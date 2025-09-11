@@ -1,6 +1,6 @@
 // src/scene/SceneRoot.jsx
 import { Canvas } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { Environment, OrbitControls } from "@react-three/drei";
 import GridCube from "../grid/GridCube";
 import useOverlayController from "./interactions/useOverlayController";
 import ProjectOverlay from "./ProjectOverlay";
@@ -23,6 +23,7 @@ export default function SceneRoot() {
         <color attach="background" args={["#22222f"]} />
         {/* You can move these to scene/params later */}
         <ambientLight intensity={0.6} />
+        <Environment preset="sunset" />
         <directionalLight position={[3, 4, 2]} intensity={1.1} />
 
         <GridCube
