@@ -12,7 +12,7 @@ export default function App() {
   const [frameVisible, setFrameVisible] = useState(false);
   const [frameReady, setFrameReady] = useState(false);
 
-  // (Nice-to-have) Preconnect for faster initial hop
+  // Preconnect
   useEffect(() => {
     const l = document.createElement("link");
     l.rel = "preconnect";
@@ -26,7 +26,10 @@ export default function App() {
       <Canvas camera={{ position: [3, 3, 3], fov: 50 }}>
         <color attach="background" args={["#22222f"]} />
         <PortalCube
-          onEnter={() => setFrameVisible(true)}
+          onEnter={() => {
+            console.log("[HUB] Revealing iframe");
+            setFrameVisible(true);
+          }}
           frameReady={frameReady}
         />
         <OrbitControls />
@@ -35,21 +38,25 @@ export default function App() {
       <ProjectFrame
         url={PROJECT_URL}
         visible={frameVisible}
-        onReady={() => setFrameReady(true)}
+        onReady={() => {
+          console.log("[HUB] iframe ready (onLoad or project-ready)");
+          setFrameReady(true);
+        }}
         onBack={() => {
+          console.log("[HUB] back-from-project received");
           setFrameVisible(false);
-          setFrameReady(false); // reset; next entry will wait for ready again
+          setFrameReady(false);
         }}
       />
     </div>
   );
 }
 
-/** Preloaded overlay iframe that shows your project */
 function ProjectFrame({ url, visible, onReady, onBack }) {
-  // Listen ONLY to messages from the project origin
   useEffect(() => {
     const onMsg = (e) => {
+      // Debug every message
+      console.log("[HUB] postMessage event:", e.origin, e.data);
       if (e.origin !== PROJECT_ORIGIN) return;
       if (e?.data?.type === "project-ready") onReady?.();
       if (e?.data?.type === "back-from-project") onBack?.();
@@ -62,8 +69,10 @@ function ProjectFrame({ url, visible, onReady, onBack }) {
     <iframe
       title="project"
       src={url}
-      // Fallback "ready" if the app doesn't postMessage (still fine)
-      onLoad={() => onReady?.()}
+      onLoad={() => {
+        console.log("[HUB] iframe onLoad fired");
+        onReady?.();
+      }}
       loading="eager"
       style={{
         position: "absolute",
@@ -74,10 +83,9 @@ function ProjectFrame({ url, visible, onReady, onBack }) {
         opacity: visible ? 1 : 0,
         pointerEvents: visible ? "auto" : "none",
         transition: "opacity 200ms ease-out",
-        background: "#111", // avoid white flash before first paint
+        background: "#111",
+        zIndex: 10, // ensure it sits above the canvas
       }}
-      // Optional sandbox if you want to tighten capabilities:
-      // sandbox="allow-scripts allow-same-origin allow-forms allow-pointer-lock"
     />
   );
 }
@@ -88,18 +96,40 @@ function PortalCube({ onEnter, frameReady }) {
   const mat = useRef();
   const { camera } = useThree();
 
-  // Subtle idle motion
   useFrame((_, dt) => {
     if (group.current) group.current.rotation.y += dt * 0.3;
     if (inner.current) inner.current.rotation.x += dt * 0.6;
   });
 
-  // Blend + camera push
   const [targetBlend, setTargetBlend] = useState(0);
   const [animating, setAnimating] = useState(false);
   const camTarget = useMemo(() => new THREE.Vector3(1.2, 1.2, 1.2), []);
   const prefersReducedMotion =
     typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+
+  // When blend finishes, either reveal immediately (if ready) or wait up to 2s for readiness.
+  const tryRevealAfterBlend = useCallback(() => {
+    if (frameReady) {
+      setTimeout(() => onEnter?.(), 16);
+      setAnimating(false);
+      setTargetBlend(0);
+    } else {
+      console.log("[HUB] blend finished, waiting for iframe readiness ...");
+      const start = performance.now();
+      const timer = setInterval(() => {
+        const elapsed = performance.now() - start;
+        if (frameReady || elapsed > 2000) {
+          clearInterval(timer);
+          console.log(frameReady
+            ? "[HUB] iframe reported ready during wait; revealing"
+            : "[HUB] timeout: revealing iframe anyway");
+          setTimeout(() => onEnter?.(), 16);
+          setAnimating(false);
+          setTargetBlend(0);
+        }
+      }, 50);
+    }
+  }, [frameReady, onEnter]);
 
   useFrame((_, dt) => {
     if (!mat.current) return;
@@ -110,30 +140,18 @@ function PortalCube({ onEnter, frameReady }) {
     if (animating) {
       camera.position.lerp(camTarget, 1 - Math.pow(0.0001, dt));
       camera.lookAt(0, 0, 0);
-
-      // Reveal iframe ONLY when blend is done AND project is ready
-      if (mat.current.blend > 0.985 && frameReady) {
-        setTimeout(() => onEnter?.(), 16); // let last portal frame paint
-        setAnimating(false);
-        setTargetBlend(0); // reset (portal is "closed" when you return)
+      if (mat.current.blend > 0.985) {
+        tryRevealAfterBlend();
       }
     }
   });
-
-  // If user clicks before iframe is ready, we hold at blend==1 until "ready"
-  useEffect(() => {
-    if (animating && mat.current?.blend > 0.985 && frameReady) {
-      setTimeout(() => onEnter?.(), 16);
-      setAnimating(false);
-      setTargetBlend(0);
-    }
-  }, [animating, frameReady, onEnter]);
 
   const startTransition = useCallback(() => {
     if (prefersReducedMotion) {
       onEnter?.();
       return;
     }
+    console.log("[HUB] starting blend");
     setAnimating(true);
     setTargetBlend(1);
   }, [onEnter, prefersReducedMotion]);
