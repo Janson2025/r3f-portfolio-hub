@@ -1,0 +1,11 @@
+[
+  {
+    "id": "character-config",
+    "block": [0, 0, 0],
+    "face": "front",
+    "type": "portal",
+    "href": "https://r3f-new-character-configurator.onrender.com/",
+    "preview": { "style": "cube-normal", "color": "#7ec8ff" },
+    "idle": { "spin": 0.6 }
+  }
+]

@@ -1,0 +1,5 @@
+{
+  "size": 1.0,
+  "material": { "color": "#1b1e24", "roughness": 0.9, "metalness": 0.1 },
+  "idle": { "speed": 0.1 }
+}
