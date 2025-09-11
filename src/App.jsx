@@ -4,7 +4,6 @@ import { OrbitControls, MeshPortalMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import { useRef, useEffect, useMemo, useState, useCallback } from "react";
 
-// === LIVE PROJECT URL / ORIGIN ===
 const PROJECT_URL = "https://r3f-new-character-configurator.onrender.com/";
 const PROJECT_ORIGIN = new URL(PROJECT_URL).origin;
 
@@ -21,32 +20,87 @@ export default function App() {
     return () => document.head.removeChild(l);
   }, []);
 
+  // Handle Esc and Back button to close the iframe
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape" && frameVisible) {
+        hideProject();
+      }
+    };
+    const onPop = () => {
+      // If user hits browser back and the iframe is open, close it instead of leaving the hub
+      if (frameVisible) hideProject(true /*fromPopstate*/);
+    };
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("popstate", onPop);
+    };
+  }, [frameVisible]);
+
+  const showProject = useCallback(() => {
+    // Push a history entry so browser Back will close the overlay
+    try {
+      window.history.pushState({ overlay: "project" }, "", "#project");
+    } catch {}
+    setFrameVisible(true);
+  }, []);
+
+  const hideProject = useCallback((fromPopstate = false) => {
+    setFrameVisible(false);
+    setFrameReady(false);
+    // If we initiated the close (not from browser back), go back one step to keep history tidy
+    if (!fromPopstate) {
+      try {
+        if (window.location.hash === "#project") window.history.back();
+      } catch {}
+    }
+  }, []);
+
   return (
     <div style={{ width: "100vw", height: "100vh", position: "relative", overflow: "hidden" }}>
       <Canvas camera={{ position: [3, 3, 3], fov: 50 }}>
         <color attach="background" args={["#22222f"]} />
-        <PortalCube
-          onEnter={() => {
-            console.log("[HUB] Revealing iframe");
-            setFrameVisible(true);
-          }}
-          frameReady={frameReady}
-        />
-        <OrbitControls />
+        <PortalCube onEnter={showProject} frameReady={frameReady} />
+        <OrbitControls enabled={!frameVisible} />
       </Canvas>
+
+      {/* Subtle preload hint (optional) */}
+      {!frameVisible && !frameReady && (
+        <div style={{ position: "absolute", bottom: 16, left: 16, padding: "6px 10px", borderRadius: 8, background: "rgba(0,0,0,0.5)", color: "#fff", fontSize: 12 }}>
+          Preloading project…
+        </div>
+      )}
+
+      {/* Close button when iframe is visible (fallback if project doesn't message) */}
+      {frameVisible && (
+        <button
+          aria-label="Back to Hub"
+          onClick={() => hideProject()}
+          style={{
+            position: "absolute",
+            top: 12,
+            left: 12,
+            zIndex: 20,
+            padding: "8px 10px",
+            borderRadius: 10,
+            border: "none",
+            background: "rgba(0,0,0,0.55)",
+            color: "#fff",
+            cursor: "pointer",
+            backdropFilter: "blur(2px)"
+          }}
+        >
+          ← Back
+        </button>
+      )}
 
       <ProjectFrame
         url={PROJECT_URL}
         visible={frameVisible}
-        onReady={() => {
-          console.log("[HUB] iframe ready (onLoad or project-ready)");
-          setFrameReady(true);
-        }}
-        onBack={() => {
-          console.log("[HUB] back-from-project received");
-          setFrameVisible(false);
-          setFrameReady(false);
-        }}
+        onReady={() => setFrameReady(true)}
+        onBack={() => hideProject()}
       />
     </div>
   );
@@ -55,8 +109,6 @@ export default function App() {
 function ProjectFrame({ url, visible, onReady, onBack }) {
   useEffect(() => {
     const onMsg = (e) => {
-      // Debug every message
-      console.log("[HUB] postMessage event:", e.origin, e.data);
       if (e.origin !== PROJECT_ORIGIN) return;
       if (e?.data?.type === "project-ready") onReady?.();
       if (e?.data?.type === "back-from-project") onBack?.();
@@ -69,10 +121,7 @@ function ProjectFrame({ url, visible, onReady, onBack }) {
     <iframe
       title="project"
       src={url}
-      onLoad={() => {
-        console.log("[HUB] iframe onLoad fired");
-        onReady?.();
-      }}
+      onLoad={() => onReady?.()}
       loading="eager"
       style={{
         position: "absolute",
@@ -84,7 +133,6 @@ function ProjectFrame({ url, visible, onReady, onBack }) {
         pointerEvents: visible ? "auto" : "none",
         transition: "opacity 200ms ease-out",
         background: "#111",
-        zIndex: 10, // ensure it sits above the canvas
       }}
     />
   );
@@ -107,29 +155,16 @@ function PortalCube({ onEnter, frameReady }) {
   const prefersReducedMotion =
     typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
-  // When blend finishes, either reveal immediately (if ready) or wait up to 2s for readiness.
-  const tryRevealAfterBlend = useCallback(() => {
-    if (frameReady) {
-      setTimeout(() => onEnter?.(), 16);
-      setAnimating(false);
-      setTargetBlend(0);
-    } else {
-      console.log("[HUB] blend finished, waiting for iframe readiness ...");
-      const start = performance.now();
-      const timer = setInterval(() => {
-        const elapsed = performance.now() - start;
-        if (frameReady || elapsed > 2000) {
-          clearInterval(timer);
-          console.log(frameReady
-            ? "[HUB] iframe reported ready during wait; revealing"
-            : "[HUB] timeout: revealing iframe anyway");
-          setTimeout(() => onEnter?.(), 16);
-          setAnimating(false);
-          setTargetBlend(0);
-        }
-      }, 50);
-    }
-  }, [frameReady, onEnter]);
+  const revealWatchdogRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (revealWatchdogRef.current) {
+        clearTimeout(revealWatchdogRef.current);
+        revealWatchdogRef.current = null;
+      }
+    };
+  }, []);
 
   useFrame((_, dt) => {
     if (!mat.current) return;
@@ -140,8 +175,24 @@ function PortalCube({ onEnter, frameReady }) {
     if (animating) {
       camera.position.lerp(camTarget, 1 - Math.pow(0.0001, dt));
       camera.lookAt(0, 0, 0);
+
       if (mat.current.blend > 0.985) {
-        tryRevealAfterBlend();
+        if (frameReady) {
+          setTimeout(() => onEnter?.(), 16);
+          setAnimating(false);
+          setTargetBlend(0);
+          if (revealWatchdogRef.current) {
+            clearTimeout(revealWatchdogRef.current);
+            revealWatchdogRef.current = null;
+          }
+        } else if (!revealWatchdogRef.current) {
+          revealWatchdogRef.current = setTimeout(() => {
+            onEnter?.();
+            setAnimating(false);
+            setTargetBlend(0);
+            revealWatchdogRef.current = null;
+          }, 1200);
+        }
       }
     }
   });
@@ -151,7 +202,6 @@ function PortalCube({ onEnter, frameReady }) {
       onEnter?.();
       return;
     }
-    console.log("[HUB] starting blend");
     setAnimating(true);
     setTargetBlend(1);
   }, [onEnter, prefersReducedMotion]);
