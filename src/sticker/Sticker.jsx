@@ -14,11 +14,6 @@ export default function Sticker({
   const mat = useRef();
   const inner = useRef();
 
-  // Subtle idle on preview mesh (if configured)
-  useFrame((_, dt) => {
-    if (inner.current) inner.current.rotation.y += dt * (config.idle?.spin ?? 0.0);
-  });
-
   // --- Build with final W/H and a THICK base depth; squash Z afterwards ---
   const { width, height, baseDepth, zScale, bevelRadius, smoothness } = useMemo(() => {
     const [w, h, d] = dims;

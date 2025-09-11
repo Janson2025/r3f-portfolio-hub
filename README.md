@@ -44,14 +44,13 @@ This repo is the **hub only**. Each project is a separate standalone static site
 ## 📂 File Structure
 node_modules
 public
-src
 │   App.jsx
 │   index.css
 │   main.jsx
 │   
 ├───block
 │   │   Block.jsx
-│   │
+│   │   
 │   ├───animations
 │   │       useBlockIdle.js
 │   │

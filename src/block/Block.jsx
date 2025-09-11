@@ -37,10 +37,6 @@ export default function Block({
 }) {
   const group = useRef();
 
-  useFrame((_, dt) => {
-    if (group.current) group.current.rotation.y += dt * (params.idle?.speed ?? 0.1);
-  });
-
   // Sticker visual proportions (relative to block size)
   const stickerSizeRatio = 0.9;  // width/height
   const stickerDepthRatio = 0.04; // thickness

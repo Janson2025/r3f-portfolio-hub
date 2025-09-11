@@ -6,7 +6,6 @@
     "type": "portal",
     "href": "https://r3f-new-character-configurator.onrender.com/",
     "preview": { "style": "cube-normal"},
-    "idle": { "spin": 0.6 },
     "bevel": 0.005
   }
 ]
