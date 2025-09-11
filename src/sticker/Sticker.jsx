@@ -16,6 +16,32 @@ export default function Sticker({ config, dims=[0.9,0.9,0.9], onActivate, frameR
   const [animating, setAnimating] = useState(false);
   const watchdogRef = useRef(null);
 
+  // Blend + reveal
+  useFrame((_, dt) => {
+    if (!mat.current) return;
+    const current = mat.current.blend ?? 0;
+    const next = THREE.MathUtils.lerp(current, targetBlend, 1 - Math.pow(0.0001, dt));
+    mat.current.blend = THREE.MathUtils.clamp(next, 0, 1);
+
+    if (animating && mat.current.blend > 0.985) {
+      if (frameReady) {
+        setTimeout(() => onActivate?.(), 16);
+        setAnimating(false);
+        setTargetBlend(0);
+        if (watchdogRef.current) clearTimeout(watchdogRef.current);
+        watchdogRef.current = null;
+      } else if (!watchdogRef.current) {
+        // reveal anyway if "ready" doesn't arrive soon
+        watchdogRef.current = setTimeout(() => {
+          onActivate?.();
+          setAnimating(false);
+          setTargetBlend(0);
+          watchdogRef.current = null;
+        }, 1200);
+      }
+    }
+  });
+
   useEffect(() => () => {
     if (watchdogRef.current) clearTimeout(watchdogRef.current);
   }, []);
