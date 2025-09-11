@@ -1,4 +1,4 @@
-// src/App.jsx (hub)
+// src/App.jsx
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { OrbitControls, MeshPortalMaterial } from "@react-three/drei";
 import * as THREE from "three";
@@ -11,7 +11,7 @@ export default function App() {
   const [frameVisible, setFrameVisible] = useState(false);
   const [frameReady, setFrameReady] = useState(false);
 
-  // Preconnect
+  // Preconnect for slightly faster first hop
   useEffect(() => {
     const l = document.createElement("link");
     l.rel = "preconnect";
@@ -20,16 +20,13 @@ export default function App() {
     return () => document.head.removeChild(l);
   }, []);
 
-  // Handle Esc and Back button to close the iframe
+  // Esc + Back button (history) to close iframe
   useEffect(() => {
     const onKey = (e) => {
-      if (e.key === "Escape" && frameVisible) {
-        hideProject();
-      }
+      if (e.key === "Escape" && frameVisible) hideProject();
     };
     const onPop = () => {
-      // If user hits browser back and the iframe is open, close it instead of leaving the hub
-      if (frameVisible) hideProject(true /*fromPopstate*/);
+      if (frameVisible) hideProject(true);
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener("popstate", onPop);
@@ -40,7 +37,6 @@ export default function App() {
   }, [frameVisible]);
 
   const showProject = useCallback(() => {
-    // Push a history entry so browser Back will close the overlay
     try {
       window.history.pushState({ overlay: "project" }, "", "#project");
     } catch {}
@@ -50,7 +46,6 @@ export default function App() {
   const hideProject = useCallback((fromPopstate = false) => {
     setFrameVisible(false);
     setFrameReady(false);
-    // If we initiated the close (not from browser back), go back one step to keep history tidy
     if (!fromPopstate) {
       try {
         if (window.location.hash === "#project") window.history.back();
@@ -59,38 +54,26 @@ export default function App() {
   }, []);
 
   return (
-    <div style={{ width: "100vw", height: "100vh", position: "relative", overflow: "hidden" }}>
+    <div className="relative h-screen w-screen overflow-hidden">
       <Canvas camera={{ position: [3, 3, 3], fov: 50 }}>
         <color attach="background" args={["#22222f"]} />
         <PortalCube onEnter={showProject} frameReady={frameReady} />
         <OrbitControls enabled={!frameVisible} />
       </Canvas>
 
-      {/* Subtle preload hint (optional) */}
+      {/* Preload hint (optional) */}
       {!frameVisible && !frameReady && (
-        <div style={{ position: "absolute", bottom: 16, left: 16, padding: "6px 10px", borderRadius: 8, background: "rgba(0,0,0,0.5)", color: "#fff", fontSize: 12 }}>
+        <div className="absolute bottom-4 left-4 rounded-lg bg-black/50 px-3 py-1.5 text-xs text-white backdrop-blur">
           Preloading project…
         </div>
       )}
 
-      {/* Close button when iframe is visible (fallback if project doesn't message) */}
+      {/* Back overlay (visible only when iframe is shown) */}
       {frameVisible && (
         <button
           aria-label="Back to Hub"
           onClick={() => hideProject()}
-          style={{
-            position: "absolute",
-            top: 12,
-            left: 12,
-            zIndex: 20,
-            padding: "8px 10px",
-            borderRadius: 10,
-            border: "none",
-            background: "rgba(0,0,0,0.55)",
-            color: "#fff",
-            cursor: "pointer",
-            backdropFilter: "blur(2px)"
-          }}
+          className="absolute left-3 top-3 z-20 rounded-xl bg-black/55 px-3 py-2 text-white backdrop-blur transition hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
         >
           ← Back
         </button>
@@ -121,19 +104,13 @@ function ProjectFrame({ url, visible, onReady, onBack }) {
     <iframe
       title="project"
       src={url}
-      onLoad={() => onReady?.()}
+      onLoad={() => onReady?.()} // baseline “ready”
       loading="eager"
-      style={{
-        position: "absolute",
-        inset: 0,
-        width: "100%",
-        height: "100%",
-        border: 0,
-        opacity: visible ? 1 : 0,
-        pointerEvents: visible ? "auto" : "none",
-        transition: "opacity 200ms ease-out",
-        background: "#111",
-      }}
+      className={[
+        "absolute inset-0 h-full w-full border-0 bg-neutral-900",
+        visible ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none",
+        "transition-opacity duration-200 ease-out",
+      ].join(" ")}
     />
   );
 }
@@ -144,19 +121,22 @@ function PortalCube({ onEnter, frameReady }) {
   const mat = useRef();
   const { camera } = useThree();
 
+  // Idle motion
   useFrame((_, dt) => {
     if (group.current) group.current.rotation.y += dt * 0.3;
     if (inner.current) inner.current.rotation.x += dt * 0.6;
   });
 
+  // Blend + camera push
   const [targetBlend, setTargetBlend] = useState(0);
   const [animating, setAnimating] = useState(false);
   const camTarget = useMemo(() => new THREE.Vector3(1.2, 1.2, 1.2), []);
   const prefersReducedMotion =
-    typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
+    typeof window !== "undefined" &&
+    window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
+  // Watchdog: if project isn't “ready” shortly after blend=1, reveal anyway
   const revealWatchdogRef = useRef(null);
-
   useEffect(() => {
     return () => {
       if (revealWatchdogRef.current) {
