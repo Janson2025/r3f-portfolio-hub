@@ -12,6 +12,18 @@
     }
   },
   {
+    "id": "r3f-molecules",
+    "block": [2, 2, 2],
+    "face": "top",
+    "href": "https://rf3-molecules.onrender.com/",
+    "preview": { "color": "#FFFFFF" },
+    "portal": {
+      "mesh": { "type": "Icosa", "props": { "radius": 0.3, "detail": 2 } },
+      "spin": { "speed": 0.7, "axis": [0.15, 1, 0.1] },
+      "lights": { "preset": "studioKey", "ambient": 0.25 }
+    }
+  },
+  {
     "id": "prototype",
     "block": [2, 0, 2],
     "face": "right",
