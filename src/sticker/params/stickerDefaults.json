@@ -1,5 +1,9 @@
 {
   "type": "portal",
   "bevel": 0.06,
-  "smoothness": 6
+  "smoothness": 6,
+
+  "blendMs": 5,
+  "enterDelayMs": 1,
+  "handoffFallbackMs": 1200
 }

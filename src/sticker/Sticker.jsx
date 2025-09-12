@@ -4,6 +4,7 @@ import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { MeshPortalMaterial, RoundedBox } from "@react-three/drei";
 import PortalScene from "./PortalScene.jsx";
+import stickerDefaults from "./params/stickerDefaults.json";
 
 export default function Sticker({
   config,
@@ -29,6 +30,16 @@ export default function Sticker({
   const [animating, setAnimating] = useState(false);
   const watchdogRef = useRef(null);
 
+  // Universal timings from stickerDefaults.json
+  const blendMs = useMemo(() => {
+    const v = stickerDefaults?.blendMs;
+    return Number.isFinite(v) && v > 0 ? v : 500; // default 500ms
+  }, []);
+  const handoffFallbackMs = useMemo(() => {
+    const v = stickerDefaults?.handoffFallbackMs;
+    return Number.isFinite(v) && v >= 0 ? v : 1200; // default 1200ms
+  }, []);
+
   useEffect(() => {
     return () => {
       if (watchdogRef.current) clearTimeout(watchdogRef.current);
@@ -39,7 +50,13 @@ export default function Sticker({
   useFrame((_, dt) => {
     if (!mat.current) return;
     const current = mat.current.blend ?? 0;
-    const next = THREE.MathUtils.lerp(current, targetBlend, 1 - Math.pow(0.0001, dt));
+
+    // Time-based easing using blendMs:
+    // factor = 1 - exp(-dt / tau), with tau = blendMs/5 so ~99% at ~blendMs
+    const tau = Math.max(0.0001, blendMs / 5000); // seconds
+    const factor = 1 - Math.exp(-(dt / tau));
+    const next = THREE.MathUtils.lerp(current, targetBlend, factor);
+
     mat.current.blend = THREE.MathUtils.clamp(next, 0, 1);
 
     if (animating && mat.current.blend > 0.985) {
@@ -55,7 +72,7 @@ export default function Sticker({
           setAnimating(false);
           setTargetBlend(0);
           watchdogRef.current = null;
-        }, 1200);
+        }, handoffFallbackMs);
       }
     }
   });
@@ -65,25 +82,23 @@ export default function Sticker({
       setAnimating(true);
       setTargetBlend(1);
     } else {
-      // Plain stickers: inert by default; wire it up if you want clicks on plain faces.
+      // Plain stickers: inert by default; wire up if needed
       // onActivate?.();
     }
-  }, [config.type, onActivate]);
+  }, [config.type]);
 
   const isPortal = config.type === "portal";
   const faceColor = config.preview?.color ?? "#ffffff"; // default background for the portal scene
 
-  // src/sticker/Sticker.jsx (only the relevant section shown)
   const portalSceneProps = useMemo(() => {
     const p = config.portal ?? {};
     return {
       bgColor: faceColor,
       mesh: p.mesh ?? { type: "icosa", props: {} },
       spin: p.spin ?? { speed: 0.6, axis: [0, 1, 0] },
-      lights: p.lights, // <-- may be preset or custom; resolver handles it
+      lights: p.lights,
     };
   }, [config.portal, faceColor]);
-
 
   return (
     <group

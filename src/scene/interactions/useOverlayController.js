@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+// src/scene/interactions/useOverlayController.js
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import stickerDefaults from "../../sticker/params/stickerDefaults.json";
 
 /**
  * Controls the project iframe overlay:
@@ -8,6 +10,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
  * - Esc to close
  * - history (#project/<slug>) so browser Back closes the overlay
  * - sets document.title while open
+ * - universal enterDelayMs (before showing iframe)
  */
 export default function useOverlayController() {
   const [visible, setVisible] = useState(false);
@@ -17,6 +20,13 @@ export default function useOverlayController() {
   const [projectSlug, setProjectSlug] = useState(null);
   const [projectTitle, setProjectTitle] = useState(null);
   const [prevTitle, setPrevTitle] = useState(null);
+
+  // universal enter delay (ms) from defaults
+  const universalEnterDelayMs = useMemo(() => {
+    const v = stickerDefaults?.enterDelayMs;
+    return Number.isFinite(v) && v >= 0 ? v : 0;
+  }, []);
+  const enterTimerRef = useRef(null);
 
   const targetOrigin = useMemo(
     () => (targetUrl ? new URL(targetUrl).origin : ""),
@@ -67,33 +77,57 @@ export default function useOverlayController() {
   /**
    * show() accepts either:
    *   show("https://example.com/app")
-   * or show({ href, slug?, title? })
+   * or show({ href, slug?, title?, delayMs? })
+   *
+   * delayMs overrides the universal enterDelayMs (optional).
    */
   const show = useCallback((hrefOrObj) => {
+    // Cancel any pending delayed entry
+    if (enterTimerRef.current) {
+      clearTimeout(enterTimerRef.current);
+      enterTimerRef.current = null;
+    }
+
     const href = typeof hrefOrObj === "string" ? hrefOrObj : hrefOrObj?.href;
     const slug =
       (typeof hrefOrObj === "object" && hrefOrObj?.slug) ||
       deriveSlugFromHref(href);
     const title = (typeof hrefOrObj === "object" && hrefOrObj?.title) || slug;
 
+    const overrideDelay = (typeof hrefOrObj === "object" && hrefOrObj?.delayMs);
+    const delayMs = Number.isFinite(overrideDelay) ? overrideDelay : universalEnterDelayMs;
+
     setTargetUrl(href);
     setProjectSlug(slug);
     setProjectTitle(title);
 
-    try {
-      const hash = makeHash(slug);
-      window.history.pushState({ overlay: "project", slug }, "", hash);
-    } catch {}
+    const goVisible = () => {
+      try {
+        const hash = makeHash(slug);
+        window.history.pushState({ overlay: "project", slug }, "", hash);
+      } catch {}
+      try {
+        setPrevTitle(document.title);
+        document.title = `${title} • Hub`;
+      } catch {}
+      setVisible(true);
+      enterTimerRef.current = null;
+    };
 
-    try {
-      setPrevTitle(document.title);
-      document.title = `${title} • Hub`;
-    } catch {}
-
-    setVisible(true);
-  }, []);
+    if (delayMs > 0) {
+      enterTimerRef.current = setTimeout(goVisible, delayMs);
+    } else {
+      goVisible();
+    }
+  }, [universalEnterDelayMs]);
 
   const hide = useCallback((fromPopstate = false) => {
+    // cancel any pending enter timer
+    if (enterTimerRef.current) {
+      clearTimeout(enterTimerRef.current);
+      enterTimerRef.current = null;
+    }
+
     setVisible(false);
     setReady(false);
     setTargetUrl(null);
@@ -117,10 +151,12 @@ export default function useOverlayController() {
     targetOrigin,
     projectSlug,
     projectTitle,
+
     // mutators
     setReady,
     show,
     hide,
+
     // convenience
     controlsDisabled: visible,
   };
