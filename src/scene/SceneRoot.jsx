@@ -1,4 +1,3 @@
-// src/scene/SceneRoot.jsx
 import { Canvas } from "@react-three/fiber";
 import { Environment, OrbitControls } from "@react-three/drei";
 import GridCube from "../grid/GridCube";
@@ -27,7 +26,10 @@ export default function SceneRoot() {
         <directionalLight position={[3, 4, 2]} intensity={1.1} />
 
         <GridCube
-          onActivateSticker={(href) => show(href)}  // supports any project href
+          // Forward slug/title derived from sticker metadata
+          onActivateSticker={(href, meta) =>
+            show({ href, slug: meta?.id, title: meta?.title ?? meta?.id })
+          }
           frameReady={ready}
         />
 
