@@ -1,4 +1,4 @@
-// src/sticker/meshes/meshes.jsx
+import { useGLTF, Center } from "@react-three/drei";
 
 /** ---------- Mesh components ---------- */
 export function Icosa({ radius = 0.5, detail = 1, ...mat }) {
@@ -30,7 +30,6 @@ export function WBox({ size = 0.6, ...mat }) {
   );
 }
 
-/** Normal-material primitives */
 export function Cube({ size = 0.6 }) {
   return (
     <mesh>
@@ -49,6 +48,19 @@ export function Cylinder({ radiusTop = 0.4, radiusBottom = 0.4, height = 1, radi
   );
 }
 
+/** New: GLB loader (centered for tiny portals) */
+export function GLB({ url, scale = 1, rotation = [0,0,0], position = [0,0,0], ...rest }) {
+  const { scene } = useGLTF(url);
+  return (
+    <Center disableY>
+      <primitive object={scene} scale={scale} rotation={rotation} position={position} {...rest} />
+    </Center>
+  );
+}
+
+// Optional preload
+useGLTF.preload?.("/models/glucose.glb");
+
 /** Registry + resolver */
 export const MESH_REGISTRY = {
   icosa: Icosa,
@@ -56,6 +68,7 @@ export const MESH_REGISTRY = {
   wbox: WBox,
   cube: Cube,
   cylinder: Cylinder,
+  glb: GLB, // <-- add this
 };
 
 export function ResolveMesh({ type = "icosa", props = {} }) {

@@ -1,3 +1,2 @@
-// src/sticker/meshes/index.jsx
-export * from "./meshes.jsx";
-export * from "./lights.jsx";
+export { ResolveMesh, MESH_REGISTRY } from "./meshes.jsx";
+export { ResolveLights } from "./lights.jsx";

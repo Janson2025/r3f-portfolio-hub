@@ -1,15 +1,9 @@
 // src/grid/GridCube.jsx
-import { useMemo } from "react";
+import React, { useMemo, useRef, useState, useCallback } from "react";
 import Block from "../block/Block";
 import gridParams from "./params/grid.json";
 import customStickers from "../sticker/params/stickers.json";
 
-/**
- * GridCube now ONLY lays out blocks and passes down:
- *  - blockIndex: [i,j,k]
- *  - gridDims: [dx,dy,dz]   (for face exposure checks inside Block)
- *  - overrides: Map keyed by "i,j,k:face" -> sticker override object
- */
 export default function GridCube({ onActivateSticker, frameReady }) {
   const dims = gridParams.dimensions ?? [3, 3, 3];
   const spacing = gridParams.spacing ?? 1.03;
@@ -25,29 +19,56 @@ export default function GridCube({ onActivateSticker, frameReady }) {
     return map;
   }, []);
 
-  const blocks = [];
-  for (let i = 0; i < dx; i++) {
-    for (let j = 0; j < dy; j++) {
-      for (let k = 0; k < dz; k++) {
-        const x = (i - (dx - 1) / 2) * spacing;
-        const y = (j - (dy - 1) / 2) * spacing;
-        const z = (k - (dz - 1) / 2) * spacing;
-
-        blocks.push(
-          <Block
-            key={`${i},${j},${k}`}
-            position={[x, y, z]}
-            size={1.0}
-            blockIndex={[i, j, k]}
-            gridDims={[dx, dy, dz]}
-            overrides={overrides}
-            onActivateSticker={onActivateSticker}
-            frameReady={frameReady}
-          />
-        );
+  // --- Model-driven blocks state
+  const [blocks, setBlocks] = useState(() => {
+    const arr = [];
+    let id = 0;
+    for (let i = 0; i < dx; i++) {
+      for (let j = 0; j < dy; j++) {
+        for (let k = 0; k < dz; k++) {
+          arr.push({ id: id++, ijk: [i, j, k], ref: React.createRef() });
+        }
       }
     }
-  }
+    return arr;
+  });
 
-  return <group>{blocks}</group>;
+  // Future use: the tmp rotating group (hidden by default)
+  const tmpGroupRef = useRef();
+
+  // Helper (needed later by the rotation hook; harmless now)
+  const getBlocks = useCallback(() => blocks, [blocks]);
+
+  // Render from indices each frame
+  const blockEls = useMemo(() => {
+    return blocks.map((b) => {
+      const [i, j, k] = b.ijk;
+      const x = (i - (dx - 1) / 2) * spacing;
+      const y = (j - (dy - 1) / 2) * spacing;
+      const z = (k - (dz - 1) / 2) * spacing;
+
+      return (
+        <Block
+          key={b.id}
+          position={[x, y, z]}
+          size={1.0}
+          blockIndex={[i, j, k]}
+          gridDims={[dx, dy, dz]}
+          overrides={overrides}
+          onActivateSticker={onActivateSticker}
+          frameReady={frameReady}
+          forwardRef={b.ref}                 // NEW: expose Object3D (used later)
+          onStickerPointerDown={undefined}   // wired in Phase 2
+        />
+      );
+    });
+  }, [blocks, dx, dy, dz, spacing, overrides, onActivateSticker, frameReady]);
+
+  return (
+    <group>
+      {/* Hidden rotating layer group (used in Phase 2+) */}
+      <group ref={tmpGroupRef} visible={false} />
+      {blockEls}
+    </group>
+  );
 }
