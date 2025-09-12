@@ -3,6 +3,7 @@ import * as THREE from "three";
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { MeshPortalMaterial, RoundedBox } from "@react-three/drei";
+import PortalScene from "./PortalScene.jsx";
 
 export default function Sticker({
   config,
@@ -12,14 +13,13 @@ export default function Sticker({
   frameReady,
 }) {
   const mat = useRef();
-  const inner = useRef();
 
   // --- Build with final W/H and a THICK base depth; squash Z afterwards ---
   const { width, height, baseDepth, zScale, bevelRadius, smoothness } = useMemo(() => {
     const [w, h, d] = dims;
-    const baseDepth = Math.max(w, h);        // thick slab so bevel stays chunky
-    const zScale = d / baseDepth;            // flatten only along Z
-    const bevelRadius = config.bevel ?? 0.08; // chunky bevel
+    const baseDepth = Math.max(w, h);          // thick slab so bevel stays chunky
+    const zScale = d / baseDepth;              // flatten only along Z
+    const bevelRadius = config.bevel ?? 0.08;  // chunky bevel
     const smoothness = Math.max(2, config.smoothness ?? 5);
     return { width: w, height: h, baseDepth, zScale, bevelRadius, smoothness };
   }, [dims, config.bevel, config.smoothness]);
@@ -65,13 +65,25 @@ export default function Sticker({
       setAnimating(true);
       setTargetBlend(1);
     } else {
-      // Plain stickers: keep inert, or enable if you want
+      // Plain stickers: inert by default; wire it up if you want clicks on plain faces.
       // onActivate?.();
     }
   }, [config.type, onActivate]);
 
   const isPortal = config.type === "portal";
-  const faceColor = config.preview?.color ?? "#ffffff"; // comes from GridCube auto-colors or override
+  const faceColor = config.preview?.color ?? "#ffffff"; // default background for the portal scene
+
+  // src/sticker/Sticker.jsx (only the relevant section shown)
+  const portalSceneProps = useMemo(() => {
+    const p = config.portal ?? {};
+    return {
+      bgColor: faceColor,
+      mesh: p.mesh ?? { type: "icosa", props: {} },
+      spin: p.spin ?? { speed: 0.6, axis: [0, 1, 0] },
+      lights: p.lights, // <-- may be preset or custom; resolver handles it
+    };
+  }, [config.portal, faceColor]);
+
 
   return (
     <group
@@ -88,20 +100,13 @@ export default function Sticker({
       >
         {isPortal ? (
           <MeshPortalMaterial ref={mat} side={THREE.DoubleSide} blend={0}>
-            {/* Portal background uses the assigned face color */}
-            <color attach="background" args={[faceColor]} />
-            <ambientLight intensity={0.75} />
-            <directionalLight position={[1.2, 1.6, 1.2]} intensity={1} />
-            <mesh ref={inner}>
-              <boxGeometry args={[0.5, 0.5, 0.5]} />
-              <meshNormalMaterial />
-            </mesh>
+            <PortalScene {...portalSceneProps} />
           </MeshPortalMaterial>
         ) : (
           <meshStandardMaterial
             color={faceColor}
             roughness={0.05}
-            metalness={0.0}
+            metalness={0.2}
             flatShading={false}
           />
         )}

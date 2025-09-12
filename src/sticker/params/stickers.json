@@ -1,11 +1,32 @@
 [
   {
     "id": "character-config",
-    "block": [1, 1, 2],
+    "block": [0, 0, 2],
     "face": "front",
-    "type": "portal",
     "href": "https://r3f-new-character-configurator.onrender.com/",
-    "preview": { "style": "cube-normal"},
-    "bevel": 0.005
+    "preview": { "color": "#0FA74A" },
+    "portal": {
+      "mesh": { "type": "cylinder", "props": { "radiusTop": 0.3, "radiusBottom": 0.3, "height": 0.25, "radialSegments": 32 } },
+      "spin": { "speed": 0.7, "axis": [0.15, 1, 0.1] },
+      "lights": { "preset": "studioKey", "ambient": 0.25 }
+    }
+  },
+  {
+    "id": "prototype",
+    "block": [2, 0, 2],
+    "face": "right",
+    "href": "https://r3f-prototype.onrender.com/",
+    "preview": { "color": "#D42828" },
+    "portal": {
+      "mesh": { "type": "cube", "props": { "size": 0.5 } },
+      "spin": { "speed": 0.45, "axis": [0, 1, 0.3] },
+      "lights": {
+        "ambient": 0.5,
+        "dirs": [
+          { "position": [2, 2.5, 1], "intensity": 1.2 },
+          { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
+        ]
+      }
+    }
   }
 ]
