@@ -1,6 +1,6 @@
 {
   "type": "portal",
-  "bevel": 0.06,
+  "bevel": 0.15,
   "smoothness": 6,
 
   "blendMs": 5,

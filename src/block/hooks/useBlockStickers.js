@@ -30,7 +30,7 @@ export default function useBlockStickers({
           face: f.name,
           type: "plain",
           preview: { color: RUBIK_FACE_COLORS[f.name] },
-          bevel: 0.02,
+          bevel: 0.1,
         });
       }
     }

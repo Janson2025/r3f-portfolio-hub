@@ -14,9 +14,9 @@ export default function StickerFace({
   frameReady,
 
   // tuning
-  stickerSizeRatio = 0.9,
-  stickerDepthRatio = 0.04,
-  epsilon = 0.002,
+  stickerSizeRatio = 0.99,
+  stickerDepthRatio = 0.99,
+  epsilon = -0.966,
 }) {
   const { face } = faceConfig;
   const rot = FACE_ROT[face];

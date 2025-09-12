@@ -6,7 +6,17 @@
     "href": "https://r3f-new-character-configurator.onrender.com/",
     "preview": { "color": "#0FA74A" },
     "portal": {
-      "mesh": { "type": "cylinder", "props": { "radiusTop": 0.3, "radiusBottom": 0.3, "height": 0.25, "radialSegments": 32 } },
+      "distance": -0.3,
+      "mesh": {
+        "type": "cylinder",
+        "props": {
+          "radiusTop": 0.3,
+          "radiusBottom": 0.3,
+          "height": 0.25,
+          "radialSegments": 32,
+          "position": [0, 0.02, 0]
+        }
+      },
       "spin": { "speed": 0.7, "axis": [0.15, 1, 0.1] },
       "lights": { "preset": "studioKey", "ambient": 0.25 }
     }
@@ -18,12 +28,14 @@
     "href": "https://rf3-molecules.onrender.com/",
     "preview": { "color": "#FFFFFF" },
     "portal": {
+      "distance": -0.3,
       "mesh": {
         "type": "glb",
         "props": {
           "url": "/models/glucose.glb",
           "scale": 0.1,
-          "rotation": [0.15, 0.9, 0.0]
+          "rotation": [0.15, 0.9, 0.0],
+          "position": [0, -0.02, 0]
         }
       },
       "spin": { "speed": 0.7, "axis": [0.15, 1, 0.1] },
@@ -37,6 +49,7 @@
     "href": "https://r3f-prototype.onrender.com/",
     "preview": { "color": "#D42828" },
     "portal": {
+      "distance": -0.3,
       "mesh": { "type": "cube", "props": { "size": 0.5 } },
       "spin": { "speed": 0.45, "axis": [0, 1, 0.3] },
       "lights": {

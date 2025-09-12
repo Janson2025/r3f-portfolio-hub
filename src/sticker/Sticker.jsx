@@ -9,23 +9,39 @@ import stickerDefaults from "./params/stickerDefaults.json";
 export default function Sticker({
   config,
   // Target final dims (world units): [width, height, depth]
-  dims = [0.94, 0.94, 0.02],
+  dims = [0.94, 0.94, 0.09],
   onActivate,
   frameReady,
 }) {
   const mat = useRef();
 
-  // --- Build with final W/H and a THICK base depth; squash Z afterwards ---
-  const { width, height, baseDepth, zScale, bevelRadius, smoothness } = useMemo(() => {
+  // --- Geometry & transform planning: bevel first, then squash Z on PARENT group ---
+  const {
+    width, height, baseDepth, zScale, bevelRadius, smoothness, faceColor,
+  } = useMemo(() => {
     const [w, h, d] = dims;
-    const baseDepth = Math.max(w, h);          // thick slab so bevel stays chunky
-    const zScale = d / baseDepth;              // flatten only along Z
-    const bevelRadius = config.bevel ?? 0.08;  // chunky bevel
-    const smoothness = Math.max(2, config.smoothness ?? 5);
-    return { width: w, height: h, baseDepth, zScale, bevelRadius, smoothness };
-  }, [dims, config.bevel, config.smoothness]);
 
-  // --- Portal blend state ---
+    // We build a thick slab so bevel is computed "chunky", then squash Z via parent group.
+    const baseDepth = Math.max(w, h);
+    const zScale = d / baseDepth;
+
+    // Chunky bevel request: default 0.4 (world units)
+    const desiredBevel = config.bevel ?? 0.4;
+
+    // Clamp bevel to safe range (cannot exceed half of any dimension)
+    const maxRadius = 0.5 * Math.min(w, h, baseDepth);
+    const bevelRadius = Math.min(desiredBevel, Math.max(0.0001, maxRadius - 1e-3));
+
+    // Segments for roundness
+    const smoothness = Math.max(2, config.smoothness ?? 6);
+
+    // Color (Rubik face color is set upstream in preview.color)
+    const faceColor = config.preview?.color ?? "#ffffff";
+
+    return { width: w, height: h, baseDepth, zScale, bevelRadius, smoothness, faceColor };
+  }, [dims, config.bevel, config.smoothness, config.preview?.color]);
+
+  // --- Portal blend state (time-based) ---
   const [targetBlend, setTargetBlend] = useState(0);
   const [animating, setAnimating] = useState(false);
   const watchdogRef = useRef(null);
@@ -33,11 +49,11 @@ export default function Sticker({
   // Universal timings from stickerDefaults.json
   const blendMs = useMemo(() => {
     const v = stickerDefaults?.blendMs;
-    return Number.isFinite(v) && v > 0 ? v : 500; // default 500ms
+    return Number.isFinite(v) && v > 0 ? v : 500;
   }, []);
   const handoffFallbackMs = useMemo(() => {
     const v = stickerDefaults?.handoffFallbackMs;
-    return Number.isFinite(v) && v >= 0 ? v : 1200; // default 1200ms
+    return Number.isFinite(v) && v >= 0 ? v : 1200;
   }, []);
 
   useEffect(() => {
@@ -51,8 +67,7 @@ export default function Sticker({
     if (!mat.current) return;
     const current = mat.current.blend ?? 0;
 
-    // Time-based easing using blendMs:
-    // factor = 1 - exp(-dt / tau), with tau = blendMs/5 so ~99% at ~blendMs
+    // time-based easing so ~blendMs to ~complete
     const tau = Math.max(0.0001, blendMs / 5000); // seconds
     const factor = 1 - Math.exp(-(dt / tau));
     const next = THREE.MathUtils.lerp(current, targetBlend, factor);
@@ -82,14 +97,14 @@ export default function Sticker({
       setAnimating(true);
       setTargetBlend(1);
     } else {
-      // Plain stickers: inert by default; wire up if needed
+      // Plain stickers are inert by default; enable if desired:
       // onActivate?.();
     }
-  }, [config.type]);
+  }, [config.type, onActivate]);
 
   const isPortal = config.type === "portal";
-  const faceColor = config.preview?.color ?? "#ffffff"; // default background for the portal scene
 
+  // Small idle spin for the portal preview (optional; uses PortalScene internal props)
   const portalSceneProps = useMemo(() => {
     const p = config.portal ?? {};
     return {
@@ -97,6 +112,7 @@ export default function Sticker({
       mesh: p.mesh ?? { type: "icosa", props: {} },
       spin: p.spin ?? { speed: 0.6, axis: [0, 1, 0] },
       lights: p.lights,
+      distance: p.distance ?? 0
     };
   }, [config.portal, faceColor]);
 
@@ -106,26 +122,27 @@ export default function Sticker({
       onPointerOver={(e) => { document.body.style.cursor = "pointer"; e.stopPropagation(); }}
       onPointerOut={() => (document.body.style.cursor = "auto")}
     >
-      {/* Build geometry with FINAL width/height and THICK base depth, then squash Z only */}
-      <RoundedBox
-        args={[width, height, baseDepth]}
-        radius={bevelRadius}
-        smoothness={smoothness}
-        scale={[1, 1, zScale]}
-      >
-        {isPortal ? (
-          <MeshPortalMaterial ref={mat} side={THREE.DoubleSide} blend={0}>
-            <PortalScene {...portalSceneProps} />
-          </MeshPortalMaterial>
-        ) : (
-          <meshStandardMaterial
-            color={faceColor}
-            roughness={0.05}
-            metalness={0.2}
-            flatShading={false}
-          />
-        )}
-      </RoundedBox>
+      {/* Parent group applies Z squash so bevel (on RoundedBox) remains visually chunky */}
+      <group scale={[1, 1, zScale]}>
+        <RoundedBox
+          args={[width, height, baseDepth]} // thick slab geometry
+          radius={bevelRadius}              // chunky bevel (clamped for safety)
+          smoothness={smoothness}
+        >
+          {isPortal ? (
+            <MeshPortalMaterial ref={mat} side={THREE.DoubleSide} blend={0}>
+              <PortalScene {...portalSceneProps} />
+            </MeshPortalMaterial>
+          ) : (
+            <meshStandardMaterial
+              color={faceColor}
+              roughness={0.05}
+              metalness={0.2}
+              flatShading={false}
+            />
+          )}
+        </RoundedBox>
+      </group>
     </group>
   );
 }
