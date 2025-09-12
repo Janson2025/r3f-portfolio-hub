@@ -36,16 +36,18 @@ export default function ProjectOverlay({
         </button>
       )}
 
-      <iframe
-        title="project"
-        src={targetUrl ?? ""}
-        onLoad={() => onReady?.()}
-        loading="eager"
-        className={[
-          "absolute inset-0 h-full w-full border-0 bg-neutral-900 transition-opacity duration-200 ease-out",
-          visible ? "opacity-100 pointer-events-auto z-10" : "opacity-0 pointer-events-none",
-        ].join(" ")}
-      />
+      {targetUrl && (
+          <iframe
+            title="project"
+            src={targetUrl}
+            onLoad={() => onReady?.()}
+            loading="eager"
+            className={[
+              "absolute inset-0 h-full w-full border-0 bg-neutral-900 transition-opacity duration-200 ease-out",
+              visible ? "opacity-100 pointer-events-auto z-10" : "opacity-0 pointer-events-none",
+            ].join(" ")}
+          />
+        )}
     </>
   );
 }

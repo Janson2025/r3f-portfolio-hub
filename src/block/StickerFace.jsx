@@ -1,5 +1,5 @@
 // src/block/StickerFace.jsx
-import { FACE_NORMAL, FACE_ROT } from "./constants";
+import { FACE_NORMAL, FACE_ROT } from "./constrants";
 import Sticker from "../sticker/Sticker";
 
 /**

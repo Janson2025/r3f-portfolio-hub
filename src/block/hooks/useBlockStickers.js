@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import { RUBIK_FACE_COLORS } from "../../shared/constants";
 import stickerDefaults from "../../sticker/params/stickerDefaults.json";
-import { FACES } from "../hooks/useBlockStickers";
+import { FACES } from "../constrants";
 
 /**
  * Builds this block's stickers:
