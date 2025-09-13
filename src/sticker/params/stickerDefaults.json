@@ -5,5 +5,5 @@
 
   "blendMs": 5,
   "enterDelayMs": 1,
-  "handoffFallbackMs": 10
+  "handoffFallbackMs": 0
 }

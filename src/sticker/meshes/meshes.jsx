@@ -48,6 +48,15 @@ export function Cylinder({ radiusTop = 0.4, radiusBottom = 0.4, height = 1, radi
   );
 }
 
+export function plane ({ size = 1 }) {
+  return (
+    <mesh>
+        <planeGeometry args={[0.70, 0.50]} />
+        <meshStandardMaterial color='#ffffff' />
+    </mesh>
+  );
+}
+
 /** New: GLB loader (centered for tiny portals) */
 export function GLB({ url, scale = 1, rotation = [0,0,0], position = [0,0,0], ...rest }) {
   const { scene } = useGLTF(url);
@@ -68,6 +77,7 @@ export const MESH_REGISTRY = {
   wbox: WBox,
   cube: Cube,
   cylinder: Cylinder,
+  plane: plane,
   glb: GLB, // <-- add this
 };
 

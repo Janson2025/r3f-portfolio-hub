@@ -60,5 +60,24 @@
         ]
       }
     }
+  },
+  {
+    "id": "circles-mask-revealer",
+    "block": [2, 0, 2],
+    "face": "front",
+    "href": "https://r3f-image-revealer.onrender.com",
+    "preview": { "color": "#0FA74A" },
+    "portal": {
+      "distance": -0.3,
+      "mesh": { "type": "plane", "props": { "size": 0.5 } },
+      "spin": { "speed": 0.45, "axis": [0, 0, 0.0] },
+      "lights": {
+        "ambient": 0.5,
+        "dirs": [
+          { "position": [2, 2.5, 1], "intensity": 1.2 },
+          { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
+        ]
+      }
+    }
   }
 ]
