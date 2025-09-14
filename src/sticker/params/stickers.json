@@ -63,7 +63,7 @@
   },
   {
     "id": "circles-mask-revealer",
-    "block": [2, 0, 2],
+    "block": [2, 1, 2],
     "face": "front",
     "href": "https://r3f-image-revealer.onrender.com",
     "preview": { "color": "#0FA74A" },
