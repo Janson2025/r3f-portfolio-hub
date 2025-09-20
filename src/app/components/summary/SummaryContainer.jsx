@@ -1,7 +1,7 @@
 // src/app/components/summary/SummaryContainer.jsx
 import { useMemo, useState } from "react";
 import Chip from "./Chip.jsx";
-import Paragraph from "./paragraph.jsx";
+import Paragraph from "./SummaryParagraph.jsx";
 import pubsub from "../../project/shared/pubsub.js";
 
 // Fallback demo data
