@@ -1,0 +1,9 @@
+/* SCSS runs first, defines tokens */
+@use "./styles/tokens.scss" as *;
+
+/* Your site-level styles after */
+@use "./styles/typography.scss";
+@use "./styles/components.scss";
+
+/* Any loose global rules are fine */
+#root { width: 100vw; height: 100vh; }

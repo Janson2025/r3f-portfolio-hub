@@ -30,7 +30,7 @@ export default function ProjectOverlay({
         <button
           aria-label="Back to Hub"
           onClick={onBack}
-          className="absolute left-3 top-3 z-20 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          className="absolute left-3 top-16 z-20 rounded-lg bg-black/60 px-3 py-2 text-white backdrop-blur hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
         >
           ← Back
         </button>

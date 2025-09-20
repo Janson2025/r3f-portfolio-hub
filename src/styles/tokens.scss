@@ -1,0 +1,45 @@
+@theme {
+  --color-bg: var(--bg);
+  --color-bg-elev: var(--bg-elev);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.08);
+  --shadow-md: 0 8px 30px rgba(0,0,0,.18);
+  --ease-smooth: cubic-bezier(.2,.8,.2,1);
+}
+
+/* Light by default */
+:root {
+  --bg: #f7f9fc;
+  --bg-elev: #ffffff;
+  --fg: #0f172a;
+  --muted: #475569;
+  --accent: #2563eb;
+  --accent-hover: #d81d49;
+  color-scheme: light;
+  --accent-hover: color-mix(in srgb, var(--accent) 80%, white);
+  --accent-weak:  color-mix(in srgb, var(--accent) 14%, var(--bg-elev));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0b0f18;
+    --bg-elev: #1017256b;
+    --fg: #e5e7eb;
+    --muted: #94a3b8;
+    --accent: #60a5fa;
+    color-scheme: dark;
+    --accent-hover: color-mix(in srgb, var(--accent) 80%, white);
+    --accent-weak:  color-mix(in srgb, var(--accent) 22%, var(--bg-elev));
+  }
+}
+
+/* Non-scroll shell */
+html, body, #root { height: 100%; }
+body { overflow: hidden; background: var(--bg); color: var(--fg); }
+
+/* Utility: hide scrollbars where we allow x-scroll chips */
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }

@@ -7,6 +7,11 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss()
-  ],
-  
+  ],css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "styles/tokens.scss" as *;`
+      }
+    }
+  }
 })

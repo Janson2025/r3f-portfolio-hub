@@ -1,0 +1,95 @@
+.card    { background: var(--color-bg-elev); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); }
+.link    { color: var(--color-accent); text-decoration: underline; text-underline-offset: 2px; }
+.link:hover { opacity: .9; }
+
+.focus-ring { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+.btn {
+  background: var(--bg-elev); color: var(--fg);
+  border-radius: 12px; padding: .5rem .75rem; box-shadow: var(--shadow-sm);
+  transition: transform .15s var(--ease-smooth), box-shadow .2s var(--ease-smooth);
+}
+.btn:hover { 
+  transform: translateY(-1px); 
+  box-shadow: var(--shadow-md);
+}
+
+.btn:focus-visible { 
+  outline: 2px solid var(--color-accent); 
+  outline-offset: 2px; 
+}
+
+.chip {
+  background: var(--bg-elev); color: var(--fg);
+  border-radius: 9999px; padding: .375rem .75rem; box-shadow: var(--shadow-sm);
+  white-space: nowrap; display: inline-flex; align-items: center; gap: .375rem;
+}
+
+.chip {
+  background: var(--bg-elev);
+  color: var(--fg);
+  border-radius: 9999px;
+  padding: .375rem .75rem;
+  box-shadow: var(--shadow-sm);
+  white-space: nowrap;
+  display: inline-flex; align-items: center; gap: .375rem;
+  transition: transform .15s var(--ease-smooth), box-shadow .2s var(--ease-smooth), background-color .2s var(--ease-smooth), color .2s var(--ease-smooth);
+}
+
+.chip:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+  background: var(--accent-weak);   /* <— distinct hover color */
+  color: var(--fg);
+}
+
+.chip:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.chip[aria-selected="true"] {
+  background: var(--accent);        /* <— selected state */
+  color: white;
+}
+
+/* Optional: keep selected color stable on hover */
+.chip[aria-selected="true"]:hover {
+  background: var(--accent);
+  color: white;
+}
+
+/* Summary: fixed to bottom; center on mobile, left on desktop */
+.summary {
+  position: fixed;
+  /* bottom spacing */
+  bottom: 1rem;
+  /* mobile: center horizontally */
+  left: 50%;
+  transform: translateX(-50%);
+
+  /* visual */
+  background-color: var(--bg-elev);
+  color: var(--fg);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+
+  /* sizing (mobile first) */
+  width: min(90vw, 40rem);   /* up to ~640px but keep margins */
+  height: min-content;
+
+  /* make sure it’s above the canvas but below overlays/header if needed */
+  z-index: 20;
+
+  /* clickable even if parent uses pointer-events:none */
+  pointer-events: auto;
+}
+
+/* Desktop ≥ 1024px: dock to bottom-left */
+@media (min-width: 1024px) {
+  .summary {
+    left: 1rem;
+    transform: none;
+    width: clamp(320px, 32vw, 520px);
+  }
+}
