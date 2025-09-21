@@ -5,7 +5,7 @@ import { Environment, OrbitControls } from "@react-three/drei";
 import GridCube from "../grid/GridCube";
 import useOverlayController from "./interactions/useOverlayController";
 import ProjectOverlay from "./ProjectOverlay";
-import Avatar from "./Avatar";
+import { Avatar } from "./Avatar";
 
 /** Drag-to-rotate controller: rotates the target group, not the camera. */
 function DragRotate({ targetRef, enabled = true, speed = 0.0035, clampX = Math.PI / 2 }) {
@@ -113,7 +113,9 @@ export default function SceneRoot() {
           </Suspense>
 
           {/* Your avatar lives in the same Canvas */}
-          <Avatar/>
+          <group position={[-1.25, -1.0, -2.0]} rotation={[0.4, .75, -0.2]}>
+            <Avatar />
+          </group>
 
           {/* Cube on the right (desktop) / centered (mobile). Drag to rotate object, not camera. */}
           <CubeRig
