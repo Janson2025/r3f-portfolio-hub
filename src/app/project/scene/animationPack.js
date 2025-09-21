@@ -17,6 +17,11 @@ export const GESTURE_FILES = [
   "sarcastic-head-nod.fbx",
   "shaking-head-no.fbx",
   "thoughtful-head-shake.fbx",
+  "Jumping.fbx",
+  "Throw.fbx",
+  "Falling-Idle.fbx",
+  "Robot-Hip-Hop-Dance.fbx",
+  "Swing-Dancing.fbx",
 ];
 
 export const DEFAULT_INITIAL_CLIP = "relieved-sigh";

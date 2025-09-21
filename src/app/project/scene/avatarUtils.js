@@ -52,7 +52,6 @@ export function useFBXClips(urls) {
       });
 
       setClips(usable);
-      console.log(`[useFBXClips] loaded ${usable.length}/${urls.length}:`, usable.map(c => c.name));
     })();
 
     return () => { alive = false; };
