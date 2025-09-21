@@ -6,6 +6,8 @@ import GridCube from "../grid/GridCube";
 import useOverlayController from "./interactions/useOverlayController";
 import ProjectOverlay from "./ProjectOverlay";
 import { Avatar } from "./Avatar";
+import { FadingDiskPlane } from "./FadingDiskPlane";
+import { ContactShadows } from "@react-three/drei";
 
 /** Drag-to-rotate controller: rotates the target group, not the camera. */
 function DragRotate({ targetRef, enabled = true, speed = 0.0035, clampX = Math.PI / 2 }) {
@@ -77,10 +79,12 @@ function CubeRig({ onActivateSticker, frameReady, controlsEnabled }) {
   const isDesktop = size.width >= 1024;
 
   // Adjust this offset to taste. World units at your current camera/fov.
-  const offsetX = isDesktop ? 10 : 0;
+  const offsetX = isDesktop ? 2.0 : 0;
+  const offsetY = isDesktop ? -0.5 : 0;
+  const offsetZ = isDesktop ? 0 : 0;
 
   return (
-    <group ref={group} position={[1.75, 0.0, -4.5]} rotation={[Math.PI / 5.5, -Math.PI / 2.75, 0]}>
+    <group ref={group} position={[offsetX, offsetZ, offsetY]} rotation={[Math.PI / 5.5, -Math.PI / 2.75, .25]}>
       <GridCube onActivateSticker={onActivateSticker} frameReady={frameReady} />
       <DragRotate targetRef={group} enabled={controlsEnabled} />
     </group>
@@ -89,35 +93,55 @@ function CubeRig({ onActivateSticker, frameReady, controlsEnabled }) {
 
 export default function SceneRoot() {
   const {
-    visible,
-    ready,
-    setReady,
-    targetUrl,
-    targetOrigin,
-    show,
-    hide,
-    controlsDisabled,
+    visible, ready, setReady, targetUrl, targetOrigin, show, hide, controlsDisabled,
   } = useOverlayController();
 
   return (
     <>
-      {/* Full-screen background Canvas (below header/footer; above body) */}
       <div className="fixed inset-0 z-0">
-        <Canvas camera={{ position: [0, 0, 0], focus: 0 }} shadows>
-          {/* Scene background + basic lighting */}
+        {/* Canvas already has shadows enabled */}
+        <Canvas camera={{ position: [0, 1.5, 6], fov: 50 }} shadows>
           <color attach="background" args={["#22222f"]} />
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[3, 4, 2]} intensity={1.1} />
-          <Suspense fallback={null}>
-            <Environment preset="sunset" />
-          </Suspense>
 
-          {/* Your avatar lives in the same Canvas */}
-          <group position={[-1.25, -1.0, -2.0]} rotation={[0.4, .75, -0.2]}>
+          {/*<OrbitControls />*/}
+          {/* Lighting */}
+          <ambientLight intensity={0.3} />
+          <directionalLight
+            position={[5, 8, 5]}
+            intensity={1.2}
+            castShadow
+            shadow-mapSize-width={2048}
+            shadow-mapSize-height={2048}
+            // Shadow camera frustum — make sure the floor + avatar are inside
+            shadow-camera-left={-12}
+            shadow-camera-right={12}
+            shadow-camera-top={12}
+            shadow-camera-bottom={-12}
+            shadow-camera-near={0.5}
+            shadow-camera-far={40}
+          />
+          <Environment preset="sunset" />
+
+
+          {/* === Avatar (casts & receives shadows) ===
+              Adjust position so feet sit near y=0 (tweak as needed) */}
+          <group position={[-1.25, -0.25, 3.0]} rotation={[0.0, 0.75, 0.0]}>
             <Avatar />
+            {/* === Floor that receives shadows === */}
+            <group position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+              <FadingDiskPlane />
+            </group>
           </group>
 
-          {/* Cube on the right (desktop) / centered (mobile). Drag to rotate object, not camera. */}
+          <ContactShadows
+            position={[0, 0.001, 0]}
+            opacity={0.6}
+            scale={24}
+            blur={2.8}
+            far={8}
+          />
+
+          {/* === Cube rig (also can cast shadows if its materials allow) === */}
           <CubeRig
             onActivateSticker={(href, meta) =>
               show({ href, slug: meta?.id, title: meta?.title ?? meta?.id })
@@ -128,7 +152,6 @@ export default function SceneRoot() {
         </Canvas>
       </div>
 
-      {/* Overlay only mounts when visible; sits above header/footer */}
       {visible && (
         <div className="fixed inset-0 z-40">
           <ProjectOverlay
