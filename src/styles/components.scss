@@ -113,3 +113,15 @@ html.in-iframe .site-footer {
 .app--overlay {
   /* Example: ensure overlay/back button sits above other UI */
 }
+
+/* Blinking caret for the typewriter effect */
+.type-caret {
+  display: inline-block;
+  margin-left: .1em;
+  animation: caret-blink 1s steps(1, end) infinite;
+}
+
+@keyframes caret-blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
