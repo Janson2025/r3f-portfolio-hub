@@ -7,10 +7,10 @@
     "links": {
       "demo": "https://r3f-new-character-configurator.onrender.com/"
     },
-    "block": [1, 2, 2],
-    "face": "front",
+    "block": [2, 2, 0],
+    "face": "right",
     "href": "https://r3f-new-character-configurator.onrender.com/",
-    "preview": { "color": "#0FA74A" },
+    "preview": { "color": "#D42828" },
     "portal": {
       "distance": -0.3,
       "mesh": {
@@ -121,23 +121,25 @@
       "demo": "https://r3f-wing-configurator-demo.onrender.com"
     },
     "block": [2, 2, 2],
-    "face": "front",
+    "face": "top",
     "href": "https://r3f-wing-configurator-demo.onrender.com/",
-    "preview": { "color": "#0FA74A" },
+    "preview": { "color": "#FFFFFF" },
     "portal": {
       "distance": -0.3,
       "mesh": {
         "type": "glb",
         "props": {
           "url": "/models/diamond-da42-twin-star3.glb",
-          "scale": 0.04,
-          "rotation": [0.05, 0.9, 0.0],
-          "position": [0, -0.05, 0]
+          "scale": 0.025,
+          "rotation": [0.0, 0.0, 0.0],
+          "position": [0.0, 0.0, 0.0]
         }
       },
-      "spin": { "speed": 0.35, "axis": [0, 1, 0] },
+      "spin": { "speed": 0.35, "axis": [1, 1, 0] },
       "lights": {
-        "ambient": 0.45,
+        "ambient": 8.95,
+        "directional": 1.15,
+        "Enviorment": 0.1,
         "dirs": [
           { "position": [2, 2.2, 1], "intensity": 1.1 },
           { "position": [-1.2, 1.0, -1.5], "intensity": 0.6 }
@@ -195,11 +197,12 @@
     "portal": {
       "distance": -0.3,
       "mesh": {
-        "type": "torus",
+        "type": "glb",
         "props": {
-          "args": [0.25, 0.1, 16, 64],
-          "rotation": [0.4, 0.6, 0.0],
-          "position": [0, 0, 0]
+          "url": "/models/trapanazome.glb",
+          "scale": 0.075,
+          "rotation": [0.05, 0.7, 0.0],
+          "position": [0, 0.0, 0]
         }
       },
       "spin": { "speed": 0.5, "axis": [0.1, 1, 0.2] },
@@ -221,23 +224,24 @@
       "demo": "https://jacall2016.github.io/paleoGISfinnal/",
       "repo": "https://github.com/jacall2016/paleoGISfinnal"
     },
-    "block": [0, 2, 2],
+    "block": [1, 2, 2],
     "face": "front",
     "href": "https://jacall2016.github.io/paleoGISfinnal/",
     "preview": { "color": "#0FA74A" },
     "portal": {
       "distance": -0.3,
       "mesh": {
-        "type": "torus",
+        "type": "glb",
         "props": {
-          "args": [0.125, 0.1, 16, 64],
-          "rotation": [0.4, 0.6, 0.0],
-          "position": [1, 0, -3]
+          "url": "/models/paltologicalMap.glb",
+          "scale": 0.0075,
+          "rotation": [0.05, 0.7, 0.0],
+          "position": [0, 0.0, 0]
         }
       },
       "spin": { "speed": 0.25, "axis": [0, 1, 0] },
       "lights": {
-        "ambient": 0.45,
+        "directional": 0.15,
         "dirs": [
           { "position": [2, 2.5, 1], "intensity": 1.1 },
           { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
@@ -253,18 +257,19 @@
     "links": {
       "demo": "https://plums-eosin.vercel.app/"
     },
-    "block": [2, 2, 0],
-    "face": "right",
+    "block": [0, 2, 2],
+    "face": "front",
     "href": "https://plums-eosin.vercel.app/",
-    "preview": { "color": "#D42828" },
+    "preview": { "color": "#0FA74A" },
     "portal": {
       "distance": -0.3,
       "mesh": {
-        "type": "torus",
+        "type": "glb",
         "props": {
-          "args": [0.25, 0.1, 16, 64],
-          "rotation": [0.4, 0.6, 0.0],
-          "position": [0, 0, 0]
+          "url": "/models/plumTree.glb",
+          "scale": 0.045,
+          "rotation": [0.05, 0.7, 0.0],
+          "position": [0.0, -0.4, 0.0]
         }
       },
       "spin": { "speed": 0.2, "axis": [0, 1, 0] },
