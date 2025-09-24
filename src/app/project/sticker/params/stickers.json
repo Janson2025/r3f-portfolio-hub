@@ -35,7 +35,7 @@
     "links": {
       "demo": "https://rf3-molecules.onrender.com/"
     },
-    "block": [2, 2, 2],
+    "block": [0, 2, 1],
     "face": "top",
     "href": "https://rf3-molecules.onrender.com/",
     "preview": { "color": "#FFFFFF" },
@@ -81,16 +81,16 @@
   },
   {
     "id": "circles-mask-revealer",
-    "title": "CodePen Image Revealer",
+    "title": "CodePen spinning circle Image Revealer",
     "tech": ["HTML", "CSS", "JavaScript", "SVG"],
     "description": "An image reveal experiment that uses SVG masking and JavaScript animation to create a hypnotic circle-based transition effect. Dozens of dynamically generated circles orbit around a center point, gradually revealing the underlying image. Hover states increase spin speed and circle size, giving the card a playful, tactile response. This project showcases creative use of SVG masks, DOM-driven animation loops, and CSS/JS interactivity to build visually striking micro-interactions for the web.",
     "links": {
       "demo": "https://r3f-image-revealer.onrender.com"
     },
-    "block": [2, 2, 2],
-    "face": "right",
+    "block": [1, 2, 0],
+    "face": "top",
     "href": "https://r3f-image-revealer.onrender.com",
-    "preview": { "color": "#D42828" },
+    "preview": { "color": "#FFFFFF" },
     "portal": {
       "distance": -0.3,
       "mesh": {
@@ -153,7 +153,7 @@
     "links": {
       "demo": "https://janson2025.github.io/mazeball2/"
     },
-    "block": [2, 1, 2],
+    "block": [2, 1, 1],
     "face": "right",
     "href": "https://janson2025.github.io/mazeball2/",
     "preview": { "color": "#D42828" },
@@ -228,9 +228,11 @@
     "portal": {
       "distance": -0.3,
       "mesh": {
-        "type": "plane",
+        "type": "torus",
         "props": {
-          "size": 0.5
+          "args": [0.125, 0.1, 16, 64],
+          "rotation": [0.4, 0.6, 0.0],
+          "position": [1, 0, -3]
         }
       },
       "spin": { "speed": 0.25, "axis": [0, 1, 0] },
@@ -258,9 +260,11 @@
     "portal": {
       "distance": -0.3,
       "mesh": {
-        "type": "plane",
+        "type": "torus",
         "props": {
-          "size": 0.5
+          "args": [0.25, 0.1, 16, 64],
+          "rotation": [0.4, 0.6, 0.0],
+          "position": [0, 0, 0]
         }
       },
       "spin": { "speed": 0.2, "axis": [0, 1, 0] },
