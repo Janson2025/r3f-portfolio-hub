@@ -7,10 +7,10 @@
     "links": {
       "demo": "https://r3f-new-character-configurator.onrender.com/"
     },
-    "block": [2, 2, 0],
-    "face": "right",
+    "block": [0, 2, 1],
+    "face": "top",
     "href": "https://r3f-new-character-configurator.onrender.com/",
-    "preview": { "color": "#D42828" },
+    "preview": { "color": "#ffffff" },
     "portal": {
       "distance": -0.3,
       "mesh": {
@@ -35,10 +35,10 @@
     "links": {
       "demo": "https://rf3-molecules.onrender.com/"
     },
-    "block": [0, 2, 1],
-    "face": "top",
+    "block": [2, 2, 1],
+    "face": "right",
     "href": "https://rf3-molecules.onrender.com/",
-    "preview": { "color": "#FFFFFF" },
+    "preview": { "color": "#D42828" },
     "portal": {
       "distance": -0.3,
       "mesh": {
@@ -62,16 +62,16 @@
     "links": {
       "demo": "https://r3f-prototype.onrender.com/"
     },
-    "block": [2, 2, 1],
-    "face": "right",
+    "block": [1, 2, 0],
+    "face": "top",
     "href": "https://r3f-prototype.onrender.com/",
-    "preview": { "color": "#D42828" },
+    "preview": { "color": "#ffffff" },
     "portal": {
       "distance": -0.3,
       "mesh": { "type": "cube", "props": { "size": 0.5 } },
       "spin": { "speed": 0.45, "axis": [0, 1, 0.3] },
       "lights": {
-        "ambient": 0.5,
+        "ambient": 1.5,
         "dirs": [
           { "position": [2, 2.5, 1], "intensity": 1.2 },
           { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
@@ -87,10 +87,10 @@
     "links": {
       "demo": "https://r3f-image-revealer.onrender.com"
     },
-    "block": [1, 2, 0],
-    "face": "top",
+    "block": [2, 2, 0],
+    "face": "right",
     "href": "https://r3f-image-revealer.onrender.com",
-    "preview": { "color": "#FFFFFF" },
+    "preview": { "color": "#D42828" },
     "portal": {
       "distance": -0.3,
       "mesh": {
@@ -104,7 +104,8 @@
       },
       "spin": { "speed": 0.45, "axis": [0, 1, 0] },
       "lights": {
-        "ambient": 0.5,
+        "ambient": 1.5,
+        "directional": 1.15,
         "dirs": [
           { "position": [2, 2.5, 1], "intensity": 1.2 },
           { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
@@ -173,6 +174,7 @@
       "spin": { "speed": 0.4, "axis": [0, 1, 0] },
       "lights": {
         "ambient": 0.5,
+        "directional": 1.15,
         "dirs": [
           { "position": [2, 2.5, 1], "intensity": 1.2 },
           { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
@@ -200,7 +202,7 @@
         "type": "glb",
         "props": {
           "url": "/models/trapanazome.glb",
-          "scale": 0.075,
+          "scale": 0.065,
           "rotation": [0.05, 0.7, 0.0],
           "position": [0, 0.0, 0]
         }
