@@ -1,7 +1,13 @@
 [
   {
     "id": "character-config",
-    "block": [0, 0, 2],
+    "title": "3D Character Configurator",
+    "tech": ["React Three Fiber"],
+    "description": "A  fully interactive 3D character configurator built with React Three Fiber. This project explores real-time character customization by allowing users to adjust attributes, swap components, and preview the results instantly in a responsive 3D environment. It demonstrates param-driven design, modular mesh loading, and smooth UI-to-3D interactions, making it a strong prototype for avatar systems or game pipelines.",
+    "links": {
+      "demo": "https://r3f-new-character-configurator.onrender.com/"
+    },
+    "block": [1, 2, 2],
     "face": "front",
     "href": "https://r3f-new-character-configurator.onrender.com/",
     "preview": { "color": "#0FA74A" },
@@ -23,6 +29,12 @@
   },
   {
     "id": "r3f-molecules",
+    "title": "3D Molecule Maker",
+    "tech": ["React Three Fiber", "GLTF"],
+    "description": "An experimental browser-based 3D molecule maker and viewer powered by React Three Fiber and GLTF models. Users can visualize molecular structures in an intuitive and interactive environment. The project emphasizes smooth camera controls, clean rendering pipelines, and accurate molecular geometry scaling. It’s designed to demonstrate both educational potential for chemistry learning tools and the feasibility of lightweight scientific visualization directly in the web browser.",
+    "links": {
+      "demo": "https://rf3-molecules.onrender.com/"
+    },
     "block": [2, 2, 2],
     "face": "top",
     "href": "https://rf3-molecules.onrender.com/",
@@ -44,7 +56,13 @@
   },
   {
     "id": "prototype",
-    "block": [2, 0, 2],
+    "title": "3D Prototype Cube",
+    "tech": ["React Three Fiber"],
+    "description": "A minimal proof-of-concept showing interactive cube behavior in a clean WebGL scene. This project was the starting ground for testing param-driven meshes, lighting systems, and animation loops before scaling up to larger projects. Its simplicity highlights the underlying React Three Fiber scaffolding while demonstrating basic real-time rendering, user interaction, and animation primitives.",
+    "links": {
+      "demo": "https://r3f-prototype.onrender.com/"
+    },
+    "block": [2, 2, 1],
     "face": "right",
     "href": "https://r3f-prototype.onrender.com/",
     "preview": { "color": "#D42828" },
@@ -63,18 +81,193 @@
   },
   {
     "id": "circles-mask-revealer",
-    "block": [2, 1, 2],
-    "face": "front",
+    "title": "CodePen Image Revealer",
+    "tech": ["HTML", "CSS", "JavaScript", "SVG"],
+    "description": "An image reveal experiment that uses SVG masking and JavaScript animation to create a hypnotic circle-based transition effect. Dozens of dynamically generated circles orbit around a center point, gradually revealing the underlying image. Hover states increase spin speed and circle size, giving the card a playful, tactile response. This project showcases creative use of SVG masks, DOM-driven animation loops, and CSS/JS interactivity to build visually striking micro-interactions for the web.",
+    "links": {
+      "demo": "https://r3f-image-revealer.onrender.com"
+    },
+    "block": [2, 2, 2],
+    "face": "right",
     "href": "https://r3f-image-revealer.onrender.com",
-    "preview": { "color": "#0FA74A" },
+    "preview": { "color": "#D42828" },
     "portal": {
       "distance": -0.3,
-      "mesh": { "type": "plane", "props": { "size": 0.5 } },
-      "spin": { "speed": 0.45, "axis": [0, 0, 0.0] },
+      "mesh": {
+        "type": "glb",
+        "props": {
+          "url": "/models/image-revealer.glb",
+          "scale": 0.25,
+          "rotation": [0.1, 0.8, 0.0],
+          "position": [0, -0.02, 0]
+        }
+      },
+      "spin": { "speed": 0.45, "axis": [0, 1, 0] },
       "lights": {
         "ambient": 0.5,
         "dirs": [
           { "position": [2, 2.5, 1], "intensity": 1.2 },
+          { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
+        ]
+      }
+    }
+  },
+  {
+    "id": "r3f-wing-configurator",
+    "title": "USU Aerospace Wingcraft Web Application",
+    "tech": ["React Three Fiber", "Three.js", "Blender", "Node.js"],
+    "description": "An aerospace-focused 3D wing modeling system created for USU Aerospace, built with React Three Fiber, Three.js, and Blender assets. The application allows users to interactively adjust airplane wing parameters in real-time and preview animated flight paths. Beyond its visual fidelity, it integrates backend infrastructure for storing and sharing design configurations across local and global contexts. The models were handcrafted in Blender for accuracy, realism, and educational value. It is designed for both museum use cases (such as Hill Air Force Base) and as a teaching tool in student competitions.",
+    "links": {
+      "demo": "https://r3f-wing-configurator-demo.onrender.com"
+    },
+    "block": [2, 2, 2],
+    "face": "front",
+    "href": "https://r3f-wing-configurator-demo.onrender.com/",
+    "preview": { "color": "#0FA74A" },
+    "portal": {
+      "distance": -0.3,
+      "mesh": {
+        "type": "glb",
+        "props": {
+          "url": "/models/diamond-da42-twin-star3.glb",
+          "scale": 0.04,
+          "rotation": [0.05, 0.9, 0.0],
+          "position": [0, -0.05, 0]
+        }
+      },
+      "spin": { "speed": 0.35, "axis": [0, 1, 0] },
+      "lights": {
+        "ambient": 0.45,
+        "dirs": [
+          { "position": [2, 2.2, 1], "intensity": 1.1 },
+          { "position": [-1.2, 1.0, -1.5], "intensity": 0.6 }
+        ]
+      }
+    }
+  },
+  {
+    "id": "maze-ball-2",
+    "title": "3D Maze Ball Configurator",
+    "tech": ["React Three Fiber", "GLTF"],
+    "description": "A web-based 3D maze ball configurator where users can explore and customize ball-maze layouts. Built with React Three Fiber and GLTF, it allows dynamic rotation, scaling, and navigation of the maze structure. The goal of this project is to test interactive puzzle design in a digital format while providing engaging visuals and smooth user control. It acts as both a prototype for future puzzle-based games and a sandbox for experimenting with physics-driven maze mechanics.",
+    "links": {
+      "demo": "https://janson2025.github.io/mazeball2/"
+    },
+    "block": [2, 1, 2],
+    "face": "right",
+    "href": "https://janson2025.github.io/mazeball2/",
+    "preview": { "color": "#D42828" },
+    "portal": {
+      "distance": -0.3,
+      "mesh": {
+        "type": "glb",
+        "props": {
+          "url": "/models/maze.glb",
+          "scale": 0.04,
+          "rotation": [0.05, 0.7, 0.0],
+          "position": [0, -0.03, 0]
+        }
+      },
+      "spin": { "speed": 0.4, "axis": [0, 1, 0] },
+      "lights": {
+        "ambient": 0.5,
+        "dirs": [
+          { "position": [2, 2.5, 1], "intensity": 1.2 },
+          { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
+        ]
+      }
+    }
+  },
+  {
+    "id": "multiplex-hts",
+    "title": "Drug Screening Analysis Program",
+    "tech": ["Python", "Flow Cytometry", "Vercel"],
+    "description": "A drug screening analysis platform that automates multiplex high-throughput screening (HTS) data using flow cytometry results. Co-authored as part of a peer-reviewed study on Trypanosoma brucei published in PubMed, this software dramatically reduced manual labor by 200+ hours, improved consistency in analysis, and cut associated costs by ~$1500. Built with Python and deployed via Vercel, the application emphasizes data reliability, reproducibility, and transparent visualization pipelines. It bridges the gap between academic research and web-based scientific tooling.",
+    "links": {
+      "demo": "https://multiplexhighthroughputscreening.vercel.app/",
+      "repo": "https://github.com/jacall2016/drugscreen-ph-flip700-yemk-live",
+      "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39163740/"
+    },
+    "block": [2, 1, 2],
+    "face": "front",
+    "href": "https://multiplexhighthroughputscreening.vercel.app/",
+    "preview": { "color": "#1F6FEB" },
+    "portal": {
+      "distance": -0.3,
+      "mesh": {
+        "type": "torus",
+        "props": {
+          "args": [0.25, 0.1, 16, 64],
+          "rotation": [0.4, 0.6, 0.0],
+          "position": [0, 0, 0]
+        }
+      },
+      "spin": { "speed": 0.5, "axis": [0.1, 1, 0.2] },
+      "lights": {
+        "ambient": 0.45,
+        "dirs": [
+          { "position": [2, 2.5, 1], "intensity": 1.1 },
+          { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
+        ]
+      }
+    }
+  },
+  {
+    "id": "paleo-gis",
+    "title": "Paleobiological GIS Program",
+    "tech": ["JavaScript", "CSS", "GitHub Pages"],
+    "description": "An educational GIS platform visualizing fossil site data across geologic time, built with vanilla JavaScript, CSS, and The Paleobiology Database API. Users can navigate a global map to see how life on Earth evolved across different eras, with the interface designed to encourage exploration and learning. The project demonstrates data integration, map-based rendering, and geotemporal visualization, making paleobiological data accessible to a broader audience including students, educators, and hobbyists.",
+    "links": {
+      "demo": "https://jacall2016.github.io/paleoGISfinnal/",
+      "repo": "https://github.com/jacall2016/paleoGISfinnal"
+    },
+    "block": [2, 2, 2],
+    "face": "left",
+    "href": "https://jacall2016.github.io/paleoGISfinnal/",
+    "preview": { "color": "#8A2BE2" },
+    "portal": {
+      "distance": -0.3,
+      "mesh": {
+        "type": "plane",
+        "props": {
+          "size": 0.5
+        }
+      },
+      "spin": { "speed": 0.25, "axis": [0, 1, 0] },
+      "lights": {
+        "ambient": 0.45,
+        "dirs": [
+          { "position": [2, 2.5, 1], "intensity": 1.1 },
+          { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
+        ]
+      }
+    }
+  },
+  {
+    "id": "plums",
+    "title": "Personal Learning System",
+    "tech": ["Next.js", "Vercel"],
+    "description": "The Personal Learning System (PLuMS) is a productivity-focused tool designed to help learners organize objectives, tasks, and files in multiple formats. Built with Next.js and deployed on Vercel, it supports flexible workflows for study planning, file organization, and goal tracking. Its modular structure makes it adaptable for students, professionals, or researchers who need a lightweight but structured environment to manage information. The system highlights clean UI/UX and practical utility over unnecessary complexity, serving as a foundation for more advanced personal knowledge management tools.",
+    "links": {
+      "demo": "https://plums-eosin.vercel.app/"
+    },
+    "block": [2, 2, 0],
+    "face": "right",
+    "href": "https://plums-eosin.vercel.app/",
+    "preview": { "color": "#FFD700" },
+    "portal": {
+      "distance": -0.3,
+      "mesh": {
+        "type": "plane",
+        "props": {
+          "size": 0.5
+        }
+      },
+      "spin": { "speed": 0.2, "axis": [0, 1, 0] },
+      "lights": {
+        "ambient": 0.45,
+        "dirs": [
+          { "position": [2, 2.5, 1], "intensity": 1.1 },
           { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
         ]
       }
