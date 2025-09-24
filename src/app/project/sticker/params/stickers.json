@@ -191,7 +191,7 @@
     "block": [2, 1, 2],
     "face": "front",
     "href": "https://multiplexhighthroughputscreening.vercel.app/",
-    "preview": { "color": "#1F6FEB" },
+    "preview": { "color": "#0FA74A" },
     "portal": {
       "distance": -0.3,
       "mesh": {
@@ -221,10 +221,10 @@
       "demo": "https://jacall2016.github.io/paleoGISfinnal/",
       "repo": "https://github.com/jacall2016/paleoGISfinnal"
     },
-    "block": [2, 2, 2],
-    "face": "left",
+    "block": [0, 2, 2],
+    "face": "front",
     "href": "https://jacall2016.github.io/paleoGISfinnal/",
-    "preview": { "color": "#8A2BE2" },
+    "preview": { "color": "#0FA74A" },
     "portal": {
       "distance": -0.3,
       "mesh": {
@@ -254,7 +254,7 @@
     "block": [2, 2, 0],
     "face": "right",
     "href": "https://plums-eosin.vercel.app/",
-    "preview": { "color": "#FFD700" },
+    "preview": { "color": "#D42828" },
     "portal": {
       "distance": -0.3,
       "mesh": {
