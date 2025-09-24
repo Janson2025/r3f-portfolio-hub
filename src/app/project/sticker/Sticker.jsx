@@ -157,28 +157,27 @@ export default function Sticker({
           )}
         </RoundedBox>
       </group>
-
+ 
       {/* Hover tooltip (screen-facing sprite) */}
       {hovered && (
         <Html
-          position={tooltipPos}
+          position={[0, height / 2 + 0.05, 0]} // anchored above the top of the sticker
           sprite
           transform
-          distanceFactor={8} // tweak for size vs. distance
-          pointerEvents="none" // don't steal pointer
+          distanceFactor={8}
+          pointerEvents="none"
           zIndexRange={[100, 0]}
         >
           <div
             style={{
-              padding: "4px 8px",
+              padding: "2px 4px",
               fontSize: "3px",
               lineHeight: 1,
-              borderRadius: "6px",
+              borderRadius: "4px",
               background: "rgba(0,0,0,0.7)",
               color: "white",
               whiteSpace: "nowrap",
-              boxShadow: "0 2px 6px rgba(0,0,0,0.35)",
-              transform: "translateY(0px)"
+              boxShadow: "0 1px 3px rgba(0,0,0,0.35)"
             }}
           >
             {config?.title ?? config?.id}
