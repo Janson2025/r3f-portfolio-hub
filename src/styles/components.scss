@@ -93,3 +93,23 @@
     width: clamp(320px, 32vw, 520px);
   }
 }
+
+/* components.scss (append these at the end) */
+
+/* When a project overlay is open, hide header/footer chrome everywhere without JS prop-drilling */
+html.portal-open .site-header,
+html.portal-open .site-footer {
+  display: none !important;
+}
+
+/* If the whole site is embedded in an iframe (e.g., project site),
+   also hide the shell so you can reuse the same build cleanly. */
+html.in-iframe .site-header,
+html.in-iframe .site-footer {
+  display: none !important;
+}
+
+/* Optional: while overlay is open, you can tweak z-index layers if needed */
+.app--overlay {
+  /* Example: ensure overlay/back button sits above other UI */
+}
