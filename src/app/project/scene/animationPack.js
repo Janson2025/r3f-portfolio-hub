@@ -6,7 +6,6 @@ export const GESTURE_FILES = [
   "happy-hand-gesture.fbx",
   "acknowledging.fbx",
   "angry-gesture.fbx",
-  "Swing-Dancing.fbx",
   "thoughtful-head-shake.fbx",
   "annoyed-head-shake.fbx",
   "Jumping.fbx",
@@ -21,7 +20,6 @@ export const GESTURE_FILES = [
   "relieved-sigh.fbx",
   "sarcastic-head-nod.fbx",
   "shaking-head-no.fbx",
-  "Robot-Hip-Hop-Dance.fbx",
 ];
 
 export const DEFAULT_INITIAL_CLIP = "relieved-sigh";
