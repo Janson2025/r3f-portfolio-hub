@@ -3,14 +3,15 @@ import { useEffect, useState } from "react";
 import Header from "./app/components/Header.jsx";
 import Footer from "./app/components/Footer.jsx";
 import MainView from "./app/views/MainView.jsx";
-import pubsub from "./app/project/shared/pubsub.js"; // ← add this
+import AboutView from "./app/views/AboutView.jsx";  // ← NEW
+import pubsub from "./app/project/shared/pubsub.js";
 
 export default function App() {
   const [page, setPage] = useState("projects");
   const [inOverlay, setInOverlay] = useState(false);
   const [inIframe, setInIframe] = useState(false);
 
-  // Detect iframe environment (this makes header/footer disappear inside embedded builds)
+  // Detect iframe environment
   useEffect(() => {
     const embedded = (() => {
       try {
@@ -57,17 +58,6 @@ export default function App() {
           <Footer />
         </footer>
       )}
-    </div>
-  );
-}
-
-function AboutView() {
-  return (
-    <div className="h-full p-4">
-      <div className="h-full rounded-xl bg-[--color-bg-elev] shadow-sm p-6 overflow-hidden">
-        <h2 className="h-title mb-2">About</h2>
-        <p className="text-[--color-muted]">Generic about page placeholder.</p>
-      </div>
     </div>
   );
 }

@@ -1,0 +1,31 @@
+{
+  "Frontend / UI": [
+    "React",
+    "React Three Fiber",
+    "Three.js",
+    "Tailwind",
+    "Vite",
+    "TypeScript",
+    "Astro"
+  ],
+  "3D / Graphics": [
+    "Blender",
+    "GLTF/GLB",
+    "Shader basics",
+    "FBX pipeline",
+    "R3F animations"
+  ],
+  "Backend / Infra": [
+    "Node.js",
+    "Express",
+    "Supabase",
+    "REST APIs"
+  ],
+  "Tools / Workflow": [
+    "Git & GitHub",
+    "Zod",
+    "Figma",
+    "Notion",
+    "Render/Vercel"
+  ]
+}
