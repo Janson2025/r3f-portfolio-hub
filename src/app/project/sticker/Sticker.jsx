@@ -2,21 +2,19 @@
 import * as THREE from "three";
 import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
-import { MeshPortalMaterial, RoundedBox, Html } from "@react-three/drei"; // ← Html added
+import { MeshPortalMaterial, RoundedBox, Html } from "@react-three/drei";
 import PortalScene from "./PortalScene.jsx";
 import stickerDefaults from "./params/stickerDefaults.json";
-import pubsub from "../../project/shared/pubsub.js"; // ← so we can emit hover
+import pubsub from "../../project/shared/pubsub.js";
 
 export default function Sticker({
   config,
-  // Target final dims (world units): [width, height, depth]
   dims = [0.94, 0.94, 0.09],
   onActivate,
   frameReady,
 }) {
   const mat = useRef();
 
-  // --- Geometry & transform planning: bevel first, then squash Z on PARENT group ---
   const {
     width, height, baseDepth, zScale, bevelRadius, smoothness, faceColor,
   } = useMemo(() => {
@@ -31,17 +29,12 @@ export default function Sticker({
     return { width: w, height: h, baseDepth, zScale, bevelRadius, smoothness, faceColor };
   }, [dims, config.bevel, config.smoothness, config.preview?.color]);
 
-  // --- Portal blend state (time-based) ---
   const [targetBlend, setTargetBlend] = useState(0);
   const [animating, setAnimating] = useState(false);
   const watchdogRef = useRef(null);
 
-  // --- Hover tooltip state ---
   const [hovered, setHovered] = useState(false);
-  const [tooltipPos, setTooltipPos] = useState([0, 0, 0]); // world-space
-  const tooltipYOffset = 0.08; // small offset above pointer
 
-  // Universal timings from stickerDefaults.json
   const blendMs = useMemo(() => {
     const v = stickerDefaults?.blendMs;
     return Number.isFinite(v) && v > 0 ? v : 500;
@@ -60,7 +53,7 @@ export default function Sticker({
   useFrame((_, dt) => {
     if (!mat.current) return;
     const current = mat.current.blend ?? 0;
-    const tau = Math.max(0.0001, blendMs / 5000); // seconds
+    const tau = Math.max(0.0001, blendMs / 5000);
     const factor = 1 - Math.exp(-(dt / tau));
     const next = THREE.MathUtils.lerp(current, targetBlend, factor);
     mat.current.blend = THREE.MathUtils.clamp(next, 0, 1);
@@ -87,30 +80,35 @@ export default function Sticker({
     if (config.type === "portal") {
       setAnimating(true);
       setTargetBlend(1);
-    } else {
-      // onActivate?.(); // enable if you want non-portal stickers to activate too
     }
-  }, [config.type, onActivate]);
+  }, [config.type]);
 
   const isPortal = config.type === "portal";
 
+  // Build PortalScene props, now with `animation` and hover-driven `playing`
   const portalSceneProps = useMemo(() => {
     const p = config.portal ?? {};
+    // Back-compat: keep existing `spin` if present, but prefer `animation`
+    const animation = p.animation
+      ? p.animation
+      : p.spin
+      ? { type: "spin", params: { speed: p.spin.speed, axis: p.spin.axis } }
+      : { type: "idle", params: {} };
+
     return {
       bgColor: faceColor,
       mesh: p.mesh ?? { type: "icosa", props: {} },
-      spin: p.spin ?? { speed: 0.6, axis: [0, 1, 0] },
       lights: p.lights,
-      distance: p.distance ?? 0
+      distance: p.distance ?? 0,
+      animation,
+      playing: hovered, // ← only animate while hovered
     };
-  }, [config.portal, faceColor]);
+  }, [config.portal, faceColor, hovered]);
 
-  // --- Pointer handlers for tooltip + hover→active ---
   const onOver = useCallback((e) => {
     document.body.style.cursor = "pointer";
     e.stopPropagation();
     setHovered(true);
-    // Trigger chip/summary focus on hover
     if (config?.id) {
       pubsub?.emit?.("project:hover", { id: config.id });
     }
@@ -121,22 +119,13 @@ export default function Sticker({
     setHovered(false);
   }, []);
 
-  const onMove = useCallback((e) => {
-    // e.point is the world-space intersection with this object
-    if (e?.point) {
-      const p = e.point;
-      setTooltipPos([p.x, p.y + tooltipYOffset, p.z]);
-    }
-  }, []);
-
   return (
     <group
       onClick={start}
       onPointerOver={onOver}
       onPointerOut={onOut}
-      onPointerMove={onMove}
+      onPointerMove={(e) => e.stopPropagation()}
     >
-      {/* Parent group applies Z squash so bevel (on RoundedBox) remains visually chunky */}
       <group scale={[1, 1, zScale]}>
         <RoundedBox
           args={[width, height, baseDepth]}
@@ -157,11 +146,10 @@ export default function Sticker({
           )}
         </RoundedBox>
       </group>
- 
-      {/* Hover tooltip (screen-facing sprite) */}
+
       {hovered && (
         <Html
-          position={[0, height / 2 + 0.05, 0]} // anchored above the top of the sticker
+          position={[0, height / 2 + 0.05, 0]}
           sprite
           transform
           distanceFactor={8}
@@ -177,7 +165,7 @@ export default function Sticker({
               background: "rgba(0,0,0,0.7)",
               color: "white",
               whiteSpace: "nowrap",
-              boxShadow: "0 1px 3px rgba(0,0,0,0.35)"
+              boxShadow: "0 1px 3px rgba(0,0,0,0.35)",
             }}
           >
             {config?.title ?? config?.id}

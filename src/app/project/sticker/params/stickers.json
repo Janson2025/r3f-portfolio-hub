@@ -23,7 +23,7 @@
           "position": [0, 0.02, 0]
         }
       },
-      "spin": { "speed": 0.7, "axis": [0.15, 1, 0.1] },
+      "animation": { "type": "spin", "params": { "speed": 0.7, "axis": [0.15, 1, 0.1] } },
       "lights": { "preset": "studioKey", "ambient": 0.25 }
     }
   },
@@ -50,7 +50,7 @@
           "position": [0, -0.02, 0]
         }
       },
-      "spin": { "speed": 0.7, "axis": [0.15, 1, 0.1] },
+      "animation": { "type": "spin", "params": { "speed": 0.7, "axis": [0.15, 1, 0.1] } },
       "lights": { "preset": "studioKey", "ambient": 0.25 }
     }
   },
@@ -69,7 +69,7 @@
     "portal": {
       "distance": -0.3,
       "mesh": { "type": "cube", "props": { "size": 0.5 } },
-      "spin": { "speed": 0.45, "axis": [0, 1, 0.3] },
+      "animation": { "type": "spin", "params": { "speed": 0.45, "axis": [0, 1, 0.3] } },
       "lights": {
         "ambient": 1.5,
         "dirs": [
@@ -102,7 +102,7 @@
           "position": [0, -0.02, 0]
         }
       },
-      "spin": { "speed": 0.45, "axis": [0, 1, 0] },
+      "animation": { "type": "spin", "params": { "speed": 0.45, "axis": [0, 1, 0] } },
       "lights": {
         "ambient": 1.5,
         "directional": 1.15,
@@ -136,7 +136,7 @@
           "position": [0.0, 0.0, 0.0]
         }
       },
-      "spin": { "speed": 0.35, "axis": [1, 1, 0] },
+      "animation": { "type": "spin", "params": { "speed": 0.35, "axis": [1, 1, 0] } },
       "lights": {
         "ambient": 8.95,
         "directional": 1.15,
@@ -171,7 +171,7 @@
           "position": [0, -0.03, 0]
         }
       },
-      "spin": { "speed": 0.4, "axis": [0, 1, 0] },
+      "animation": { "type": "spin", "params": { "speed": 0.4, "axis": [0, 1, 0] } },
       "lights": {
         "ambient": 0.5,
         "directional": 1.15,
@@ -207,7 +207,7 @@
           "position": [0, 0.0, 0]
         }
       },
-      "spin": { "speed": 0.5, "axis": [0.1, 1, 0.2] },
+      "animation": { "type": "spin", "params": { "speed": 0.5, "axis": [0.1, 1, 0.2] } },
       "lights": {
         "ambient": 0.45,
         "dirs": [
@@ -241,7 +241,7 @@
           "position": [0, 0.0, 0]
         }
       },
-      "spin": { "speed": 0.25, "axis": [0, 1, 0] },
+      "animation": { "type": "idle", "params": { "bobAmp": 0.03, "bobHz": 0.6 }},
       "lights": {
         "directional": 0.15,
         "dirs": [
@@ -274,7 +274,7 @@
           "position": [0.0, -0.4, 0.0]
         }
       },
-      "spin": { "speed": 0.2, "axis": [0, 1, 0] },
+      "animation": { "type": "spin", "params": { "speed": 0.2, "axis": [0, 1, 0] } },
       "lights": {
         "ambient": 0.45,
         "dirs": [

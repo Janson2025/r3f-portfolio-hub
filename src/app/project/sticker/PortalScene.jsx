@@ -2,35 +2,48 @@
 import { useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { ResolveMesh, ResolveLights } from "./meshes/index.jsx";
+import { makeAnimator } from "./meshPortalObjectAnimation.js";
 
 /**
  * Props:
  *  - bgColor: string hex
  *  - mesh: { type: string, props?: Record<string, any> }
- *  - spin?: { speed?: number, axis?: [x,y,z] }
  *  - lights?: { preset?: string } | { ambient?: number, dirs?: [{position, intensity}, ...] }
- *  - distance?: number   // NEW: moves object along -Z; positive pushes it deeper
+ *  - distance?: number
+ *  - animation?: { type: "idle"|"spin"|"none", params?: object }
+ *  - playing?: boolean   // ← when false, animation does not advance
+ *
+ * Back-compat: if `spin` prop is provided, it’s mapped to animation={type:"spin"}
  */
 export default function PortalScene({
   bgColor = "#ffffff",
   mesh = { type: "icosa", props: {} },
-  spin = { speed: 0.6, axis: [0, 1, 0] },
   lights,
-  distance = 0, // world units; 0 keeps prior behavior
+  distance = 0,
+  animation,
+  // Deprecated (kept for older sticker entries)
+  spin,
+  playing = false,
 }) {
   const g = useRef();
 
-  const axis = useMemo(() => {
-    const a = spin?.axis ?? [0, 1, 0];
-    return [a[0] ?? 0, a[1] ?? 1, a[2] ?? 0];
-  }, [spin?.axis]);
+  const resolvedAnimation = useMemo(() => {
+    // Map legacy `spin` into new system if present and no explicit animation provided
+    if (!animation && spin) {
+      return { type: "spin", params: { speed: spin.speed ?? 0.6, axis: spin.axis ?? [0, 1, 0] } };
+    }
+    // default to idle if not specified
+    return animation ?? { type: "idle", params: {} };
+  }, [animation, spin]);
+
+  const animator = useMemo(
+    () => makeAnimator(resolvedAnimation),
+    [resolvedAnimation?.type, JSON.stringify(resolvedAnimation?.params || {})]
+  );
 
   useFrame((_, dt) => {
-    const spd = spin?.speed ?? 0.6;
-    if (!spd || !g.current) return;
-    g.current.rotation.x += axis[0] * spd * dt;
-    g.current.rotation.y += axis[1] * spd * dt;
-    g.current.rotation.z += axis[2] * spd * dt;
+    // Cheap: animator early-returns when not playing
+    animator(g.current, dt, playing);
   });
 
   return (
@@ -38,7 +51,6 @@ export default function PortalScene({
       <color attach="background" args={[bgColor]} />
       <ResolveLights lights={lights} />
 
-      {/* Push the whole mesh group along -Z by `distance` */}
       <group ref={g} position={[0, 0, -distance]}>
         <ResolveMesh type={mesh?.type} props={mesh?.props} />
       </group>
