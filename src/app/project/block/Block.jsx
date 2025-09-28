@@ -1,5 +1,4 @@
-// src/block/Block.jsx
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import BlockBody from "./BlockBody";
 import StickerFace from "./StickerFace";
 import useBlockStickers from "./hooks/useBlockStickers";
@@ -12,17 +11,21 @@ export default function Block({
   overrides = new Map(),
   onActivateSticker,
   frameReady,
+  forwardRef,                 // NEW
 }) {
-  const group = useRef();
+  const localRef = useRef();
+  const group = forwardRef ?? localRef;
 
-  // Compute this block's stickers (defaults + overrides + global portal defaults)
+  // expose ijk for selection
+  useEffect(() => {
+    if (group.current) group.current.userData.ijk = blockIndex;
+  }, [group, blockIndex]);
+
   const stickers = useBlockStickers({ blockIndex, gridDims, overrides });
 
   return (
     <group ref={group} position={position}>
       <BlockBody size={size} />
-
-      {/* Stickers parented to this block */}
       {stickers.map((s) => (
         <StickerFace
           key={s.id}

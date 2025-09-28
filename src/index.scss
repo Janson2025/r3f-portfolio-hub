@@ -7,3 +7,12 @@
 
 /* Any loose global rules are fine */
 #root { width: 100vw; height: 100vh; }
+
+/* Make sure the Leva panel is fixed, visible, and clickable */
+#leva__root {
+  position: fixed !important;
+  top: 12px !important;
+  right: 12px !important;
+  z-index: 9999 !important;
+  pointer-events: auto !important;
+}
