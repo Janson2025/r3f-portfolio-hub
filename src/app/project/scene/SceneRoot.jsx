@@ -10,18 +10,24 @@ import { Avatar } from "./Avatar";
 import { FadingDiskPlane } from "./FadingDiskPlane";
 import DevRotatePanel from "../grid/interactions/DevRotatePanel";
 
-/** Drag-to-rotate controller: rotates the target group, not the camera. */
-function DragRotate({ targetRef, enabled = true, speed = 0.0035, clampX = Math.PI / 2 }) {
-  const { gl } = useThree();
+import * as THREE from "three";
 
-  // prevent the browser from handling touch panning/zooming on the canvas
+/** Drag-to-rotate controller: rotates the target group, not the camera. */
+function DragRotate({
+  targetRef,
+  excludeRef,                 // pass the cube group here
+  enabled = true,
+  speed = 0.0035,
+  clampX = Math.PI / 2,
+}) {
+  const { gl, camera } = useThree();
+  const raycaster = new THREE.Raycaster();
+
   useEffect(() => {
     const el = gl.domElement;
     const prev = el.style.touchAction;
     el.style.touchAction = "none";
-    return () => {
-      el.style.touchAction = prev;
-    };
+    return () => { el.style.touchAction = prev; };
   }, [gl]);
 
   useEffect(() => {
@@ -30,7 +36,24 @@ function DragRotate({ targetRef, enabled = true, speed = 0.0035, clampX = Math.P
     const el = gl.domElement;
     const state = { dragging: false, lx: 0, ly: 0 };
 
+    const ndcFromEvent = (e) => {
+      const r = gl.domElement.getBoundingClientRect();
+      const x = ((e.clientX - r.left) / r.width) * 2 - 1;
+      const y = -((e.clientY - r.top) / r.height) * 2 + 1;
+      return { x, y };
+    };
+
+    const overCube = (e) => {
+      if (!excludeRef?.current) return false;
+      const { x, y } = ndcFromEvent(e);
+      raycaster.setFromCamera({ x, y }, camera);
+      const hits = raycaster.intersectObject(excludeRef.current, true);
+      return hits.length > 0;
+    };
+
     const onDown = (e) => {
+      // only start rig drag if click is NOT on cube
+      if (overCube(e)) return;
       state.dragging = true;
       state.lx = e.clientX;
       state.ly = e.clientY;
@@ -39,16 +62,28 @@ function DragRotate({ targetRef, enabled = true, speed = 0.0035, clampX = Math.P
     };
 
     const onMove = (e) => {
-      if (!state.dragging || !targetRef.current) return;
+      if (!targetRef.current) return;
+
+      // hover feedback when not dragging
+      if (!state.dragging) {
+        // outside cube → show 4-arrow/move; over cube → let sticker/hover control it
+        if (!overCube(e)) {
+          document.body.style.cursor = "move";
+        } else if (document.body.style.cursor === "move") {
+          document.body.style.cursor = "";
+        }
+        return;
+      }
+
+      // rotate rig while dragging
       const dx = e.clientX - state.lx;
       const dy = e.clientY - state.ly;
       state.lx = e.clientX;
       state.ly = e.clientY;
 
       const g = targetRef.current;
-      g.rotation.y += dx * speed; // horizontal drag -> yaw
-      g.rotation.x += dy * speed; // vertical drag   -> pitch
-      // Clamp pitch to avoid flipping
+      g.rotation.y += dx * speed; // yaw
+      g.rotation.x += dy * speed; // pitch
       if (g.rotation.x >  clampX) g.rotation.x =  clampX;
       if (g.rotation.x < -clampX) g.rotation.x = -clampX;
     };
@@ -69,7 +104,7 @@ function DragRotate({ targetRef, enabled = true, speed = 0.0035, clampX = Math.P
       window.removeEventListener("pointerup", endDrag);
       window.removeEventListener("pointercancel", endDrag);
     };
-  }, [gl, targetRef, enabled, speed, clampX]);
+  }, [gl, camera, targetRef, excludeRef, enabled, speed, clampX, raycaster]);
 
   return null;
 }
@@ -96,7 +131,11 @@ function CubeRig({ gridRef, onActivateSticker, frameReady, controlsEnabled }) {
         onActivateSticker={onActivateSticker}
         frameReady={frameReady}
       />
-      <DragRotate targetRef={group} enabled={controlsEnabled} />
+      <DragRotate
+        targetRef={group}
+        excludeRef={group}            // ← clicking on the cube = NO rig drag
+        enabled={controlsEnabled}
+      />
     </group>
   );
 }
@@ -112,7 +151,7 @@ export default function SceneRoot() {
   return (
     <>
       {/* Dev panel renders to document.body — keep it OUTSIDE Canvas to avoid R3F SVG errors */}
-      <DevRotatePanel gridRef={gridRef} />
+      {/*<DevRotatePanel gridRef={gridRef} /> */}
 
       <div className="fixed inset-0 z-0">
         {/* Canvas already has shadows enabled */}

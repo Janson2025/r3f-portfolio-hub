@@ -12,8 +12,6 @@ export default function HudSection({
     // w-fit makes the section as wide as the widest child (your heading)
     // ml-auto keeps the whole section pushed to the right in its parent
     <section className={["w-fit ml-auto text-right", className].join(" ")}>
-      {heading ? <h3 className={headingClass}>{heading}</h3> : null}
-
       {/* Each row will be w-full, which now means "as wide as the heading" */}
       <div className="flex flex-col gap-1 items-stretch w-full">
         {children}

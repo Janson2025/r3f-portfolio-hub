@@ -1,15 +1,29 @@
-import React, { useMemo, useRef, useState, useCallback, forwardRef, useImperativeHandle } from "react";
+// src/app/project/grid/GridCube.jsx
+import React, {
+  useMemo,
+  useRef,
+  useState,
+  useCallback,
+  forwardRef,
+  useImperativeHandle,
+} from "react";
 import Block from "../block/Block";
 import gridParams from "./params/grid.json";
 import customStickers from "../sticker/params/stickers.json";
 import useLayerRotate from "./interactions/useLayerRotate.js";
+import useLayerDrag from "./interactions/useLayerDrag.js";
 
 const GridCube = forwardRef(function GridCube({ onActivateSticker, frameReady }, ref) {
+  // --- grid setup ---
   const dims = gridParams.dimensions ?? [3, 3, 3];
   const spacing = gridParams.spacing ?? 1.03;
   const [dx, dy, dz] = dims;
 
-  // Build overrides map once
+  // --- drag kill-switch ---
+  // Flip to true when you're ready to re-enable drag.
+  const DRAG_ENABLED = false;
+
+  // --- sticker overrides map (block,face) -> config ---
   const overrides = useMemo(() => {
     const map = new Map();
     for (const s of customStickers) {
@@ -19,7 +33,7 @@ const GridCube = forwardRef(function GridCube({ onActivateSticker, frameReady },
     return map;
   }, []);
 
-  // blocks model (keep your shape, but add a ref per block)
+  // --- stable blocks model (ref per cubelet) ---
   const [blocks] = useState(() => {
     const arr = [];
     let id = 0;
@@ -33,41 +47,91 @@ const GridCube = forwardRef(function GridCube({ onActivateSticker, frameReady },
     return arr;
   });
 
-  const cubeRootRef = useRef();    // parent for all blocks
-  const tmpGroupRef = useRef();    // temporary rotation parent
-
+  // expose for rotate/drag helpers
   const getBlocks = useCallback(() => blocks, [blocks]);
 
-  // Hook providing rotate(axis, layer, dir)
-  const rotateApi = useLayerRotate({ cubeRootRef, tmpGroupRef, getBlocks });
+  // --- scene groups ---
+  const cubeRootRef = useRef(); // parent for all blocks
+  const tmpGroupRef = useRef(); // temporary rotation parent (used by BOTH rotate & drag)
 
-  // Expose a dev API (optional) so your HUD/overlay can call rotations
-  useImperativeHandle(ref, () => ({
-    devAPI: {
-      rotateX: (layer, dir) => rotateApi.rotate("x", layer, dir),
-      rotateY: (layer, dir) => rotateApi.rotate("y", layer, dir),
-      rotateZ: (layer, dir) => rotateApi.rotate("z", layer, dir),
-      // convenience: names you mentioned earlier
-      x_left:  (dir) => rotateApi.rotate("x", 0, dir),
-      x_mid:   (dir) => rotateApi.rotate("x", 1, dir),
-      x_right: (dir) => rotateApi.rotate("x", 2, dir),
-      y_front: (dir) => rotateApi.rotate("y", 0, dir),
-      y_mid:   (dir) => rotateApi.rotate("y", 1, dir),
-      y_back:  (dir) => rotateApi.rotate("y", 2, dir),
-      z_top:   (dir) => rotateApi.rotate("z", 2, dir),
-      z_mid:   (dir) => rotateApi.rotate("z", 1, dir),
-      z_bottom:(dir) => rotateApi.rotate("z", 0, dir),
-      busy: rotateApi.rotating,
-    }
-  }), [rotateApi]);
+  // --- animated 90° button rotations ---
+  const rotateApi = useLayerRotate({
+    cubeRootRef,
+    tmpGroupRef,
+    getBlocks,
+    dims,          // ← add these
+    spacing,       // ← add these
+    durationMs: 250,
+  });
 
-  // Render blocks from ijk and spacing
+  // --- drag hook wired but disabled (so code stays intact) ---
+  const dragApi = useLayerDrag({
+    cubeRootRef,
+    tmpGroupRef,
+    enabled: DRAG_ENABLED, // <— OFF for now
+    dims: [dx, dy, dz],
+    spacing,
+  });
+
+  // pointer start intended for drag — only attaches when enabled
+  const onStickerPointerDown = useCallback(
+    (e, info) => {
+      if (!DRAG_ENABLED) return;
+      if (rotateApi.rotating() || dragApi.rotating()) return;
+
+      dragApi.dragStart(e, info);
+
+      const onMove = (ev) => dragApi.dragUpdate(ev);
+      const onEnd = () => {
+        dragApi.dragEnd();
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onEnd);
+        window.removeEventListener("pointercancel", onEnd);
+      };
+
+      window.addEventListener("pointermove", onMove, { passive: false });
+      window.addEventListener("pointerup", onEnd, { passive: true });
+      window.addEventListener("pointercancel", onEnd, { passive: true });
+    },
+    [DRAG_ENABLED, dragApi, rotateApi]
+  );
+
+  // --- dev/HUD API for your panel ---
+  useImperativeHandle(
+    ref,
+    () => ({
+      devAPI: {
+        rotateX: (layer, dir) => rotateApi.rotate("x", layer, dir),
+        rotateY: (layer, dir) => rotateApi.rotate("y", layer, dir),
+        rotateZ: (layer, dir) => rotateApi.rotate("z", layer, dir),
+
+        // convenience aliases
+        x_left: (dir) => rotateApi.rotate("x", 0, dir),
+        x_mid: (dir) => rotateApi.rotate("x", 1, dir),
+        x_right: (dir) => rotateApi.rotate("x", 2, dir),
+
+        y_front: (dir) => rotateApi.rotate("y", 0, dir),
+        y_mid: (dir) => rotateApi.rotate("y", 1, dir),
+        y_back: (dir) => rotateApi.rotate("y", 2, dir),
+
+        z_bottom: (dir) => rotateApi.rotate("z", 0, dir),
+        z_mid: (dir) => rotateApi.rotate("z", 1, dir),
+        z_top: (dir) => rotateApi.rotate("z", 2, dir),
+
+        busy: () => rotateApi.rotating() || dragApi.rotating(), // dragApi.rotating() will be false when disabled
+      },
+    }),
+    [rotateApi, dragApi]
+  );
+
+  // --- render all blocks at their spaced ijk positions ---
   const blockEls = useMemo(() => {
     return blocks.map((b) => {
       const [i, j, k] = b.ijk;
       const x = (i - (dx - 1) / 2) * spacing;
       const y = (j - (dy - 1) / 2) * spacing;
       const z = (k - (dz - 1) / 2) * spacing;
+
       return (
         <Block
           key={b.id}
@@ -78,17 +142,29 @@ const GridCube = forwardRef(function GridCube({ onActivateSticker, frameReady },
           overrides={overrides}
           onActivateSticker={onActivateSticker}
           frameReady={frameReady}
-          forwardRef={b.ref}               // expose the Object3D for reparenting
-          onStickerPointerDown={undefined} // (Phase 2: drag-to-rotate)
+          forwardRef={b.ref}
+          // Only wire the drag start handler when drag is enabled
+          onStickerPointerDown={DRAG_ENABLED ? onStickerPointerDown : undefined}
         />
       );
     });
-  }, [blocks, dx, dy, dz, spacing, overrides, onActivateSticker, frameReady]);
+  }, [
+    blocks,
+    dx,
+    dy,
+    dz,
+    spacing,
+    overrides,
+    onActivateSticker,
+    frameReady,
+    onStickerPointerDown,
+    DRAG_ENABLED,
+  ]);
 
   return (
     <group ref={cubeRootRef}>
-      {/* Temporary rotation group */}
-      <group ref={tmpGroupRef} visible={false} />
+      {/* IMPORTANT: keep visible=true so button-rotations don't make children disappear while attached */}
+      <group ref={tmpGroupRef} visible={true} />
       {blockEls}
     </group>
   );

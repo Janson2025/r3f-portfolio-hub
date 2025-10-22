@@ -14,10 +14,9 @@ export default function Sticker({
   frameReady,
 }) {
   const mat = useRef();
+  const isPortal = config?.type === "portal";
 
-  const {
-    width, height, baseDepth, zScale, bevelRadius, smoothness, faceColor,
-  } = useMemo(() => {
+  const { width, height, baseDepth, zScale, bevelRadius, smoothness, faceColor } = useMemo(() => {
     const [w, h, d] = dims;
     const baseDepth = Math.max(w, h);
     const zScale = d / baseDepth;
@@ -31,9 +30,8 @@ export default function Sticker({
 
   const [targetBlend, setTargetBlend] = useState(0);
   const [animating, setAnimating] = useState(false);
-  const watchdogRef = useRef(null);
-
   const [hovered, setHovered] = useState(false);
+  const watchdogRef = useRef(null);
 
   const blendMs = useMemo(() => {
     const v = stickerDefaults?.blendMs;
@@ -51,7 +49,7 @@ export default function Sticker({
   }, []);
 
   useFrame((_, dt) => {
-    if (!mat.current) return;
+    if (!isPortal || !mat.current) return; // only portals animate blend/hand-off
     const current = mat.current.blend ?? 0;
     const tau = Math.max(0.0001, blendMs / 5000);
     const factor = 1 - Math.exp(-(dt / tau));
@@ -77,61 +75,52 @@ export default function Sticker({
   });
 
   const start = useCallback(() => {
-    if (config.type === "portal") {
+    if (isPortal) {
       setAnimating(true);
       setTargetBlend(1);
     }
-  }, [config.type]);
+  }, [isPortal]);
 
-  const isPortal = config.type === "portal";
-
-  // Build PortalScene props, now with `animation` and hover-driven `playing`
+  // Portal scene props; only play when portal & hovered
   const portalSceneProps = useMemo(() => {
     const p = config.portal ?? {};
-    // Back-compat: keep existing `spin` if present, but prefer `animation`
     const animation = p.animation
       ? p.animation
       : p.spin
       ? { type: "spin", params: { speed: p.spin.speed, axis: p.spin.axis } }
       : { type: "idle", params: {} };
-
     return {
       bgColor: faceColor,
       mesh: p.mesh ?? { type: "icosa", props: {} },
       lights: p.lights,
       distance: p.distance ?? 0,
       animation,
-      playing: hovered, // ← only animate while hovered
+      playing: isPortal && hovered,
     };
-  }, [config.portal, faceColor, hovered]);
+  }, [config.portal, faceColor, hovered, isPortal]);
 
   const onOver = useCallback((e) => {
-    document.body.style.cursor = "pointer";
     e.stopPropagation();
     setHovered(true);
-    if (config?.id) {
-      pubsub?.emit?.("project:hover", { id: config.id });
-    }
-  }, [config?.id]);
+    document.body.style.cursor = isPortal ? "pointer" : "grab";
+    if (config?.id) pubsub?.emit?.("project:hover", { id: config.id });
+  }, [isPortal, config?.id]);
 
   const onOut = useCallback(() => {
-    document.body.style.cursor = "auto";
     setHovered(false);
+    // Let the scene logic decide (DragRotate will set 'move' when outside)
+    document.body.style.cursor = "";
   }, []);
 
   return (
     <group
-      onClick={start}
-      onPointerOver={onOver}
-      onPointerOut={onOut}
-      onPointerMove={(e) => e.stopPropagation()}
+      onClick={isPortal ? start : undefined}
+      onPointerOver={isPortal ? onOver : undefined}
+      onPointerOut={isPortal ? onOut : undefined}
+      onPointerMove={(e) => isPortal ? e.stopPropagation() : undefined}
     >
       <group scale={[1, 1, zScale]}>
-        <RoundedBox
-          args={[width, height, baseDepth]}
-          radius={bevelRadius}
-          smoothness={smoothness}
-        >
+        <RoundedBox args={[width, height, baseDepth]} radius={bevelRadius} smoothness={smoothness}>
           {isPortal ? (
             <MeshPortalMaterial ref={mat} side={THREE.DoubleSide} blend={0}>
               <PortalScene {...portalSceneProps} />
@@ -147,7 +136,7 @@ export default function Sticker({
         </RoundedBox>
       </group>
 
-      {hovered && (
+      {isPortal && hovered && (
         <Html
           position={[0, height / 2 + 0.05, 0]}
           sprite
