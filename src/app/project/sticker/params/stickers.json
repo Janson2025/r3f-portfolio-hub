@@ -283,5 +283,38 @@
         ]
       }
     }
+  },
+  {
+    "id": "plums",
+    "title": "raindrop image revealer",
+    "tech": ["javascript.js"],
+    "description": "A complex image revealing system that reveals images using raindrop like splattering effect and can reveal 2 layers of images using different drop effects. useful in mixing images in a artistic way such as colorizing a black and white or pencil version of a photo in specific fun ways, or by mixing 2 different images to create a complex cool interactive effect.",
+    "links": {
+      "demo": "https://vanilla-pencil-image-revealer-prototype.onrender.com/"
+    },
+    "block": [2, 2, 2],
+    "face": "front",
+    "href": "https://vanilla-pencil-image-revealer-prototype.onrender.com/",
+    "preview": { "color": "#0FA74A" },
+    "portal": {
+      "distance": -0.3,
+      "mesh": {
+        "type": "glb",
+        "props": {
+          "url": "/models/raindropSplatterPlane.glb",
+          "scale": 0.25,
+          "rotation": [1.5, 0.0, 0.0],
+          "position": [0, -0.02, 0]
+        }
+      },
+      "animation": { "type": "spin", "params": { "speed": 0.2, "axis": [0, 1, 0] } },
+      "lights": {
+        "ambient": 0.45,
+        "dirs": [
+          { "position": [2, 2.5, 1], "intensity": 1.1 },
+          { "position": [-1.5, 1.2, -2], "intensity": 0.7 }
+        ]
+      }
+    }
   }
 ]
