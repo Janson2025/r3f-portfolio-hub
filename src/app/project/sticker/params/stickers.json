@@ -339,7 +339,7 @@
           "url": "/models/threadSpool.glb",
           "scale": 0.4,
           "rotation": [0.0, 0.0, 0.0],
-          "position": [0, -0.02, 0]
+          "position": [0, -0.333, 0]
         }
       },
       "animation": { "type": "spin", "params": { "speed": 0.2, "axis": [0, 1, 0] } },
