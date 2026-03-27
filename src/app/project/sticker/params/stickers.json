@@ -336,7 +336,7 @@
       "mesh": {
         "type": "glb",
         "props": {
-          "url": "/models/threadSpool.glb",
+          "url": "/models/threadSpool2.glb",
           "scale": 0.4,
           "rotation": [0.0, 0.0, 0.0],
           "position": [0, -0.333, 0]
