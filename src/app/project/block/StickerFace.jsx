@@ -9,7 +9,8 @@ import Sticker from "../sticker/Sticker";
  */
 export default function StickerFace({
   size = 1,
-  faceConfig,                // merged config for this face
+  faceConfig,    
+  cubieId,            // merged config for this face
   onActivateSticker,
   frameReady,
   blockIndex,                 // needed to choose layer on drag
@@ -39,7 +40,12 @@ export default function StickerFace({
       onPointerDown={(e) => {
         e.stopPropagation();
         document.body.style.cursor = "grabbing";
-        onPointerDown?.(e, { blockIndex, face });
+
+        onPointerDown?.(e, {
+          cubieId,
+          gridPosition: blockIndex,
+          face,
+        });
       }}
       onPointerUp={() => { document.body.style.cursor = ""; }}
       onPointerCancel={() => { document.body.style.cursor = ""; }}

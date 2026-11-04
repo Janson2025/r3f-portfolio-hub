@@ -1,3 +1,4 @@
+
 import { useEffect, useRef } from "react";
 import BlockBody from "./BlockBody";
 import StickerFace from "./StickerFace";
@@ -5,31 +6,74 @@ import useBlockStickers from "./hooks/useBlockStickers";
 
 /**
  * One cubelet block with 0–6 stickers parented to it.
- * Exposes userData.ijk so the grid can select layers quickly.
+ *
+ * blockIndex:
+ *   Permanent original coordinates.
+ *   Used for sticker identity and project overrides.
+ *
+ * gridPosition:
+ *   Current logical coordinates.
+ *   Used for slice selection and interactions.
  */
 export default function Block({
   position = [0, 0, 0],
+  quaternion = [0, 0, 0, 1],
+
   size = 1,
+
+  cubieId,
   blockIndex = [0, 0, 0],
+  gridPosition = blockIndex,
+
   gridDims = [3, 3, 3],
+  faceMap = {},
+
   overrides = new Map(),
+
   onActivateSticker,
   frameReady,
-  onStickerPointerDown, // passed to StickerFace
-  forwardRef,           // allows external parenting to this block
+  onStickerPointerDown,
+
+  forwardRef,
 }) {
   const localRef = useRef();
   const group = forwardRef ?? localRef;
 
-  // expose ijk for layer-selection logic
+  // Keep interaction metadata synchronized with the current engine state.
   useEffect(() => {
-    if (group.current) group.current.userData.ijk = blockIndex;
-  }, [blockIndex, group]);
+    if (!group.current) return;
 
-  const stickers = useBlockStickers({ blockIndex, gridDims, overrides });
+    group.current.userData.cubieId = cubieId;
+    group.current.userData.ijk = [...gridPosition];
+    group.current.userData.originalPosition = [...blockIndex];
+    group.current.userData.faceMap = { ...faceMap };
+  }, [
+    cubieId,
+    gridPosition,
+    blockIndex,
+    faceMap,
+    group,
+  ]);
+
+  // Sticker identity must always use the original position.
+  const stickers = useBlockStickers({
+    blockIndex,
+    gridDims,
+    overrides,
+  });
 
   return (
-    <group ref={group} position={position} userData={{ ijk: blockIndex }}>
+    <group
+      ref={group}
+      position={position}
+      quaternion={quaternion}
+      userData={{
+        cubieId,
+        ijk: gridPosition,
+        originalPosition: blockIndex,
+        faceMap,
+      }}
+    >
       <BlockBody size={size} />
 
       {stickers.map((s) => (
@@ -37,7 +81,8 @@ export default function Block({
           key={s.id}
           size={size}
           faceConfig={s}
-          blockIndex={blockIndex}
+          cubieId={cubieId}
+          blockIndex={gridPosition}
           onActivateSticker={onActivateSticker}
           frameReady={frameReady}
           onPointerDown={onStickerPointerDown}

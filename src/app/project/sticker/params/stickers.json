@@ -285,7 +285,7 @@
     }
   },
   {
-    "id": "plums",
+    "id": "raindrop-image-revealer",
     "title": "raindrop image revealer",
     "tech": ["javascript.js"],
     "description": "A complex image revealing system that reveals images using raindrop like splattering effect and can reveal 2 layers of images using different drop effects. useful in mixing images in a artistic way such as colorizing a black and white or pencil version of a photo in specific fun ways, or by mixing 2 different images to create a complex cool interactive effect.",
