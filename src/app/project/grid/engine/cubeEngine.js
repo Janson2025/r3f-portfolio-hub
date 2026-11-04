@@ -56,7 +56,7 @@ export function createCubeEngine(size = 3) {
   /**
    * Commit a normalized move to the internal state.
    */
-  function commitMove(move) {
+  function commitMove(move, { recordHistory = true } = {}) {
     if (move.quarterTurns === 0) {
       return cloneState(state);
     }
@@ -67,13 +67,15 @@ export function createCubeEngine(size = 3) {
 
     state = nextState;
 
-    history.push({
-      move: { ...move },
-      notation: moveToNotation(move, size),
-    });
+    if (recordHistory) {
+      history.push({
+        move: { ...move },
+        notation: moveToNotation(move, size),
+      });
 
-    // A new move invalidates the redo history.
-    redoStack = [];
+      // A recorded user move invalidates redo history.
+      redoStack = [];
+    }
 
     return cloneState(state);
   }
@@ -81,10 +83,9 @@ export function createCubeEngine(size = 3) {
   /**
    * Apply one move.
    */
-  function move(moveDescription) {
+  function move(moveDescription, options = {}) {
     const normalized = normalizeMove(moveDescription, size);
-
-    return commitMove(normalized);
+    return commitMove(normalized, options);
   }
 
   /**

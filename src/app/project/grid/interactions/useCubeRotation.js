@@ -346,12 +346,16 @@ export default function useCubeRotation({
       quarterTurns = 1,
       options = {}
     ) => {
-      if (
-        !VALID_QUARTER_TURNS.includes(quarterTurns)
-      ) {
+      if (!VALID_QUARTER_TURNS.includes(quarterTurns)) {
         throw new Error(
           "quarterTurns must be 1, -1, 2, or -2."
         );
+      }
+
+      const moveDuration = options.durationMs ?? durationMs;
+
+      if (!Number.isFinite(moveDuration) || moveDuration <= 0) {
+        throw new Error("Rotation duration must be positive.");
       }
 
       const started = beginRotation(
@@ -364,21 +368,19 @@ export default function useCubeRotation({
 
       const state = animation.current;
 
+      state.duration = moveDuration;
       state.direction = Math.sign(quarterTurns);
       state.quarterTurns = quarterTurns;
 
       state.targetAngle =
         quarterTurns * QUARTER_TURN;
 
-      state.commitMove =
-        options.commitMove ?? null;
-
-      state.onComplete =
-        options.onComplete ?? null;
+      state.commitMove = options.commitMove ?? null;
+      state.onComplete = options.onComplete ?? null;
 
       return true;
     },
-    [beginRotation]
+    [beginRotation, durationMs]
   );
 
   // --------------------------------------------------

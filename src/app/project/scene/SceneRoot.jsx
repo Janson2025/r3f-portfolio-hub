@@ -4,6 +4,7 @@ import {
   useRef,
   useMemo,
   useCallback,
+  useState,
 } from "react";
 import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { Environment, ContactShadows /*, OrbitControls */ } from "@react-three/drei";
@@ -14,6 +15,8 @@ import ProjectOverlay from "./ProjectOverlay";
 import { Avatar } from "./Avatar";
 import { FadingDiskPlane } from "./FadingDiskPlane";
 import DevRotatePanel from "../grid/interactions/DevRotatePanel";
+import CubeIdleAnimation from "./animations/CubeIdleAnimation";
+import CubeIdleSliceAnimation from "./animations/CubeIdleSliceAnimation";
 
 import * as THREE from "three";
 
@@ -333,12 +336,23 @@ function DragRotate({
 
 
 /** Wraps the cube, positions it, and makes it rotatable. */
-function CubeRig({ gridRef, onActivateSticker, frameReady, controlsEnabled }) {
+
+/** Wraps the cube, positions it, and coordinates its movement. */
+
+function CubeRig({
+  gridRef,
+  onActivateSticker,
+  frameReady,
+  controlsEnabled,
+}) {
   const group = useRef();
+  const idleGroup = useRef();
+
+  const [idleSliceActive, setIdleSliceActive] = useState(false);
+
   const { size } = useThree();
   const isDesktop = size.width >= 1024;
 
-  // Adjust this offset to taste. World units at your current camera/fov.
   const offsetX = isDesktop ? 2.0 : 0;
   const offsetY = isDesktop ? -0.5 : 0;
   const offsetZ = isDesktop ? 0 : 0;
@@ -349,15 +363,39 @@ function CubeRig({ gridRef, onActivateSticker, frameReady, controlsEnabled }) {
       position={[offsetX, offsetZ, offsetY]}
       rotation={[Math.PI / 5.5, -Math.PI / 2.75, 0.25]}
     >
-      <GridCube
-        ref={gridRef} // forwardRef GridCube must expose devAPI
-        onActivateSticker={onActivateSticker}
-        frameReady={frameReady}
+      <group ref={idleGroup}>
+        <GridCube
+          ref={gridRef}
+          onActivateSticker={onActivateSticker}
+          frameReady={frameReady}
+          interactionsEnabled={
+            controlsEnabled && !idleSliceActive
+          }
+        />
+      </group>
+
+      {/* Overall cube idle movement */}
+      <CubeIdleAnimation
+        targetRef={idleGroup}
+        enabled={controlsEnabled && !idleSliceActive}
+        idleDelay={8}
       />
+
+      {/* Occasional automatic slice rotation */}
+      <CubeIdleSliceAnimation
+        gridRef={gridRef}
+        enabled={controlsEnabled}
+        minInterval={3}
+        maxInterval={7}
+        turnDuration={0.8}
+        onActiveChange={setIdleSliceActive}
+      />
+
+      {/* Manual orbit */}
       <DragRotate
         targetRef={group}
         excludeRef={group}
-        enabled={controlsEnabled}
+        enabled={controlsEnabled && !idleSliceActive}
         speed={0.0035}
         friction={1.25}
         maxVelocity={6}

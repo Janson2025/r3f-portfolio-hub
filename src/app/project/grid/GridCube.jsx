@@ -185,6 +185,14 @@ const GridCube = forwardRef(function GridCube(
       move.layer,
       move.quarterTurns,
       {
+        durationMs: sequence.durationMs,
+
+        commitMove: (completedMove) => {
+          engine.move(completedMove, {
+            recordHistory: sequence.recordHistory,
+          });
+        },
+
         onComplete: () => {
           sequence.index += 1;
           sequence.waitingForRender = true;
@@ -209,6 +217,7 @@ const GridCube = forwardRef(function GridCube(
 
     if (sequence.index >= sequence.moves.length) {
       sequenceRef.current = null;
+      sequence.onComplete?.();
       return;
     }
 
@@ -216,33 +225,26 @@ const GridCube = forwardRef(function GridCube(
   }, [revision, startNextSequenceMove]);
 
   const playSequence = useCallback(
-    (moves) => {
-      if (
-        !interactionsEnabled ||
-        !Array.isArray(moves) ||
-        moves.length === 0 ||
-        rotationBusy() ||
-        sequenceRef.current
-      ) {
-        return false;
-      }
+    (
+      moves,
+      {
+        recordHistory = true,
+        durationMs = ANIMATION_DURATION,
+        onComplete,
+      } = {}
+    ) => {
+      // Keep your existing validation and sequence setup.
 
       const sequence = {
         moves: moves.map((move) => ({ ...move })),
         index: 0,
         waitingForRender: false,
+        recordHistory,
+        durationMs,
+        onComplete,
       };
 
-      sequenceRef.current = sequence;
-
-      const started = startNextSequenceMove();
-
-      if (!started) {
-        sequenceRef.current = null;
-        return false;
-      }
-
-      return true;
+      // Keep the remainder of your existing function.
     },
     [
       interactionsEnabled,
@@ -401,6 +403,21 @@ const GridCube = forwardRef(function GridCube(
     enabled: interactionsEnabled,
   });
 
+  const handleBeginSliceDrag = useCallback(
+    (axis, layer) => {
+      if (
+        !interactionsEnabled ||
+        sequenceRef.current ||
+        rotationBusy()
+      ) {
+        return false;
+      }
+
+      return beginSliceDrag(axis, layer);
+    },
+    [interactionsEnabled, rotationBusy, beginSliceDrag]
+  );
+
   // --------------------------------------------------
   // Pointer selection and slice dragging
   // --------------------------------------------------
@@ -411,7 +428,7 @@ const GridCube = forwardRef(function GridCube(
     size: dx,
     spacing,
 
-    beginDrag: beginSliceDrag,
+    beginDrag: handleBeginSliceDrag,
     updateDrag: updateSliceDrag,
     finishDrag: finishSliceDrag,
 
