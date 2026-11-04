@@ -1,5 +1,6 @@
 /* SCSS runs first, defines tokens */
 @use "./styles/tokens.scss" as *;
+@use "./styles/CubeControlPanel.scss";
 
 /* Your site-level styles after */
 @use "./styles/typography.scss";

@@ -7,14 +7,20 @@ import React, {
   createRef,
   useCallback,
   useRef,
+  useEffect,
 } from "react";
 
 import Block from "../block/Block";
 import gridParams from "./params/grid.json";
-import customStickers from "../sticker/params/stickers.json";
+import stickerData from "../sticker/params/stickers.json";
+
+const customStickers = stickerData.projects;
 
 import { createCubeEngine } from "./engine/cubeEngine.js";
 import { buildBlockRenderProps } from "./engine/cubeRenderAdapter.js";
+import {
+    createProjectStickerOverrides,
+} from "./engine/projectAssignment.js";
 
 import useCubeRotation from "./interactions/useCubeRotation.js";
 import useCubePointerSelection from "./interactions/useCubePointerSelection.js";
@@ -31,7 +37,12 @@ const ANIMATION_DURATION = 250;
 // --------------------------------------------------
 
 const GridCube = forwardRef(function GridCube(
-  { onActivateSticker, frameReady },
+  {
+    onActivateSticker,
+    frameReady,
+    interactionsEnabled = true,
+    showProjectPortals = true,
+  },
   ref
 ) {
   // --------------------------------------------------
@@ -39,7 +50,6 @@ const GridCube = forwardRef(function GridCube(
   // --------------------------------------------------
 
   const dims = gridParams.dimensions ?? [3, 3, 3];
-  const spacing = gridParams.spacing ?? 1.03;
 
   const [dx, dy, dz] = dims;
 
@@ -49,12 +59,44 @@ const GridCube = forwardRef(function GridCube(
     );
   }
 
+  const overallSize = gridParams.overallSize ?? 3.06;
+  const gap = gridParams.gap ?? 0.03;
+
+  if (
+    !Number.isInteger(dx) ||
+    dx < 1 ||
+    !Number.isFinite(overallSize) ||
+    overallSize <= 0 ||
+    !Number.isFinite(gap) ||
+    gap < 0
+  ) {
+    throw new Error("Invalid grid configuration.");
+  }
+
+  // Calculate the physical dimensions of each cubie.
+  const cubieSize = (overallSize - (dx - 1) * gap) / dx;
+
+  if (cubieSize <= 0) {
+    throw new Error("Grid gap is too large for the configured cube size.");
+  }
+
+  // Center-to-center distance between neighboring cubies.
+  const spacing = cubieSize + gap;
+
+  // Convenient layer indices.
+  const firstLayer = 0;
+  const lastLayer = dx - 1;
+  const middleLayer = Math.floor(dx / 2);
+
   // --------------------------------------------------
   // Cube engine
   // --------------------------------------------------
 
   const [engine] = useState(() => createCubeEngine(dx));
+
   const [revision, setRevision] = useState(0);
+
+  const sequenceRef = useRef(null);
 
   const handleMoveComplete = useCallback(() => {
     setRevision((current) => current + 1);
@@ -105,14 +147,248 @@ const GridCube = forwardRef(function GridCube(
 
   const performMove = useCallback(
     (axis, layer, direction = 1) => {
+      if (
+        !interactionsEnabled ||
+        sequenceRef.current
+      ) {
+        return false;
+      }
+
       return rotateSlice(
         axis,
         layer,
         direction >= 0 ? 1 : -1
       );
     },
-    [rotateSlice]
+    [rotateSlice, interactionsEnabled]
   );
+
+  // --------------------------------------------------
+  // Animated move sequences
+  // --------------------------------------------------
+
+  const startNextSequenceMove = useCallback(() => {
+    const sequence = sequenceRef.current;
+
+    if (!sequence) return false;
+    if (sequence.waitingForRender) return false;
+
+    if (sequence.index >= sequence.moves.length) {
+      sequenceRef.current = null;
+      return true;
+    }
+
+    const move = sequence.moves[sequence.index];
+
+    const started = rotateSlice(
+      move.axis,
+      move.layer,
+      move.quarterTurns,
+      {
+        onComplete: () => {
+          sequence.index += 1;
+          sequence.waitingForRender = true;
+        },
+      }
+    );
+
+    if (!started) {
+      sequenceRef.current = null;
+      return false;
+    }
+
+    return true;
+  }, [rotateSlice]);
+
+  useEffect(() => {
+    const sequence = sequenceRef.current;
+
+    if (!sequence || !sequence.waitingForRender) return;
+
+    sequence.waitingForRender = false;
+
+    if (sequence.index >= sequence.moves.length) {
+      sequenceRef.current = null;
+      return;
+    }
+
+    startNextSequenceMove();
+  }, [revision, startNextSequenceMove]);
+
+  const playSequence = useCallback(
+    (moves) => {
+      if (
+        !interactionsEnabled ||
+        !Array.isArray(moves) ||
+        moves.length === 0 ||
+        rotationBusy() ||
+        sequenceRef.current
+      ) {
+        return false;
+      }
+
+      const sequence = {
+        moves: moves.map((move) => ({ ...move })),
+        index: 0,
+        waitingForRender: false,
+      };
+
+      sequenceRef.current = sequence;
+
+      const started = startNextSequenceMove();
+
+      if (!started) {
+        sequenceRef.current = null;
+        return false;
+      }
+
+      return true;
+    },
+    [
+      interactionsEnabled,
+      rotationBusy,
+      startNextSequenceMove,
+    ]
+  );
+
+  // --------------------------------------------------
+  // Scramble
+  // --------------------------------------------------
+
+  const scramble = useCallback(() => {
+    if (
+      !interactionsEnabled ||
+      rotationBusy() ||
+      sequenceRef.current
+    ) {
+      return false;
+    }
+
+    const moves = [];
+    let previousKey = "";
+
+    const moveCount = Math.max(20, dx * 8);
+
+    for (let index = 0; index < moveCount; index += 1) {
+      let axis;
+      let layer;
+      let key;
+
+      do {
+        axis = ["x", "y", "z"][
+          Math.floor(Math.random() * 3)
+        ];
+
+        layer = Math.floor(Math.random() * dx);
+        key = `${axis}:${layer}`;
+      } while (key === previousKey && dx > 1);
+
+      previousKey = key;
+
+      moves.push({
+        axis,
+        layer,
+        quarterTurns: Math.random() < 0.5 ? -1 : 1,
+      });
+    }
+
+    return playSequence(moves);
+  }, [
+    dx,
+    interactionsEnabled,
+    playSequence,
+    rotationBusy,
+  ]);
+
+  // --------------------------------------------------
+  // Undo
+  // --------------------------------------------------
+
+  const undo = useCallback(() => {
+    if (
+      !interactionsEnabled ||
+      rotationBusy() ||
+      sequenceRef.current ||
+      !engine.canUndo()
+    ) {
+      return false;
+    }
+
+    const entry = engine.getHistory().at(-1);
+
+    if (!entry) return false;
+
+    return rotateSlice(
+      entry.move.axis,
+      entry.move.layer,
+      -entry.move.quarterTurns,
+      {
+        commitMove: () => engine.undo(),
+      }
+    );
+  }, [
+    interactionsEnabled,
+    engine,
+    rotateSlice,
+    rotationBusy,
+  ]);
+
+  // --------------------------------------------------
+  // Redo
+  // --------------------------------------------------
+
+  const redo = useCallback(() => {
+    if (
+      !interactionsEnabled ||
+      rotationBusy() ||
+      sequenceRef.current ||
+      !engine.canRedo()
+    ) {
+      return false;
+    }
+
+    const entry = engine.getRedoHistory().at(-1);
+
+    if (!entry) return false;
+
+    return rotateSlice(
+      entry.move.axis,
+      entry.move.layer,
+      entry.move.quarterTurns,
+      {
+        commitMove: () => engine.redo(),
+      }
+    );
+  }, [
+    interactionsEnabled,
+    engine,
+    rotateSlice,
+    rotationBusy,
+  ]);
+
+  // --------------------------------------------------
+  // Clear history
+  // --------------------------------------------------
+
+  const clearHistory = useCallback(() => {
+    if (
+      !interactionsEnabled ||
+      rotationBusy() ||
+      sequenceRef.current
+    ) {
+      return false;
+    }
+
+    engine.clearHistory();
+
+    setRevision((current) => current + 1);
+
+    return true;
+  }, [
+    interactionsEnabled,
+    engine,
+    rotationBusy,
+  ]);
 
   // --------------------------------------------------
   // Keyboard controls
@@ -122,6 +398,7 @@ const GridCube = forwardRef(function GridCube(
     size: dx,
     performMove,
     rotationBusy,
+    enabled: interactionsEnabled,
   });
 
   // --------------------------------------------------
@@ -137,6 +414,8 @@ const GridCube = forwardRef(function GridCube(
     beginDrag: beginSliceDrag,
     updateDrag: updateSliceDrag,
     finishDrag: finishSliceDrag,
+
+    enabled: interactionsEnabled,
   });
 
   // --------------------------------------------------
@@ -144,17 +423,18 @@ const GridCube = forwardRef(function GridCube(
   // --------------------------------------------------
 
   const overrides = useMemo(() => {
-    const map = new Map();
+      if (!showProjectPortals) {
+          return new Map();
+      }
 
-    for (const sticker of customStickers) {
-      const key =
-        `${sticker.block[0]},${sticker.block[1]},${sticker.block[2]}:${sticker.face}`;
-
-      map.set(key, sticker);
-    }
-
-    return map;
-  }, []);
+      return createProjectStickerOverrides({
+          projects: customStickers,
+          dimensions: dims,
+          seed:
+              stickerData.defaults?.assignmentSeed ??
+              "rubix-portfolio-v1",
+      });
+  }, [showProjectPortals, dims]);
 
   // --------------------------------------------------
   // Developer / HUD API
@@ -164,49 +444,93 @@ const GridCube = forwardRef(function GridCube(
     ref,
     () => ({
       devAPI: {
-        rotateX: (layer, direction) =>
+        rotate: (axis, layer, quarterTurns = 1) =>
+          performMove(axis, layer, quarterTurns),
+
+        rotateX: (layer, direction = 1) =>
           performMove("x", layer, direction),
 
-        rotateY: (layer, direction) =>
+        rotateY: (layer, direction = 1) =>
           performMove("y", layer, direction),
 
-        rotateZ: (layer, direction) =>
+        rotateZ: (layer, direction = 1) =>
           performMove("z", layer, direction),
 
-        // X-axis aliases
+        // Outer and middle layers.
         x_left: (direction) =>
-          performMove("x", 0, direction),
+          performMove("x", firstLayer, direction),
 
         x_mid: (direction) =>
-          performMove("x", 1, direction),
+          performMove("x", middleLayer, direction),
 
         x_right: (direction) =>
-          performMove("x", 2, direction),
+          performMove("x", lastLayer, direction),
 
-        // Y-axis aliases
         y_front: (direction) =>
-          performMove("y", 0, direction),
+          performMove("y", firstLayer, direction),
 
         y_mid: (direction) =>
-          performMove("y", 1, direction),
+          performMove("y", middleLayer, direction),
 
         y_back: (direction) =>
-          performMove("y", 2, direction),
+          performMove("y", lastLayer, direction),
 
-        // Z-axis aliases
         z_bottom: (direction) =>
-          performMove("z", 0, direction),
+          performMove("z", firstLayer, direction),
 
         z_mid: (direction) =>
-          performMove("z", 1, direction),
+          performMove("z", middleLayer, direction),
 
         z_top: (direction) =>
-          performMove("z", 2, direction),
+          performMove("z", lastLayer, direction),
 
-        busy: () => rotationBusy(),
+        undo,
+        redo,
+        clearHistory,
+
+        scramble,
+        playSequence,
+
+        playMove: (move) =>
+          performMove(
+            move.axis,
+            move.layer,
+            move.quarterTurns
+          ),
+
+        getHistoryState: () => {
+          const applied = engine.getHistory();
+          const redoHistory = engine.getRedoHistory();
+
+          return {
+            moves: [
+              ...applied,
+              ...redoHistory.slice().reverse(),
+            ],
+            cursor: applied.length,
+            total: applied.length + redoHistory.length,
+            canUndo: engine.canUndo(),
+            canRedo: engine.canRedo(),
+          };
+        },
+
+        busy: () =>
+          rotationBusy() || !!sequenceRef.current,
       },
     }),
-    [performMove, rotationBusy]
+    [
+      performMove,
+      undo,
+      redo,
+      clearHistory,
+      scramble,
+      playSequence,
+      engine,
+      rotationBusy,
+      firstLayer,
+      middleLayer,
+      lastLayer,
+    ]
   );
 
   // --------------------------------------------------
@@ -230,13 +554,16 @@ const GridCube = forwardRef(function GridCube(
       renderProps.map((cubie) => {
         const block = blocks[cubie.cubieId];
 
-        const { key: _adapterKey, ...blockProps } = cubie;
+        const {
+          key: _adapterKey,
+          ...blockProps
+        } = cubie;
 
         return (
           <Block
             key={cubie.cubieId}
             {...blockProps}
-            size={1.0}
+            size={cubieSize}
             gridDims={dims}
             overrides={overrides}
             onActivateSticker={onActivateSticker}
@@ -249,6 +576,7 @@ const GridCube = forwardRef(function GridCube(
     [
       renderProps,
       blocks,
+      cubieSize,
       dims,
       overrides,
       onActivateSticker,

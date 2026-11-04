@@ -7,8 +7,11 @@ export default function useCubeKeyboardControls({
   size,
   performMove,
   rotationBusy,
+  enabled = true,
 }) {
   useEffect(() => {
+    if (!enabled) return;
+    
     const heldAxisKeys = new Set();
     const heldNumberKeys = new Set();
 

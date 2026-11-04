@@ -1,4 +1,3 @@
-
 import {
   createCubeState,
   applySliceMove,
@@ -23,10 +22,10 @@ function cloneState(state) {
   return {
     size: state.size,
     cubies: state.cubies.map((cubie) => ({
-        id: cubie.id,
-        originalPosition: { ...cubie.originalPosition },
-        position: { ...cubie.position },
-        orientation: cubie.orientation.map((row) => [...row]),
+      id: cubie.id,
+      originalPosition: { ...cubie.originalPosition },
+      position: { ...cubie.position },
+      orientation: cubie.orientation.map((row) => [...row]),
     })),
   };
 }
@@ -156,6 +155,19 @@ export function createCubeEngine(size = 3) {
   }
 
   /**
+   * Clear undo/redo history without changing the current cube arrangement.
+   */
+  function clearHistory() {
+    history = [];
+    redoStack = [];
+
+    return {
+      history: getHistory(),
+      redoHistory: getRedoHistory(),
+    };
+  }
+
+  /**
    * Reset the cube to its solved state.
    */
   function reset() {
@@ -212,6 +224,7 @@ export function createCubeEngine(size = 3) {
     undo,
     redo,
     reset,
+    clearHistory,
 
     getState,
     getHistory,

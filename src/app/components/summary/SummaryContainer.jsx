@@ -3,7 +3,9 @@ import { useMemo, useState, useEffect, useRef } from "react";
 import Chip from "./Chip.jsx";
 import Paragraph from "./SummaryParagraph.jsx";
 import pubsub from "../../project/shared/pubsub.js";
-import projects from "../../project/sticker/params/stickers.json";
+import stickerData from "../../project/sticker/params/stickers.json";
+
+const projects = stickerData.projects;
 
 const HOVER_DEBOUNCE_MS = 80;
 

@@ -1,6 +1,6 @@
 // src/scene/interactions/useOverlayController.js
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import stickerDefaults from "../../sticker/params/stickerDefaults.json";
+import stickerDefaults from "../../sticker/params/stickers.json";
 import pubsub from "../../shared/pubsub"; // ← add this
 
 export default function useOverlayController() {

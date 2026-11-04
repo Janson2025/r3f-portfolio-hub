@@ -4,7 +4,7 @@ import { useRef, useState, useEffect, useCallback, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import { MeshPortalMaterial, RoundedBox, Html } from "@react-three/drei";
 import PortalScene from "./PortalScene.jsx";
-import stickerDefaults from "./params/stickerDefaults.json";
+import stickerDefaults from "./params/stickers.json";
 import pubsub from "../../project/shared/pubsub.js";
 
 export default function Sticker({

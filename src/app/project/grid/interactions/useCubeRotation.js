@@ -1,12 +1,17 @@
+
 import * as THREE from "three";
 import { useCallback, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 
 const AXES = {
-  x: [1, 0, 0],
-  y: [0, 1, 0],
-  z: [0, 0, 1],
+  x: new THREE.Vector3(1, 0, 0),
+  y: new THREE.Vector3(0, 1, 0),
+  z: new THREE.Vector3(0, 0, 1),
 };
+
+const VALID_AXES = ["x", "y", "z"];
+
+const VALID_QUARTER_TURNS = [1, -1, 2, -2];
 
 const QUARTER_TURN = Math.PI / 2;
 
@@ -22,12 +27,21 @@ const INITIAL_ANIMATION_STATE = {
   quarterTurns: 0,
   elapsed: 0,
   duration: 250,
+  commitMove: null,
+  onComplete: null,
 };
 
 function easeInOutCubic(t) {
   return t < 0.5
     ? 4 * t * t * t
     : 1 - Math.pow(-2 * t + 2, 3) / 2;
+}
+
+function createAnimationState(duration) {
+  return {
+    ...INITIAL_ANIMATION_STATE,
+    duration,
+  };
 }
 
 /**
@@ -37,9 +51,14 @@ function easeInOutCubic(t) {
  * The pivot group is used only for visual rotation.
  *
  * Supports:
- * - Fixed quarter-turn rotations (keyboard/buttons).
- * - Manual pointer-driven rotation.
- * - Snapping and committing a dragged rotation.
+ * - Fixed quarter-turn rotations.
+ * - Half-turn rotations.
+ * - Manual pointer-driven rotations.
+ * - Snapping and committing dragged rotations.
+ * - Custom commit functions for undo and redo.
+ *
+ * Cubies are selected using their logical engine positions,
+ * rather than potentially stale Three.js userData.
  */
 export default function useCubeRotation({
   cubeRootRef,
@@ -49,29 +68,36 @@ export default function useCubeRotation({
   onMoveComplete,
   durationMs = 250,
 }) {
-  const animation = useRef({
-    ...INITIAL_ANIMATION_STATE,
-    duration: durationMs,
-  });
+  const animation = useRef(
+    createAnimationState(durationMs)
+  );
 
   // --------------------------------------------------
   // State helpers
   // --------------------------------------------------
 
-  const rotating = useCallback(
-    () => animation.current.active,
-    []
-  );
+  const rotating = useCallback(() => {
+    return animation.current.active;
+  }, []);
+
+  // --------------------------------------------------
+  // Pivot management
+  // --------------------------------------------------
 
   /**
-   * Return all cubies from the pivot to the cube root.
-   * Object3D.attach preserves their world transforms.
+   * Restore all cubies from the pivot to the cube root.
+   *
+   * Object3D.attach preserves world transforms.
+   * React will subsequently apply the new logical transforms.
    */
   const restorePivot = useCallback(() => {
     const root = cubeRootRef.current;
     const pivot = pivotRef.current;
 
     if (!root || !pivot) return;
+
+    root.updateMatrixWorld(true);
+    pivot.updateMatrixWorld(true);
 
     while (pivot.children.length > 0) {
       root.attach(pivot.children[0]);
@@ -80,12 +106,18 @@ export default function useCubeRotation({
     pivot.position.set(0, 0, 0);
     pivot.rotation.set(0, 0, 0);
     pivot.quaternion.identity();
+    pivot.scale.set(1, 1, 1);
 
     pivot.updateMatrixWorld(true);
+    root.updateMatrixWorld(true);
   }, [cubeRootRef, pivotRef]);
 
+  // --------------------------------------------------
+  // Begin rotation
+  // --------------------------------------------------
+
   /**
-   * Begin a rotation by selecting the current slice
+   * Begin a rotation by selecting the current logical slice
    * and attaching its cubies to the pivot.
    */
   const beginRotation = useCallback(
@@ -93,50 +125,79 @@ export default function useCubeRotation({
       const root = cubeRootRef.current;
       const pivot = pivotRef.current;
 
-      if (!root || !pivot || !engine) return false;
-      if (animation.current.active) return false;
-
-      if (!["x", "y", "z"].includes(axis)) {
-        throw new Error(`Invalid rotation axis: ${axis}`);
+      if (!root || !pivot || !engine) {
+        return false;
       }
 
-      const size = engine.getState().size;
+      if (animation.current.active) {
+        return false;
+      }
 
-      if (!Number.isInteger(layer) || layer < 0 || layer >= size) {
-        throw new Error(`Invalid layer index: ${layer}`);
+      if (!VALID_AXES.includes(axis)) {
+        throw new Error(
+          `Invalid rotation axis: ${axis}`
+        );
       }
 
       if (durationMs <= 0) {
-        throw new Error("Animation duration must be positive.");
+        throw new Error(
+          "Animation duration must be positive."
+        );
       }
 
+      // Get the current logical cube state.
+      const currentState = engine.getState();
+      const size = currentState.size;
+
+      if (
+        !Number.isInteger(layer) ||
+        layer < 0 ||
+        layer >= size
+      ) {
+        throw new Error(
+          `Invalid layer index: ${layer}`
+        );
+      }
+
+      // Ensure the pivot is empty before starting.
       restorePivot();
 
-      const axisIndex = {
-        x: 0,
-        y: 1,
-        z: 2,
-      }[axis];
+      // Create a lookup using permanent cubie IDs.
+      const cubiesById = new Map(
+        currentState.cubies.map((cubie) => [
+          cubie.id,
+          cubie,
+        ])
+      );
 
       // Select cubies using their current logical positions.
-      const selectedBlocks = getBlocks().filter((block) => {
-        const object = block.ref?.current;
+      //
+      // Do not use object.userData.ijk here.
+      // React may not have updated that metadata yet when
+      // consecutive moves are being animated.
+      const selectedBlocks = getBlocks().filter(
+        (block) => {
+          const object = block.ref?.current;
+          const cubie = cubiesById.get(block.id);
 
-        return (
-          object &&
-          object.userData?.ijk?.[axisIndex] === layer
-        );
-      });
+          return (
+            object &&
+            cubie &&
+            cubie.position[axis] === layer
+          );
+        }
+      );
 
       // A complete slice must contain size² cubies.
       if (selectedBlocks.length !== size * size) {
         console.error(
-          "Cube rotation aborted: incomplete slice selection.",
+          "[Cube rotation] Incomplete slice selection.",
           {
             axis,
             layer,
             expected: size * size,
             found: selectedBlocks.length,
+            logicalCubieCount: currentState.cubies.length,
           }
         );
 
@@ -144,24 +205,31 @@ export default function useCubeRotation({
       }
 
       // Attach selected cubies while preserving world transforms.
-      for (const block of selectedBlocks) {
-        pivot.attach(block.ref.current);
+      try {
+        root.updateMatrixWorld(true);
+
+        for (const block of selectedBlocks) {
+          pivot.attach(block.ref.current);
+        }
+
+        pivot.updateMatrixWorld(true);
+      } catch (error) {
+        console.error(
+          "[Cube rotation] Failed to attach slice to pivot.",
+          error
+        );
+
+        restorePivot();
+
+        return false;
       }
 
-      pivot.updateMatrixWorld(true);
-
       animation.current = {
+        ...createAnimationState(durationMs),
         active: true,
         mode,
         axis,
         layer,
-        direction: 1,
-        angle: 0,
-        fromAngle: 0,
-        targetAngle: 0,
-        quarterTurns: 0,
-        elapsed: 0,
-        duration: durationMs,
       };
 
       return true;
@@ -180,55 +248,133 @@ export default function useCubeRotation({
   // Finish and commit rotation
   // --------------------------------------------------
 
+  /**
+   * Complete an animation and commit its result to the engine.
+   *
+   * A custom commit function allows undo and redo to update
+   * existing history instead of creating new history entries.
+   */
   const finishRotation = useCallback(
     (quarterTurns) => {
       const state = animation.current;
 
       if (!state.active) return;
 
-      // Commit only actual quarter-turn movements.
-      if (quarterTurns !== 0) {
-        engine.move({
-          axis: state.axis,
-          layer: state.layer,
-          quarterTurns,
-        });
+      const move = {
+        axis: state.axis,
+        layer: state.layer,
+        quarterTurns,
+      };
+
+      const onComplete = state.onComplete;
+
+      try {
+        // Commit only actual quarter-turn movements.
+        if (quarterTurns !== 0) {
+          if (typeof state.commitMove === "function") {
+            state.commitMove(move);
+          } else {
+            engine.move(move);
+          }
+        }
+      } catch (error) {
+        console.error(
+          "[Cube rotation] Failed to commit move.",
+          move,
+          error
+        );
+
+        // Restore the scene before propagating the error.
+        restorePivot();
+
+        animation.current = createAnimationState(
+          durationMs
+        );
+
+        throw error;
       }
 
-      // Restore cubies before React applies new transforms.
+      // Restore cubies before React applies their new transforms.
       restorePivot();
 
-      animation.current = {
-        ...INITIAL_ANIMATION_STATE,
-        duration: durationMs,
-      };
+      // Mark the animation as finished.
+      animation.current = createAnimationState(
+        durationMs
+      );
 
       if (quarterTurns !== 0) {
         onMoveComplete?.();
       }
+
+      // Notify the caller after the animation has finished.
+      //
+      // For sequences, the caller should wait for React's
+      // updated render before starting the next rotation.
+      onComplete?.(quarterTurns);
     },
-    [engine, restorePivot, onMoveComplete, durationMs]
+    [
+      engine,
+      restorePivot,
+      onMoveComplete,
+      durationMs,
+    ]
   );
 
   // --------------------------------------------------
   // Fixed quarter-turn rotation
   // --------------------------------------------------
 
+  /**
+   * Animate a slice rotation.
+   *
+   * quarterTurns:
+   *   1  = positive quarter-turn
+   *  -1  = negative quarter-turn
+   *   2  = positive half-turn
+   *  -2  = negative half-turn
+   *
+   * options.commitMove:
+   *   Optional custom engine commit function.
+   *
+   * options.onComplete:
+   *   Optional completion callback.
+   */
   const rotate = useCallback(
-    (axis, layer, direction = 1) => {
-      if (direction !== 1 && direction !== -1) {
-        throw new Error("Direction must be 1 or -1.");
+    (
+      axis,
+      layer,
+      quarterTurns = 1,
+      options = {}
+    ) => {
+      if (
+        !VALID_QUARTER_TURNS.includes(quarterTurns)
+      ) {
+        throw new Error(
+          "quarterTurns must be 1, -1, 2, or -2."
+        );
       }
 
-      const started = beginRotation(axis, layer, "turn");
+      const started = beginRotation(
+        axis,
+        layer,
+        "turn"
+      );
 
       if (!started) return false;
 
       const state = animation.current;
 
-      state.direction = direction;
-      state.quarterTurns = direction;
-      state.targetAngle = direction * QUARTER_TURN;
+      state.direction = Math.sign(quarterTurns);
+      state.quarterTurns = quarterTurns;
+
+      state.targetAngle =
+        quarterTurns * QUARTER_TURN;
+
+      state.commitMove =
+        options.commitMove ?? null;
+
+      state.onComplete =
+        options.onComplete ?? null;
 
       return true;
     },
@@ -244,7 +390,11 @@ export default function useCubeRotation({
    */
   const beginDrag = useCallback(
     (axis, layer) => {
-      return beginRotation(axis, layer, "drag");
+      return beginRotation(
+        axis,
+        layer,
+        "drag"
+      );
     },
     [beginRotation]
   );
@@ -252,25 +402,33 @@ export default function useCubeRotation({
   /**
    * Update the current drag angle in radians.
    *
-   * Positive and negative angles are both supported.
+   * Positive and negative angles are supported.
    */
   const updateDrag = useCallback(
     (angle) => {
       const state = animation.current;
       const pivot = pivotRef.current;
 
-      if (!state.active || state.mode !== "drag" || !pivot) {
+      if (
+        !state.active ||
+        state.mode !== "drag" ||
+        !pivot
+      ) {
         return false;
       }
 
-      if (!Number.isFinite(angle)) return false;
+      if (!Number.isFinite(angle)) {
+        return false;
+      }
 
       state.angle = angle;
 
       pivot.quaternion.setFromAxisAngle(
-        new THREE.Vector3(...AXES[state.axis]),
+        AXES[state.axis],
         angle
       );
+
+      pivot.updateMatrixWorld(true);
 
       return true;
     },
@@ -284,7 +442,10 @@ export default function useCubeRotation({
   const finishDrag = useCallback(() => {
     const state = animation.current;
 
-    if (!state.active || state.mode !== "drag") {
+    if (
+      !state.active ||
+      state.mode !== "drag"
+    ) {
       return false;
     }
 
@@ -294,7 +455,10 @@ export default function useCubeRotation({
 
     state.mode = "settle";
     state.fromAngle = state.angle;
-    state.targetAngle = quarterTurns * QUARTER_TURN;
+
+    state.targetAngle =
+      quarterTurns * QUARTER_TURN;
+
     state.quarterTurns = quarterTurns;
     state.elapsed = 0;
 
@@ -308,7 +472,10 @@ export default function useCubeRotation({
   useFrame((_, delta) => {
     const state = animation.current;
 
-    if (!state.active || state.mode === "drag") {
+    if (
+      !state.active ||
+      state.mode === "drag"
+    ) {
       return;
     }
 
@@ -332,11 +499,12 @@ export default function useCubeRotation({
     } else {
       angle =
         state.fromAngle +
-        (state.targetAngle - state.fromAngle) * eased;
+        (state.targetAngle - state.fromAngle) *
+          eased;
     }
 
     pivot.quaternion.setFromAxisAngle(
-      new THREE.Vector3(...AXES[state.axis]),
+      AXES[state.axis],
       angle
     );
 
@@ -344,12 +512,18 @@ export default function useCubeRotation({
 
     // Finish at the exact target angle.
     pivot.quaternion.setFromAxisAngle(
-      new THREE.Vector3(...AXES[state.axis]),
+      AXES[state.axis],
       state.targetAngle
     );
 
+    pivot.updateMatrixWorld(true);
+
     finishRotation(state.quarterTurns);
   });
+
+  // --------------------------------------------------
+  // Public API
+  // --------------------------------------------------
 
   return {
     rotate,

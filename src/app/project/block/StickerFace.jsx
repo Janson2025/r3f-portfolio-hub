@@ -53,7 +53,13 @@ export default function StickerFace({
       <Sticker
         config={faceConfig}
         dims={[w, h, d]}
-        onActivate={() => onActivateSticker(faceConfig.href, faceConfig)}
+        onActivate={() => {
+          const projectUrl = faceConfig.links?.demo;
+
+          if (projectUrl) {
+            onActivateSticker?.(projectUrl, faceConfig);
+          }
+        }}
         frameReady={frameReady}
       />
     </group>

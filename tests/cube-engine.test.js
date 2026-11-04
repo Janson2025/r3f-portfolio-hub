@@ -1,4 +1,3 @@
-
 import test from "node:test";
 import assert from "node:assert/strict";
 
@@ -443,4 +442,49 @@ test("the pure state operation leaves its input state unchanged", () => {
     validateCubeState(next).valid,
     true
   );
+});
+
+// --------------------------------------------------
+// Test 12: Clear history without changing cube state
+// --------------------------------------------------
+
+test("clearHistory removes undo and redo history without changing the current cube state", () => {
+  const engine = createCubeEngine(3);
+
+  engine.move({
+    axis: "x",
+    layer: 0,
+    quarterTurns: 1,
+  });
+
+  engine.move({
+    axis: "y",
+    layer: 2,
+    quarterTurns: -1,
+  });
+
+  // Undo one move so both history stacks contain entries.
+  engine.undo();
+
+  const stateBeforeClear = snapshot(engine.getState());
+
+  assert.equal(engine.canUndo(), true);
+  assert.equal(engine.canRedo(), true);
+
+  engine.clearHistory();
+
+  assert.deepEqual(
+    snapshot(engine.getState()),
+    stateBeforeClear,
+    "Clearing history must not change the cube arrangement."
+  );
+
+  assert.deepEqual(engine.getHistory(), []);
+  assert.deepEqual(engine.getRedoHistory(), []);
+
+  assert.equal(engine.canUndo(), false);
+  assert.equal(engine.canRedo(), false);
+  assert.equal(engine.getMoveCount(), 0);
+
+  assertValid(engine);
 });
