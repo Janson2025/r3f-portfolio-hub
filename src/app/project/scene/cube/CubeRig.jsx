@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
@@ -7,6 +6,11 @@ import GridCube from "../../grid/GridCube";
 import CubeIdleAnimation from "../animations/CubeIdleAnimation";
 import CubeIdleSliceAnimation from "../animations/CubeIdleSliceAnimation";
 import DragRotate from "../interactions/DragRotate";
+
+import {
+  getDirectionalProjectNavigation,
+  EMPTY_PROJECT_NAVIGATION,
+} from "./projectNavigation.js";
 
 const TRANSITION_DURATION = 1.1;
 
@@ -40,6 +44,10 @@ function fovToZoomPercent(fov) {
 const PROJECT_VIEW_FOV = zoomPercentToFov(PROJECT_VIEW_ZOOM);
 const CUBE_VIEW_FOV = zoomPercentToFov(CUBE_VIEW_ZOOM);
 
+// --------------------------------------------------
+// Project sticker lookup
+// --------------------------------------------------
+
 function findProjectSticker(root, projectId) {
   if (!root || !projectId) return null;
 
@@ -63,6 +71,8 @@ function findProjectSticker(root, projectId) {
   return result;
 }
 
+// Convert a world-space quaternion into the local space
+// of the object's parent.
 function worldQuaternionToLocal(group, worldQuaternion) {
   const parentQuaternion = new THREE.Quaternion();
 
@@ -75,6 +85,10 @@ function worldQuaternionToLocal(group, worldQuaternion) {
     .multiply(worldQuaternion.clone());
 }
 
+// --------------------------------------------------
+// Project focus calculations
+// --------------------------------------------------
+
 function calculateAlignedFaceQuaternion(
   stickerObject,
   camera,
@@ -85,6 +99,8 @@ function calculateAlignedFaceQuaternion(
       new THREE.Quaternion()
     );
 
+  // Project camera-up onto the plane of the sticker.
+  // This keeps the sticker's top aligned with the camera's up direction.
   const cameraUp = camera.up.clone().normalize();
 
   const alignedUp = cameraUp.addScaledVector(
@@ -92,6 +108,8 @@ function calculateAlignedFaceQuaternion(
     -cameraUp.dot(directionToCamera)
   );
 
+  // Fallback in the unlikely event camera-up is parallel
+  // to the direction toward the camera.
   if (alignedUp.lengthSq() < 0.000001) {
     alignedUp.copy(
       camera.getWorldDirection(new THREE.Vector3())
@@ -127,6 +145,8 @@ function calculateAlignedFaceQuaternion(
     new THREE.Quaternion()
       .setFromRotationMatrix(desiredRotationMatrix);
 
+  // Calculate the world-space rotation needed to align
+  // the sticker with the camera.
   const worldRotationDelta =
     desiredStickerQuaternion.multiply(
       currentStickerQuaternion.clone().invert()
@@ -171,13 +191,12 @@ function calculateProjectFocus({
     .sub(stickerPosition)
     .normalize();
 
-  const {
-    worldRotationDelta,
-  } = calculateAlignedFaceQuaternion(
-    stickerObject,
-    camera,
-    directionToCamera
-  );
+  const { worldRotationDelta } =
+    calculateAlignedFaceQuaternion(
+      stickerObject,
+      camera,
+      directionToCamera
+    );
 
   const cubeWorldPosition = cubeGroup.getWorldPosition(
     new THREE.Vector3()
@@ -203,7 +222,7 @@ function calculateProjectFocus({
     .applyQuaternion(worldRotationDelta)
     .add(cubeWorldPosition);
 
-  // The camera position and FOV remain unchanged.
+  // Keep the camera at its current position.
   const targetCameraPosition = camera.position.clone();
 
   const targetCameraQuaternion = getLookAtQuaternion(
@@ -222,6 +241,10 @@ function calculateProjectFocus({
   };
 }
 
+// --------------------------------------------------
+// CubeRig
+// --------------------------------------------------
+
 export default function CubeRig({
   gridRef,
   cameraControlRef,
@@ -229,6 +252,7 @@ export default function CubeRig({
   onSelectProject,
   onActivateSticker,
   onTransitionComplete,
+  onProjectNavigationChange,
 
   selectedProject,
   isProjectView = false,
@@ -466,7 +490,11 @@ export default function CubeRig({
     const previousProjectId = previousProjectIdRef.current;
 
     if (projectId && !previousProjectId) {
+      // Save the Cube View pose only when entering Project View.
       savedPoseRef.current = captureOriginalPose();
+
+      // Remove old navigation while the new project is being focused.
+      onProjectNavigationChange?.(EMPTY_PROJECT_NAVIGATION);
 
       transitionRef.current = {
         type: "focus",
@@ -479,6 +507,9 @@ export default function CubeRig({
       previousProjectId &&
       projectId !== previousProjectId
     ) {
+      // Switching projects should not overwrite the saved Cube View pose.
+      onProjectNavigationChange?.(EMPTY_PROJECT_NAVIGATION);
+
       transitionRef.current = {
         type: "focus",
         projectId,
@@ -486,6 +517,9 @@ export default function CubeRig({
         initialized: false,
       };
     } else if (!projectId && previousProjectId) {
+      // Clear arrows immediately when leaving Project View.
+      onProjectNavigationChange?.(EMPTY_PROJECT_NAVIGATION);
+
       if (savedPoseRef.current) {
         transitionRef.current = {
           type: "restore",
@@ -493,12 +527,17 @@ export default function CubeRig({
           initialized: false,
         };
       } else {
+        transitionRef.current = null;
         onTransitionComplete?.("cube");
       }
     }
 
     previousProjectIdRef.current = projectId;
-  }, [projectId, onTransitionComplete]);
+  }, [
+    projectId,
+    onTransitionComplete,
+    onProjectNavigationChange,
+  ]);
 
   // --------------------------------------------------
   // Animate cube and camera transitions
@@ -519,6 +558,10 @@ export default function CubeRig({
     if (!transition.initialized) {
       if (cubeBusy) return;
 
+      // ----------------------------------------------
+      // Focus a project sticker
+      // ----------------------------------------------
+
       if (transition.type === "focus") {
         const sticker = findProjectSticker(
           cubeGroup,
@@ -531,12 +574,16 @@ export default function CubeRig({
             "Check that the sticker has userData.projectSticker metadata."
           );
 
+          onProjectNavigationChange?.(
+            EMPTY_PROJECT_NAVIGATION
+          );
+
           transitionRef.current = null;
           onTransitionComplete?.("project");
           return;
         }
 
-        // Recalculate from the frozen, current world transform.
+        // Recalculate from the current world transform.
         cubeGroup.updateWorldMatrix(true, true);
 
         const focus = calculateProjectFocus({
@@ -590,11 +637,20 @@ export default function CubeRig({
         transition.initialized = true;
       }
 
+      // ----------------------------------------------
+      // Restore Cube View
+      // ----------------------------------------------
+
       if (transition.type === "restore") {
         const savedPose = savedPoseRef.current;
 
         if (!savedPose) {
           transitionRef.current = null;
+
+          onProjectNavigationChange?.(
+            EMPTY_PROJECT_NAVIGATION
+          );
+
           onTransitionComplete?.("cube");
           return;
         }
@@ -611,7 +667,6 @@ export default function CubeRig({
         transition.targetCubeQuaternion =
           savedPose.cubeQuaternion.clone();
 
-        // Keep the current camera position and FOV.
         transition.startCameraPosition =
           camera.position.clone();
 
@@ -637,8 +692,7 @@ export default function CubeRig({
           ? camera.fov
           : null;
 
-        // Returning to Cube View always restores the standard 50% zoom,
-        // rather than a previous manually adjusted zoom level.
+        // Returning to Cube View always restores the standard 50% zoom.
         transition.targetCameraFov = camera.isPerspectiveCamera
           ? CUBE_VIEW_FOV
           : null;
@@ -707,6 +761,7 @@ export default function CubeRig({
         transition.targetCameraFov,
         progress
       );
+
       camera.updateProjectionMatrix();
     }
 
@@ -756,10 +811,26 @@ export default function CubeRig({
           ? "project"
           : "cube";
 
+      // Clear the active transition before notifying React.
       transitionRef.current = null;
 
-      if (destination === "cube") {
+      if (destination === "project") {
+        // Calculate navigation only after the cube has
+        // reached its final orientation.
+        cubeGroup.updateWorldMatrix(true, true);
+
+        const navigation = getDirectionalProjectNavigation(
+          cubeGroup,
+          transition.projectId
+        );
+
+        onProjectNavigationChange?.(navigation);
+      } else {
         savedPoseRef.current = null;
+
+        onProjectNavigationChange?.(
+          EMPTY_PROJECT_NAVIGATION
+        );
       }
 
       onTransitionComplete?.(destination);

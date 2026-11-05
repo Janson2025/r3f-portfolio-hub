@@ -11,6 +11,7 @@ import CubeRig from "./cube/CubeRig";
 
 export default function PortfolioCanvas({
   gridRef,
+  onProjectNavigationChange,
   cameraControlRef,
 
   onSelectProject,
@@ -95,6 +96,7 @@ export default function PortfolioCanvas({
         onSelectProject={onSelectProject}
         onActivateSticker={onActivateSticker}
         onTransitionComplete={onTransitionComplete}
+        onProjectNavigationChange={onProjectNavigationChange}
         selectedProject={selectedProject}
         isProjectView={isProjectView}
         frameReady={frameReady}

@@ -1,3 +1,4 @@
+
 import {
   useCallback,
   useEffect,
@@ -9,6 +10,7 @@ import CubeControlPanel from "../grid/controls/CubeControlPanel";
 import useOverlayController from "./interactions/useOverlayController";
 import ProjectOverlay from "./ProjectOverlay";
 import PortfolioCanvas from "./PortfolioCanvas";
+import ProjectNavigationArrows from "./ProjectNavigationArrows";
 
 import pubsub from "../shared/pubsub.js";
 import stickerData from "../sticker/params/stickers.json";
@@ -28,17 +30,26 @@ export default function SceneRoot() {
   const gridRef = useRef(null);
   const cameraControlRef = useRef(null);
 
-  const [selectedProject, setSelectedProject] =
-    useState(null);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [projectViewReady, setProjectViewReady] = useState(false);
 
-  const [isTransitioning, setIsTransitioning] =
-    useState(false);
-
-  const [projectViewReady, setProjectViewReady] =
-    useState(false);
+  // Directional navigation for the currently focused project.
+  const [projectNavigation, setProjectNavigation] = useState(null);
 
   const isCubeView = selectedProject === null;
   const isProjectView = selectedProject !== null;
+
+  // --------------------------------------------------
+  // Project navigation synchronization
+  // --------------------------------------------------
+
+  const handleProjectNavigationChange = useCallback(
+    (navigation) => {
+      setProjectNavigation(navigation);
+    },
+    []
+  );
 
   // --------------------------------------------------
   // Project selection
@@ -62,13 +73,16 @@ export default function SceneRoot() {
         href: project.href ?? project.links?.demo ?? null,
       };
 
+      // Disable the previous project's navigation immediately.
+      setProjectNavigation(null);
+
       setProjectViewReady(false);
       setIsTransitioning(true);
       setSelectedProject(nextProject);
 
       // Synchronize the summary bubble selection.
       // This works whether selection originated from
-      // a cube sticker or a project bubble.
+      // a cube sticker, a project bubble, or an arrow.
       pubsub?.emit?.("project:selected", {
         id: nextProject.id,
       });
@@ -131,7 +145,14 @@ export default function SceneRoot() {
   const handleTransitionComplete = useCallback(
     (destination) => {
       setIsTransitioning(false);
-      setProjectViewReady(destination === "project");
+
+      const arrivedAtProject = destination === "project";
+
+      setProjectViewReady(arrivedAtProject);
+
+      if (!arrivedAtProject) {
+        setProjectNavigation(null);
+      }
     },
     []
   );
@@ -149,6 +170,9 @@ export default function SceneRoot() {
     ) {
       return;
     }
+
+    // Remove project navigation immediately.
+    setProjectNavigation(null);
 
     setProjectViewReady(false);
     setIsTransitioning(true);
@@ -268,6 +292,15 @@ export default function SceneRoot() {
     !isTransitioning &&
     !controlsDisabled;
 
+  // Arrow navigation is only available once the focused
+  // project transition has completed.
+  const projectNavigationEnabled =
+    isProjectView &&
+    projectViewReady &&
+    !isTransitioning &&
+    !visible &&
+    !controlsDisabled;
+
   // --------------------------------------------------
   // Render
   // --------------------------------------------------
@@ -281,6 +314,7 @@ export default function SceneRoot() {
           onSelectProject={handleSelectProject}
           onActivateSticker={handleActivateSticker}
           onTransitionComplete={handleTransitionComplete}
+          onProjectNavigationChange={handleProjectNavigationChange}
           selectedProject={selectedProject}
           isProjectView={isProjectView}
           frameReady={ready}
@@ -293,12 +327,22 @@ export default function SceneRoot() {
           isTransitioning={isTransitioning}
         />
 
+        {/* Directional project navigation */}
+        {isProjectView && (
+          <ProjectNavigationArrows
+            navigation={projectNavigation}
+            onNavigate={handleSelectProject}
+            disabled={!projectNavigationEnabled}
+          />
+        )}
+
         <CubeControlPanel
           gridRef={gridRef}
           cameraControlRef={cameraControlRef}
         />
       </div>
 
+      {/* Project website overlay */}
       {visible && (
         <div className="fixed inset-0 z-40">
           <ProjectOverlay
