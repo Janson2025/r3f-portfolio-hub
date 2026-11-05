@@ -1,0 +1,82 @@
+
+/* =========================================
+   SLICE ROTATION CONTROLS
+   ========================================= */
+
+.cube-controls__axis-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 6px 0;
+  border-top: 1px solid var(--cc-border);
+}
+
+.cube-controls__axis-label {
+  display: grid;
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+
+  color: var(--cc-accent);
+  background: var(--cc-panel-raised);
+  border: 1px solid var(--cc-border);
+  border-radius: 5px;
+
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.cube-controls__slice-buttons {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 6px;
+  min-width: 0;
+}
+
+.cube-controls__slice-button,
+.cube-controls__icon-button,
+.cube-controls__history-move {
+  display: grid;
+  place-items: center;
+
+  color: var(--cc-text);
+  background: var(--cc-panel-raised);
+  border: 1px solid var(--cc-border);
+  border-radius: 5px;
+
+  cursor: pointer;
+
+  transition:
+    color var(--duration-fast) var(--ease-standard),
+    background-color var(--duration-fast) var(--ease-standard),
+    border-color var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.cube-controls__slice-button {
+  flex: 1 1 0;
+  min-width: 28px;
+  height: 27px;
+
+  font-family: var(--font-mono);
+  font-size: 10px;
+}
+
+.cube-controls__slice-button:hover:not(:disabled),
+.cube-controls__icon-button:hover:not(:disabled),
+.cube-controls__history-move:hover:not(:disabled) {
+  color: var(--cc-accent);
+  background: color-mix(in srgb, var(--cc-accent) 10%, transparent);
+  border-color: color-mix(in srgb, var(--cc-accent) 55%, transparent);
+}
+
+.cube-controls__slice-button:active:not(:disabled),
+.cube-controls__icon-button:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.cube-controls button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

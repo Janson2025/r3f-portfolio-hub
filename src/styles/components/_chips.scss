@@ -1,0 +1,173 @@
+/* =========================================
+   CHIPS AND FILTERS
+   ========================================= */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+
+  padding: 0.375rem 0.75rem;
+
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+
+  font-size: var(--text-sm);
+  white-space: nowrap;
+
+  transition: var(--transition-interactive);
+
+  &:hover {
+    background: var(--color-accent-weak);
+    border-color: var(--color-accent);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  &[aria-selected="true"],
+  &[aria-pressed="true"] {
+    color: var(--color-accent-contrast);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+}
+
+
+/* =========================================
+   PROJECT SELECTOR
+   ========================================= */
+
+.project-selector {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  gap: 0.5rem;
+
+  width: 100%;
+  min-width: 0;
+  padding: 0.25rem 0 0.75rem;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  scrollbar-width: none;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+
+/* =========================================
+   PROJECT SELECTOR BUBBLES
+   ========================================= */
+
+.project-chip {
+  --chip-color: #3285e8;
+  --chip-text-color: #ffffff;
+
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 2.25rem;
+  max-width: 260px;
+  padding: 0.5rem 1rem;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  color: var(--color-text);
+
+  background: color-mix(
+    in srgb,
+    var(--chip-color) 15%,
+    var(--color-surface-raised)
+  );
+
+  border: 1px solid color-mix(
+    in srgb,
+    var(--chip-color) 35%,
+    transparent
+  );
+
+  border-radius: var(--radius-full);
+
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 18%),
+    inset 0 -1px 0 rgb(0 0 0 / 10%);
+
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+
+  cursor: pointer;
+  scroll-snap-align: start;
+
+  transition:
+    background-color 180ms var(--ease-standard),
+    border-color 180ms var(--ease-standard),
+    box-shadow 180ms var(--ease-standard),
+    transform 180ms var(--ease-smooth),
+    color 180ms var(--ease-standard);
+
+    &:hover,
+    &.is-preview {
+        background: color-mix(
+        in srgb,
+        var(--chip-color) 24%,
+        var(--color-surface-raised)
+        );
+
+        border-color: #60a5fa;
+
+        box-shadow:
+        0 0 0 2px rgb(96 165 250 / 13%),
+        0 4px 14px rgb(59 130 246 / 18%);
+
+        transform: translateY(-1px);
+    }
+
+  &:focus-visible {
+    outline: 2px solid #60a5fa;
+    outline-offset: 3px;
+  }
+
+  &[aria-selected="true"] {
+    color: var(--chip-text-color);
+    background: var(--chip-color);
+    border-color: var(--chip-color);
+
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 28%),
+      inset 0 -1px 0 rgb(0 0 0 / 14%),
+      0 3px 12px color-mix(
+        in srgb,
+        var(--chip-color) 32%,
+        transparent
+      );
+
+    &:hover {
+      border-color: #60a5fa;
+
+      box-shadow:
+        0 0 0 2px rgb(96 165 250 / 18%),
+        0 5px 18px color-mix(
+          in srgb,
+          var(--chip-color) 35%,
+          transparent
+        );
+    }
+  }
+}

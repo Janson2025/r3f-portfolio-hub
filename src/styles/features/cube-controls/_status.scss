@@ -1,0 +1,31 @@
+
+/* =========================================
+   CONTROL PANEL STATUS
+   ========================================= */
+
+.cube-controls__status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  margin: 0;
+  padding-top: 7px;
+
+  color: var(--cc-accent);
+  border-top: 1px solid var(--cc-border);
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.cube-controls__status-dot {
+  &.is-busy {
+    background: #f3c969;
+    box-shadow: 0 0 10px rgb(243 201 105 / 35%);
+  }
+
+  &.is-disconnected {
+    background: #e18b8b;
+    box-shadow: none;
+  }
+}

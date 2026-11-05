@@ -1,19 +1,28 @@
-/* SCSS runs first, defines tokens */
-@use "./styles/tokens.scss" as *;
-@use "./styles/CubeControlPanel.scss";
 
-/* Your site-level styles after */
-@use "./styles/typography.scss";
-@use "./styles/components.scss";
+/* =========================================
+   STYLE SYSTEM ENTRY POINT
+   ========================================= */
 
-/* Any loose global rules are fine */
-#root { width: 100vw; height: 100vh; }
+/* 1. Foundations */
+@use "./styles/foundations/tokens";
+@use "./styles/foundations/reset";
+@use "./styles/foundations/typography";
+@use "./styles/foundations/motion";
 
-/* Make sure the Leva panel is fixed, visible, and clickable */
-#leva__root {
-  position: fixed !important;
-  top: 12px !important;
-  right: 12px !important;
-  z-index: 9999 !important;
-  pointer-events: auto !important;
-}
+/* 2. Utilities */
+@use "./styles/utilities/utilities";
+
+/* 3. Generic components */
+@use "./styles/components/buttons";
+@use "./styles/components/cards";
+@use "./styles/components/links";
+@use "./styles/components/summary";
+@use "./styles/components/chips";
+
+/* 4. Site layout */
+@use "./styles/layout/shell";
+@use "./styles/layout/header";
+@use "./styles/layout/footer";
+
+/* 5. Feature-specific styles */
+@use "./styles/features/cube-controls";

@@ -1,8 +1,20 @@
-// src/sticker/Sticker.jsx
+
 import * as THREE from "three";
-import { useRef, useState, useEffect, useCallback, useMemo } from "react";
+import {
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
+
 import { useFrame } from "@react-three/fiber";
-import { MeshPortalMaterial, RoundedBox, Html } from "@react-three/drei";
+import {
+  MeshPortalMaterial,
+  RoundedBox,
+  Html,
+} from "@react-three/drei";
+
 import PortalScene from "./PortalScene.jsx";
 import stickerDefaults from "./params/stickers.json";
 import pubsub from "../../project/shared/pubsub.js";
@@ -12,117 +24,315 @@ export default function Sticker({
   dims = [0.94, 0.94, 0.09],
   onActivate,
   frameReady,
+
+  // External permission to activate this portal.
+  // Disabled by default.
+  activationEnabled = false,
 }) {
   const mat = useRef();
   const isPortal = config?.type === "portal";
 
-  const { width, height, baseDepth, zScale, bevelRadius, smoothness, faceColor } = useMemo(() => {
-    const [w, h, d] = dims;
-    const baseDepth = Math.max(w, h);
-    const zScale = d / baseDepth;
-    const desiredBevel = config.bevel ?? 0.4;
-    const maxRadius = 0.5 * Math.min(w, h, baseDepth);
-    const bevelRadius = Math.min(desiredBevel, Math.max(0.0001, maxRadius - 1e-3));
-    const smoothness = Math.max(2, config.smoothness ?? 6);
-    const faceColor = config.preview?.color ?? "#ffffff";
-    return { width: w, height: h, baseDepth, zScale, bevelRadius, smoothness, faceColor };
-  }, [dims, config.bevel, config.smoothness, config.preview?.color]);
+  const { width, height, baseDepth, zScale, bevelRadius, smoothness, faceColor } =
+    useMemo(() => {
+      const [w, h, d] = dims;
+
+      const baseDepth = Math.max(w, h);
+      const zScale = d / baseDepth;
+
+      const desiredBevel = config.bevel ?? 0.4;
+      const maxRadius = 0.5 * Math.min(w, h, baseDepth);
+
+      const bevelRadius = Math.min(
+        desiredBevel,
+        Math.max(0.0001, maxRadius - 1e-3)
+      );
+
+      const smoothness = Math.max(2, config.smoothness ?? 6);
+      const faceColor = config.preview?.color ?? "#ffffff";
+
+      return {
+        width: w,
+        height: h,
+        baseDepth,
+        zScale,
+        bevelRadius,
+        smoothness,
+        faceColor,
+      };
+    }, [
+      dims,
+      config.bevel,
+      config.smoothness,
+      config.preview?.color,
+    ]);
 
   const [targetBlend, setTargetBlend] = useState(0);
   const [animating, setAnimating] = useState(false);
   const [hovered, setHovered] = useState(false);
+
   const watchdogRef = useRef(null);
+  const handoffRef = useRef(null);
 
   const blendMs = useMemo(() => {
-    const v = stickerDefaults?.blendMs;
-    return Number.isFinite(v) && v > 0 ? v : 500;
+    const value = stickerDefaults?.blendMs;
+
+    return Number.isFinite(value) && value > 0
+      ? value
+      : 500;
   }, []);
+
   const handoffFallbackMs = useMemo(() => {
-    const v = stickerDefaults?.handoffFallbackMs;
-    return Number.isFinite(v) && v >= 0 ? v : 1200;
+    const value = stickerDefaults?.handoffFallbackMs;
+
+    return Number.isFinite(value) && value >= 0
+      ? value
+      : 1200;
+  }, []);
+
+  // --------------------------------------------------
+  // TIMER CLEANUP
+  // --------------------------------------------------
+
+  const clearActivationTimers = useCallback(() => {
+    if (watchdogRef.current) {
+      clearTimeout(watchdogRef.current);
+      watchdogRef.current = null;
+    }
+
+    if (handoffRef.current) {
+      clearTimeout(handoffRef.current);
+      handoffRef.current = null;
+    }
   }, []);
 
   useEffect(() => {
     return () => {
-      if (watchdogRef.current) clearTimeout(watchdogRef.current);
+      clearActivationTimers();
     };
-  }, []);
+  }, [clearActivationTimers]);
+
+  // --------------------------------------------------
+  // ACTIVATION PERMISSION
+  // --------------------------------------------------
+
+  /**
+   * If activation becomes disabled while the portal is
+   * animating, immediately cancel the activation.
+   *
+   * This prevents a previously started animation from
+   * opening a website after the user changes views.
+   */
+  useEffect(() => {
+    if (activationEnabled) return;
+
+    setAnimating(false);
+    setTargetBlend(0);
+
+    if (mat.current) {
+      mat.current.blend = 0;
+    }
+
+    clearActivationTimers();
+  }, [activationEnabled, clearActivationTimers]);
+
+  // --------------------------------------------------
+  // PORTAL BLEND ANIMATION
+  // --------------------------------------------------
 
   useFrame((_, dt) => {
-    if (!isPortal || !mat.current) return; // only portals animate blend/hand-off
+    if (!isPortal || !mat.current) return;
+
+    // Never allow a disabled portal to continue an
+    // activation or external-site handoff.
+    if (!activationEnabled && animating) {
+      setAnimating(false);
+      setTargetBlend(0);
+      mat.current.blend = 0;
+      clearActivationTimers();
+      return;
+    }
+
     const current = mat.current.blend ?? 0;
+
     const tau = Math.max(0.0001, blendMs / 5000);
     const factor = 1 - Math.exp(-(dt / tau));
-    const next = THREE.MathUtils.lerp(current, targetBlend, factor);
+
+    const next = THREE.MathUtils.lerp(
+      current,
+      targetBlend,
+      factor
+    );
+
     mat.current.blend = THREE.MathUtils.clamp(next, 0, 1);
 
     if (animating && mat.current.blend > 0.985) {
       if (frameReady) {
-        setTimeout(() => onActivate?.(), 16);
-        setAnimating(false);
-        setTargetBlend(0);
-        if (watchdogRef.current) clearTimeout(watchdogRef.current);
-        watchdogRef.current = null;
+        if (!handoffRef.current) {
+          handoffRef.current = setTimeout(() => {
+            handoffRef.current = null;
+
+            if (!activationEnabled) return;
+
+            onActivate?.();
+
+            setAnimating(false);
+            setTargetBlend(0);
+            clearActivationTimers();
+          }, 16);
+        }
       } else if (!watchdogRef.current) {
         watchdogRef.current = setTimeout(() => {
+          watchdogRef.current = null;
+
+          if (!activationEnabled) return;
+
           onActivate?.();
+
           setAnimating(false);
           setTargetBlend(0);
-          watchdogRef.current = null;
+          clearActivationTimers();
         }, handoffFallbackMs);
       }
     }
   });
 
-  const start = useCallback(() => {
-    if (isPortal) {
+  // --------------------------------------------------
+  // START ACTIVATION
+  // --------------------------------------------------
+
+  const start = useCallback(
+    (event) => {
+      if (!isPortal || !activationEnabled) return;
+
+      event?.stopPropagation();
+
+      clearActivationTimers();
+
       setAnimating(true);
       setTargetBlend(1);
-    }
-  }, [isPortal]);
+    },
+    [
+      isPortal,
+      activationEnabled,
+      clearActivationTimers,
+    ]
+  );
 
-  // Portal scene props; only play when portal & hovered
+  // --------------------------------------------------
+  // PORTAL SCENE
+  // --------------------------------------------------
+
   const portalSceneProps = useMemo(() => {
-    const p = config.portal ?? {};
-    const animation = p.animation
-      ? p.animation
-      : p.spin
-      ? { type: "spin", params: { speed: p.spin.speed, axis: p.spin.axis } }
-      : { type: "idle", params: {} };
+    const portal = config.portal ?? {};
+
+    const animation = portal.animation
+      ? portal.animation
+      : portal.spin
+        ? {
+            type: "spin",
+            params: {
+              speed: portal.spin.speed,
+              axis: portal.spin.axis,
+            },
+          }
+        : {
+            type: "idle",
+            params: {},
+          };
+
     return {
       bgColor: faceColor,
-      mesh: p.mesh ?? { type: "icosa", props: {} },
-      lights: p.lights,
-      distance: p.distance ?? 0,
+      mesh: portal.mesh ?? {
+        type: "icosa",
+        props: {},
+      },
+      lights: portal.lights,
+      distance: portal.distance ?? 0,
       animation,
       playing: isPortal && hovered,
     };
-  }, [config.portal, faceColor, hovered, isPortal]);
+  }, [
+    config.portal,
+    faceColor,
+    hovered,
+    isPortal,
+  ]);
 
-  const onOver = useCallback((e) => {
-    e.stopPropagation();
-    setHovered(true);
-    document.body.style.cursor = isPortal ? "pointer" : "grab";
-    if (config?.id) pubsub?.emit?.("project:hover", { id: config.id });
-  }, [isPortal, config?.id]);
+  // --------------------------------------------------
+  // HOVER
+  // --------------------------------------------------
+
+  const onOver = useCallback(
+    (event) => {
+      event.stopPropagation();
+
+      setHovered(true);
+
+      document.body.style.cursor =
+        isPortal && activationEnabled
+          ? "pointer"
+          : "";
+
+      // Project previews are only enabled in Cube View.
+      // activationEnabled is true for the active Project View.
+      if (!activationEnabled && config?.id) {
+        pubsub?.emit?.("project:hover", {
+          id: config.id,
+        });
+      }
+    },
+    [
+      isPortal,
+      activationEnabled,
+      config?.id,
+    ]
+  );
 
   const onOut = useCallback(() => {
     setHovered(false);
-    // Let the scene logic decide (DragRotate will set 'move' when outside)
     document.body.style.cursor = "";
-  }, []);
+
+    if (!activationEnabled && config?.id) {
+      pubsub?.emit?.("project:unhover", {
+        id: config.id,
+      });
+    }
+  }, [
+    activationEnabled,
+    config?.id,
+  ]);
+
+  // --------------------------------------------------
+  // RENDER
+  // --------------------------------------------------
 
   return (
     <group
-      onClick={isPortal ? start : undefined}
+      onClick={
+        isPortal && activationEnabled
+          ? start
+          : undefined
+      }
       onPointerOver={isPortal ? onOver : undefined}
       onPointerOut={isPortal ? onOut : undefined}
-      onPointerMove={(e) => isPortal ? e.stopPropagation() : undefined}
+      onPointerMove={
+        isPortal
+          ? (event) => event.stopPropagation()
+          : undefined
+      }
     >
       <group scale={[1, 1, zScale]}>
-        <RoundedBox args={[width, height, baseDepth]} radius={bevelRadius} smoothness={smoothness}>
+        <RoundedBox
+          args={[width, height, baseDepth]}
+          radius={bevelRadius}
+          smoothness={smoothness}
+        >
           {isPortal ? (
-            <MeshPortalMaterial ref={mat} side={THREE.DoubleSide} blend={0}>
+            <MeshPortalMaterial
+              ref={mat}
+              side={THREE.DoubleSide}
+              blend={0}
+            >
               <PortalScene {...portalSceneProps} />
             </MeshPortalMaterial>
           ) : (

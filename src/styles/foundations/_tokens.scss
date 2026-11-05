@@ -1,0 +1,174 @@
+
+/* =========================================
+   DESIGN TOKENS
+   ========================================= */
+
+/*
+ * Tailwind v4 theme mappings.
+ * These make semantic tokens available as utilities.
+ */
+
+@theme {
+  /* Semantic color utilities */
+  --color-bg: var(--color-canvas);
+  --color-panel: var(--color-surface);
+  --color-panel-raised: var(--color-surface-raised);
+  --color-fg: var(--color-text);
+  --color-muted: var(--color-text-muted);
+  --color-line: var(--color-border);
+
+  --color-brand: var(--color-accent);
+  --color-brand-hover: var(--color-accent-hover);
+  --color-brand-weak: var(--color-accent-weak);
+
+  --color-ok: var(--color-success);
+  --color-caution: var(--color-warning);
+  --color-error: var(--color-danger);
+
+  /* Shape */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-full: 9999px;
+
+  /* Elevation */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 8%);
+  --shadow-md: 0 8px 30px rgb(0 0 0 / 12%);
+  --shadow-lg: 0 18px 48px rgb(0 0 0 / 20%);
+
+  /* Motion */
+  --ease-smooth: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* =========================================
+   LIGHT THEME
+   ========================================= */
+
+:root {
+  color-scheme: light;
+
+  /* Surfaces */
+  --color-canvas: #f7f9fc;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f0f3f8;
+  --color-overlay: rgb(15 23 42 / 55%);
+
+  /* Text */
+  --color-text: #172033;
+  --color-text-muted: #64748b;
+  --color-text-subtle: #94a3b8;
+  --color-text-inverse: #ffffff;
+
+  /* Borders */
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+
+  /* Accent */
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-weak: #dbeafe;
+  --color-accent-contrast: #ffffff;
+
+  /* Status */
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #dc2626;
+
+  /* Typography */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans", Arial, sans-serif;
+
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+  /* Layout */
+  --page-gutter: clamp(1rem, 3vw, 2.5rem);
+  --content-max-width: 1440px;
+
+  /* Component defaults */
+  --control-height: 2.5rem;
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+
+/* =========================================
+   DARK THEME
+   ========================================= */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) {
+    color-scheme: dark;
+
+    --color-canvas: #0b0f18;
+    --color-surface: #141b29;
+    --color-surface-raised: #1c2637;
+    --color-overlay: rgb(0 0 0 / 70%);
+
+    --color-text: #e5e7eb;
+    --color-text-muted: #a0aec0;
+    --color-text-subtle: #718096;
+    --color-text-inverse: #0b0f18;
+
+    --color-border: #293548;
+    --color-border-strong: #3c4a60;
+
+    --color-accent: #60a5fa;
+    --color-accent-hover: #93c5fd;
+    --color-accent-weak: #1e3a5f;
+    --color-accent-contrast: #0b0f18;
+
+    --color-success: #4ade80;
+    --color-warning: #fbbf24;
+    --color-danger: #f87171;
+  }
+}
+
+/* Explicit theme selection overrides OS preference */
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --color-canvas: #f7f9fc;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f0f3f8;
+  --color-overlay: rgb(15 23 42 / 55%);
+
+  --color-text: #172033;
+  --color-text-muted: #64748b;
+  --color-text-subtle: #94a3b8;
+  --color-text-inverse: #ffffff;
+
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+
+  --color-accent: #2563eb;
+  --color-accent-hover: #1d4ed8;
+  --color-accent-weak: #dbeafe;
+  --color-accent-contrast: #ffffff;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-canvas: #0b0f18;
+  --color-surface: #141b29;
+  --color-surface-raised: #1c2637;
+  --color-overlay: rgb(0 0 0 / 70%);
+
+  --color-text: #e5e7eb;
+  --color-text-muted: #a0aec0;
+  --color-text-subtle: #718096;
+  --color-text-inverse: #0b0f18;
+
+  --color-border: #293548;
+  --color-border-strong: #3c4a60;
+
+  --color-accent: #60a5fa;
+  --color-accent-hover: #93c5fd;
+  --color-accent-weak: #1e3a5f;
+  --color-accent-contrast: #0b0f18;
+
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-danger: #f87171;
+}

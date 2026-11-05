@@ -10,6 +10,10 @@ import React, {
   useEffect,
 } from "react";
 
+import {
+  getProjectStickers,
+  getProjectStickerById,
+} from "./projectStickerLookup.js";
 import Block from "../block/Block";
 import gridParams from "./params/grid.json";
 import stickerData from "../sticker/params/stickers.json";
@@ -39,9 +43,15 @@ const ANIMATION_DURATION = 250;
 const GridCube = forwardRef(function GridCube(
   {
     onActivateSticker,
+    onSelectProject,
     frameReady,
     interactionsEnabled = true,
+    projectSelectionEnabled = false,
+    isProjectView = false,
     showProjectPortals = true,
+
+    activationEnabled = false,
+    activationProjectId = null,
   },
   ref
 ) {
@@ -432,7 +442,22 @@ const GridCube = forwardRef(function GridCube(
     updateDrag: updateSliceDrag,
     finishDrag: finishSliceDrag,
 
-    enabled: interactionsEnabled,
+    onSelectProject,
+
+    // Selection and slice manipulation have separate permissions.
+    enabled:
+      interactionsEnabled ||
+      projectSelectionEnabled,
+
+    dragEnabled: interactionsEnabled,
+
+    // In Project View, only projects on the focused cube face
+    // may be selected.
+    focusedProjectId: isProjectView
+      ? activationProjectId
+      : null,
+
+    restrictToFocusedSide: isProjectView,
   });
 
   // --------------------------------------------------
@@ -460,6 +485,16 @@ const GridCube = forwardRef(function GridCube(
   useImperativeHandle(
     ref,
     () => ({
+      // --------------------------------------------------
+      // Project navigation API
+      // --------------------------------------------------
+
+      getProjectStickers: () =>
+        getProjectStickers(blocks),
+
+      getProjectStickerById: (projectId) =>
+        getProjectStickerById(blocks, projectId),
+
       devAPI: {
         rotate: (axis, layer, quarterTurns = 1) =>
           performMove(axis, layer, quarterTurns),
@@ -536,6 +571,7 @@ const GridCube = forwardRef(function GridCube(
       },
     }),
     [
+      blocks,
       performMove,
       undo,
       redo,
@@ -584,22 +620,29 @@ const GridCube = forwardRef(function GridCube(
             gridDims={dims}
             overrides={overrides}
             onActivateSticker={onActivateSticker}
+            onSelectProject={onSelectProject}
+            isProjectView={isProjectView}
             frameReady={frameReady}
+            activationEnabled={activationEnabled}
+            activationProjectId={activationProjectId}
             onStickerPointerDown={handleStickerPointerDown}
             forwardRef={block.ref}
           />
         );
       }),
-    [
-      renderProps,
-      blocks,
-      cubieSize,
-      dims,
-      overrides,
-      onActivateSticker,
-      frameReady,
-      handleStickerPointerDown,
-    ]
+      [
+        renderProps,
+        blocks,
+        cubieSize,
+        dims,
+        overrides,
+        onActivateSticker,
+        onSelectProject,
+        frameReady,
+        activationEnabled,
+        activationProjectId,
+        handleStickerPointerDown,
+      ]
   );
 
   // --------------------------------------------------

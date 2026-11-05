@@ -1,7 +1,21 @@
-// src/app/components/summary/SummaryParagraph.jsx
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
-const PUNCT = new Set([".", "!", "?", ",", ";", ":", "—", "–", "…"]);
+const PUNCT = new Set([
+  ".",
+  "!",
+  "?",
+  ",",
+  ";",
+  ":",
+  "—",
+  "–",
+  "…",
+]);
 
 export default function Paragraph({
   title = "Welcome",
@@ -9,16 +23,20 @@ export default function Paragraph({
   text = "",
   textKey = "welcome",
   speedMs = 22,
-  force = true, // ← animate by default; set to false if you want to honor reduced motion
+  force = true,
 }) {
   const [out, setOut] = useState("");
   const [done, setDone] = useState(false);
+
   const timerRef = useRef(null);
 
   const reducedMotionOS = useMemo(() => {
     if (typeof window === "undefined") return false;
+
     try {
-      return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      return window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
     } catch {
       return false;
     }
@@ -27,7 +45,6 @@ export default function Paragraph({
   const reduced = !force && reducedMotionOS;
 
   useEffect(() => {
-    // cleanup any pending timer
     const clear = () => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
@@ -36,12 +53,14 @@ export default function Paragraph({
     };
 
     clear();
+
     setOut("");
     setDone(false);
 
     if (!text || reduced) {
       setOut(text ?? "");
       setDone(true);
+
       return () => clear();
     }
 
@@ -52,16 +71,20 @@ export default function Paragraph({
         setDone(true);
         return;
       }
+
       const ch = text[i++];
+
       setOut((prev) => prev + ch);
 
       let delay = speedMs;
-      if (PUNCT.has(ch)) delay += 220; // small pause on punctuation
+
+      if (PUNCT.has(ch)) {
+        delay += 220;
+      }
 
       timerRef.current = setTimeout(tick, delay);
     };
 
-    // small ramp-in
     timerRef.current = setTimeout(tick, 80);
 
     return () => clear();
@@ -69,9 +92,10 @@ export default function Paragraph({
 
   return (
     <div className="surface p-3">
-      {/* Title + Techs row */}
       <div className="flex items-center gap-3 mb-2">
-        <div className="h-lead whitespace-nowrap">{title}</div>
+        <div className="h-lead whitespace-nowrap">
+          {title}
+        </div>
 
         {Array.isArray(tech) && tech.length > 0 && (
           <div className="flex gap-2 overflow-x-auto no-scrollbar">
@@ -88,13 +112,21 @@ export default function Paragraph({
         )}
       </div>
 
-      {/* Animated text with caret while typing */}
-      <p className="text-muted">
-        {out}
-        {!done && <span className="type-caret" aria-hidden="true">▮</span>}
-      </p>
+      <div className="summary__description-scroll">
+        <p className="text-muted">
+          {out}
 
-      {/* Accessibility: full text for screen readers */}
+          {!done && (
+            <span
+              className="type-caret"
+              aria-hidden="true"
+            >
+              ▮
+            </span>
+          )}
+        </p>
+      </div>
+
       <p className="sr-only">{text}</p>
     </div>
   );

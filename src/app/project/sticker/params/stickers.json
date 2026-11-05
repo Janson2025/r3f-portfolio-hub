@@ -125,7 +125,7 @@
     },
     {
       "id": "circles-mask-revealer",
-      "title": "CodePen Spinning Circle Image Revealer",
+      "title": "Spinning Circle Image Revealer",
       "priority": 2,
       "tech": ["HTML", "CSS", "JavaScript", "SVG"],
       "description": "An image reveal experiment using SVG masking and JavaScript animation to create a circular transition effect. Animated circles orbit around a center point, gradually revealing the underlying image.",

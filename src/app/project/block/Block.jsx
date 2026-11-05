@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -78,12 +77,13 @@ function AnimatedVisuals({ children, cubieId, position }) {
       animation.secondaryPhase
     );
 
-    // Combine two waves for a less mechanical movement.
     const movement =
       (primaryWave * 0.9 + secondaryWave * 0.5) *
       animation.amplitude;
 
-    visual.position.copy(outwardDirection).multiplyScalar(movement);
+    visual.position
+      .copy(outwardDirection)
+      .multiplyScalar(movement);
   });
 
   return (
@@ -116,6 +116,15 @@ export default function Block({
 
   onActivateSticker,
   frameReady,
+
+  // Whether the rendered project portal can be activated.
+  activationEnabled = false,
+  activationProjectId = null,
+
+  // Project selection behavior.
+  isProjectView = false,
+  onSelectProject,
+
   onStickerPointerDown,
 
   forwardRef,
@@ -123,7 +132,7 @@ export default function Block({
   const localRef = useRef();
   const group = forwardRef ?? localRef;
 
-  // Keep interaction metadata synchronized with the current engine state.
+  // Keep interaction metadata synchronized with engine state.
   useEffect(() => {
     if (!group.current) return;
 
@@ -139,7 +148,7 @@ export default function Block({
     group,
   ]);
 
-  // Sticker identity must always use the original position.
+  // Sticker identity always uses the original position.
   const stickers = useBlockStickers({
     blockIndex,
     gridDims,
@@ -164,15 +173,26 @@ export default function Block({
       >
         <BlockBody size={size} />
 
-        {stickers.map((s) => (
+        {stickers.map((sticker) => (
           <StickerFace
-            key={s.id}
+            key={sticker.id}
             size={size}
-            faceConfig={s}
+            faceConfig={sticker}
             cubieId={cubieId}
             blockIndex={gridPosition}
             onActivateSticker={onActivateSticker}
+            onSelectProject={onSelectProject}
+            isProjectView={isProjectView}
             frameReady={frameReady}
+
+            // Only the selected project's portal is active.
+            activationEnabled={
+              activationEnabled &&
+              sticker.id === activationProjectId
+            }
+
+            activationProjectId={activationProjectId}
+
             onPointerDown={onStickerPointerDown}
           />
         ))}

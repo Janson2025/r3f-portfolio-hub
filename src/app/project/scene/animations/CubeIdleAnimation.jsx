@@ -4,15 +4,12 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
 const ROTATION = {
-  // Angular velocity in radians per second.
   minSpeed: 0.025,
   maxSpeed: 0.055,
 
-  // How often the desired rotation direction changes.
   minDirectionDuration: 8,
   maxDirectionDuration: 16,
 
-  // How quickly the cube transitions toward its new direction.
   directionChangeSpeed: 0.12,
 };
 
@@ -26,12 +23,6 @@ function randomRange(min, max) {
   return min + Math.random() * (max - min);
 }
 
-/**
- * Creates a random angular velocity.
- *
- * The direction is distributed across all three axes.
- * Its magnitude is kept within the configured speed range.
- */
 function createRandomAngularVelocity() {
   const direction = new THREE.Vector3(
     Math.random() * 2 - 1,
@@ -53,24 +44,19 @@ function createRandomAngularVelocity() {
   return direction.multiplyScalar(speed);
 }
 
-/**
- * Adds subtle idle movement to a target group.
- *
- * The target must be a dedicated child group, separate from
- * the group used by orbit controls or other interactions.
- *
- * Animation:
- * - Starts after a period of inactivity.
- * - Continuously rotates at a slow speed.
- * - Gradually changes its rotational direction.
- * - Gently bobs in multiple directions.
- * - Fades back to its neutral transform during interaction.
- */
+function normalizeAngle(angle) {
+  return THREE.MathUtils.euclideanModulo(
+    angle + Math.PI,
+    Math.PI * 2
+  ) - Math.PI;
+}
+
 export default function CubeIdleAnimation({
   targetRef,
   enabled = true,
   idleDelay = 8,
   blendRef,
+  freeze = false,
 }) {
   const state = useRef({
     lastInteraction: 0,
@@ -78,17 +64,14 @@ export default function CubeIdleAnimation({
 
     phase: Math.random() * Math.PI * 2,
 
-    // Current and desired angular velocity.
     angularVelocity: new THREE.Vector3(),
     targetAngularVelocity: createRandomAngularVelocity(),
 
-    // Accumulated idle rotation.
     rotationOffset: new THREE.Vector3(),
 
     nextDirectionChange: 0,
   });
 
-  // Register mouse, touch, keyboard, and scroll activity.
   useEffect(() => {
     const animation = state.current;
     animation.lastInteraction = performance.now();
@@ -122,6 +105,10 @@ export default function CubeIdleAnimation({
 
     if (!group) return;
 
+    // Freeze the exact current transform during a view transition.
+    // Do not fade or continue changing the inner group here.
+    if (freeze) return;
+
     const now = performance.now();
 
     const elapsedSinceInteraction =
@@ -130,7 +117,6 @@ export default function CubeIdleAnimation({
     const shouldAnimate =
       enabled && elapsedSinceInteraction >= idleDelay;
 
-    // Smoothly fade idle movement in and out.
     animation.blend = THREE.MathUtils.damp(
       animation.blend,
       shouldAnimate ? 1 : 0,
@@ -145,7 +131,6 @@ export default function CubeIdleAnimation({
     const time = clock.elapsedTime;
     const blend = animation.blend;
 
-    // Pick a new rotational direction periodically.
     if (time >= animation.nextDirectionChange) {
       animation.targetAngularVelocity.copy(
         createRandomAngularVelocity()
@@ -158,7 +143,6 @@ export default function CubeIdleAnimation({
         );
     }
 
-    // Gradually steer toward the new direction.
     const directionLerp =
       1 - Math.exp(-ROTATION.directionChangeSpeed * delta);
 
@@ -167,14 +151,18 @@ export default function CubeIdleAnimation({
       directionLerp
     );
 
-    // Accumulate continuous rotation.
-    // Multiplying by blend allows it to slow down during interaction.
     animation.rotationOffset.addScaledVector(
       animation.angularVelocity,
       delta * blend
     );
 
-    // Layered, slow bobbing.
+    // Keep Euler values bounded without changing their orientation.
+    animation.rotationOffset.set(
+      normalizeAngle(animation.rotationOffset.x),
+      normalizeAngle(animation.rotationOffset.y),
+      normalizeAngle(animation.rotationOffset.z)
+    );
+
     const bobX =
       Math.sin(time * 0.23 + animation.phase) * BOBBING.x;
 
@@ -184,7 +172,6 @@ export default function CubeIdleAnimation({
     const bobZ =
       Math.sin(time * 0.31 + animation.phase * 0.7) * BOBBING.z;
 
-    // Apply idle movement to the dedicated inner group.
     group.position.set(
       bobX * blend,
       bobY * blend,

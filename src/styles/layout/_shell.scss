@@ -1,0 +1,41 @@
+
+/* =========================================
+   SITE SHELL
+   ========================================= */
+
+#root {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+}
+
+.site-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--color-canvas);
+  color: var(--color-text);
+}
+
+/* Project overlay and embedded project behavior */
+
+html.portal-open {
+  .site-header,
+  .site-footer {
+    display: none !important;
+  }
+}
+
+html.in-iframe {
+  .site-header,
+  .site-footer {
+    display: none !important;
+  }
+}
+
+.app--overlay {
+  position: relative;
+  z-index: 40;
+}

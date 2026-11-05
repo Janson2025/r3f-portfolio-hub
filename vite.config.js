@@ -10,7 +10,7 @@ export default defineConfig({
   ],css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@use "styles/tokens.scss" as *;`
+        additionalData: `@use "styles/foundations/tokens.scss" as *;`
       }
     }
   }

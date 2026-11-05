@@ -1,0 +1,238 @@
+/* =========================================
+   CUBE CONTROL PANEL
+   ========================================= */
+
+.cube-controls {
+  --cc-panel: color-mix(
+    in srgb,
+    var(--color-surface) 90%,
+    transparent
+  );
+
+  --cc-panel-raised: color-mix(
+    in srgb,
+    var(--color-text) 6%,
+    transparent
+  );
+
+  --cc-border: var(--color-border);
+  --cc-text: var(--color-text);
+  --cc-muted: var(--color-text-muted);
+  --cc-accent: #9de2b8;
+
+  --site-header-height: 3.5rem;
+
+  position: fixed;
+  z-index: 30;
+
+  top: calc(var(--site-header-height) + 0.75rem);
+  right: 1rem;
+
+  display: flex;
+  flex-direction: column;
+
+  width: min(360px, calc(100vw - 2rem));
+
+  max-height: min(
+    520px,
+    calc(100dvh - var(--site-header-height) - 2rem)
+  );
+
+  overflow: hidden;
+
+  color: var(--cc-text);
+  background: var(--cc-panel);
+
+  border: 1px solid var(--cc-border);
+  border-radius: 13px;
+
+  box-shadow: var(--shadow-lg);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  font-family: inherit;
+
+  pointer-events: auto;
+  user-select: none;
+
+  button {
+    font: inherit;
+  }
+}
+
+.cube-controls__toggle {
+  display: flex;
+  flex: 0 0 auto;
+
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 1rem;
+
+  width: 100%;
+  min-height: 42px;
+
+  padding: 0 15px;
+
+  color: var(--cc-text);
+  text-align: left;
+  letter-spacing: 0.08em;
+
+  background: transparent;
+  border: 0;
+
+  cursor: pointer;
+
+  &:hover {
+    background: rgb(255 255 255 / 3.5%);
+  }
+}
+
+.cube-controls__toggle-main,
+.cube-controls__toggle-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.cube-controls__toggle-main {
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.cube-controls__toggle-meta {
+  color: var(--cc-muted);
+  font-size: 8px;
+  white-space: nowrap;
+}
+
+.cube-controls__indicator,
+.cube-controls__status-dot {
+  display: inline-block;
+  flex: 0 0 7px;
+
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+  background: var(--cc-accent);
+}
+
+.cube-controls__chevron {
+  display: inline-block;
+
+  color: var(--cc-accent);
+  font-size: 17px;
+  line-height: 1;
+
+  transition:
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.cube-controls.is-expanded
+.cube-controls__chevron {
+  transform: rotate(180deg);
+}
+
+.cube-controls__content {
+  flex: 1 1 auto;
+
+  min-height: 0;
+  max-height: calc(520px - 42px);
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+
+  padding: 0 15px 10px;
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    rgb(255 255 255 / 20%)
+    transparent;
+}
+
+.cube-controls__content::-webkit-scrollbar {
+  width: 4px;
+}
+
+.cube-controls__content::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 22%);
+  border-radius: 4px;
+}
+
+.cube-controls__section {
+  padding: 10px 0;
+  border-top: 1px solid var(--cc-border);
+}
+
+.cube-controls__section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+
+  margin-bottom: 8px;
+
+  color: var(--cc-text);
+
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+}
+
+.cube-controls__subheading {
+  color: var(--cc-muted);
+  font-size: 8px;
+  font-weight: 400;
+}
+
+.cube-controls__note {
+  margin: 7px 0 2px;
+
+  color: var(--cc-muted);
+
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+
+/* =========================================
+   MOBILE
+   ========================================= */
+
+@media (max-width: 640px) {
+  .cube-controls {
+    top: calc(var(--site-header-height) + 0.5rem);
+    right: 0.625rem;
+
+    width: min(320px, calc(100vw - 1.25rem));
+
+    // Reserve space for the summary panel at the bottom.
+    // The expanded controls cannot grow behind it.
+    max-height: max(
+      120px,
+      calc(
+        100dvh -
+        var(--site-header-height) -
+        42dvh -
+        3.5rem
+      )
+    );
+  }
+
+  .cube-controls__content {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+
+    padding-right: 12px;
+    padding-left: 12px;
+
+    overflow-y: auto;
+  }
+}
