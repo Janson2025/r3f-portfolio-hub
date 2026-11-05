@@ -1,11 +1,10 @@
 
 .project-navigation-arrows {
-  --arrow-offset: 165px;
+  --arrow-offset: 205px;
 
   position: absolute;
   inset: 0;
   z-index: 20;
-
   pointer-events: none;
 }
 
@@ -52,29 +51,44 @@
     cursor: default;
   }
 
+  // ----------------------------------------------
+  // Up
+  // ----------------------------------------------
+
   &--up {
     top: calc(50% - var(--arrow-offset));
     left: 50%;
+
     transform: translate(-50%, -50%);
 
     &:active:not(:disabled) {
       transform: translate(-50%, -50%) scale(0.92);
     }
   }
+
+  // ----------------------------------------------
+  // Down
+  // ----------------------------------------------
 
   &--down {
     top: calc(50% + var(--arrow-offset));
     left: 50%;
+
     transform: translate(-50%, -50%);
 
     &:active:not(:disabled) {
       transform: translate(-50%, -50%) scale(0.92);
     }
   }
+
+  // ----------------------------------------------
+  // Left
+  // ----------------------------------------------
 
   &--left {
     top: 50%;
     left: calc(50% - var(--arrow-offset));
+
     transform: translate(-50%, -50%);
 
     &:active:not(:disabled) {
@@ -82,9 +96,14 @@
     }
   }
 
+  // ----------------------------------------------
+  // Right
+  // ----------------------------------------------
+
   &--right {
     top: 50%;
     left: calc(50% + var(--arrow-offset));
+
     transform: translate(-50%, -50%);
 
     &:active:not(:disabled) {
@@ -93,9 +112,13 @@
   }
 }
 
+// ----------------------------------------------
+// Mobile
+// ----------------------------------------------
+
 @media (max-width: 640px) {
   .project-navigation-arrows {
-    --arrow-offset: 115px;
+    --arrow-offset: 145px;
   }
 
   .project-navigation-arrow {
