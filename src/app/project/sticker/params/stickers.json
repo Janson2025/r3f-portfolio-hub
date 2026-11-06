@@ -295,7 +295,7 @@
       "tech": ["Web Development", "3D Modeling"],
       "description": "A world-building project focused on creating and exploring fictional worlds through a web-based creative environment and custom 3D assets.",
       "links": {
-        "demo": "https://world-forge-seven.vercel.app/"
+        "demo": "https://world-forge-eznd.vercel.app/"
       },
       "block": [0, 1, 2],
       "face": "front",
