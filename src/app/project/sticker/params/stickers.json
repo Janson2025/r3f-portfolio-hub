@@ -1139,6 +1139,94 @@
           "image": null
         }
       }
+    },
+    {
+      "id": "shape-fall",
+      "priority": 1,
+      "preview": {
+        "color": "#875471"
+      },
+      "portal": {
+        "distance": 0,
+        "mesh": {
+          "type": "shapeFall",
+          "props": {
+            "rotation": [
+              0.83,
+              0,
+              0.16
+            ],
+            "position": [
+              0,
+              -0.05,
+              0
+            ],
+            "scale": 0.8
+          }
+        },
+        "animation": {
+          "type": "spin",
+          "params": {
+            "speed": 0.3,
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        },
+        "lights": {
+          "preset": "studioKey",
+          "ambient": 0.55
+        },
+        "background": {
+          "opacity": 0.2
+        }
+      }
+    },
+    {
+      "id": "3d-fruit-merge",
+      "priority": 1,
+      "preview": {
+        "color": "#536473"
+      },
+      "portal": {
+        "distance": 0,
+        "mesh": {
+          "type": "fruitMerge",
+          "props": {
+            "rotation": [
+              0.63,
+              0,
+              0
+            ],
+            "position": [
+              0,
+              -0.09,
+              0
+            ],
+            "scale": 0.8
+          }
+        },
+        "animation": {
+          "type": "spin",
+          "params": {
+            "speed": 0.3,
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        },
+        "lights": {
+          "preset": "studioKey",
+          "ambient": 0.55
+        },
+        "background": {
+          "opacity": 0.2
+        }
+      }
     }
   ]
 }

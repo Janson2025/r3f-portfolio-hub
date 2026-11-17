@@ -558,5 +558,59 @@
       }
     ],
     "caseStudy": []
+  },
+  {
+    "id": "shape-fall",
+    "slug": "shape-fall",
+    "title": "Shape Fall",
+    "summary": "A puzzle game about matching falling shapes to their cutouts.",
+    "description": "A puzzle game about matching falling shapes to their cutouts.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "Game",
+      "Web Development"
+    ],
+    "featured": false,
+    "sortOrder": 200,
+    "image": "/images/backgrounds/shapefall background.png",
+    "imageAlt": "Shape Fall game preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://shapefall.vercel.app/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "3d-fruit-merge",
+    "slug": "3d-fruit-merge",
+    "title": "3D Fruit Merge",
+    "summary": "A 3D puzzle game where matching fruits combine into larger fruits.",
+    "description": "A 3D puzzle game where matching fruits combine into larger fruits.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "Game",
+      "Web Development"
+    ],
+    "featured": false,
+    "sortOrder": 210,
+    "image": "/images/backgrounds/3d-fruit-merge background.png",
+    "imageAlt": "3D Fruit Merge game preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://3dfruitmerge.vercel.app/"
+      }
+    ],
+    "caseStudy": []
   }
 ]

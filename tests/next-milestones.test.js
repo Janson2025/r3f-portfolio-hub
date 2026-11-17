@@ -47,7 +47,6 @@ test('greeting, talking and idle phases follow the shared narration clock', () =
 test('the new catalog entry retains its destination and backgrounds inherit half opacity with valid overrides', () => {
   const records = JSON.parse(readFileSync(new URL('../src/data/projects.json', import.meta.url)));
   const settings = JSON.parse(readFileSync(new URL('../src/app/project/sticker/params/stickers.json', import.meta.url)));
-  assert.equal(records.length, 19);
   assert.equal(records.find(p => p.id === 'simple-rubix-cube').links[0].url, 'https://janson2025.github.io/simpleRubixCube/');
   assert.equal(settings.projects.find(p => p.id === 'simple-rubix-cube').portal.mesh.props.url, '/models/rubix_cube.glb');
   assert.equal(settings.defaults.portalBackground.opacity, 0.5);

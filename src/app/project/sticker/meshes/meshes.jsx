@@ -3,6 +3,7 @@ import { useEffect, useMemo } from "react";
 import { useAnimations, useGLTF } from "@react-three/drei";
 import { Box3, Vector3 } from "three";
 import { clone } from "three/addons/utils/SkeletonUtils.js";
+import { FruitMerge, ShapeFall } from "./GamePreviews.jsx";
 
 /** ---------- Mesh components ---------- */
 
@@ -177,6 +178,8 @@ export const MESH_REGISTRY = {
   cylinder: Cylinder,
   cone: Cone,
   plane: plane,
+  shapeFall: ShapeFall,
+  fruitMerge: FruitMerge,
   glb: GLB,
 };
 
