@@ -1,4 +1,3 @@
-
 {
   "defaults": {
     "type": "portal",
@@ -6,21 +5,37 @@
     "smoothness": 6,
     "blendMs": 5,
     "enterDelayMs": 1,
-    "handoffFallbackMs": 0
+    "handoffFallbackMs": 0,
+    "portalBackground": {
+      "type": "hemisphere",
+      "radius": 4.5,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "opacity": 0.5,
+      "coverage": 0.72
+    }
   },
   "projects": [
     {
       "id": "character-config",
-      "title": "3D Character Configurator",
       "priority": 2,
-      "tech": ["React Three Fiber", "Three.js", "VRM"],
-      "description": "A fully interactive 3D character configurator built with React Three Fiber. Users can customize character attributes, swap components, and preview the results instantly in a responsive 3D environment.",
-      "links": {
-        "demo": "https://r3f-ultimate-character-configurator-ten.vercel.app/"
-      },
-      "block": [0, 2, 1],
+      "block": [
+        0,
+        2,
+        1
+      ],
       "face": "top",
-      "preview": { "color": "#ffffff" },
+      "preview": {
+        "color": "#ffffff"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
@@ -28,8 +43,16 @@
           "props": {
             "url": "/models/Sariah-reduced.vrm",
             "scale": 1,
-            "rotation": [1.5, 0, 0],
-            "position": [0, 0.0, 0]
+            "rotation": [
+              0.35,
+              0,
+              0
+            ],
+            "position": [
+              0,
+              0.0,
+              0
+            ]
           }
         },
         "animation": {
@@ -42,57 +65,77 @@
         "lights": {
           "preset": "studioKey",
           "ambient": 0.25
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "r3f-molecules",
-      "title": "3D Molecule Maker",
       "priority": 2,
-      "tech": ["React Three Fiber", "GLTF"],
-      "description": "An experimental browser-based 3D molecule maker and viewer. Users can visualize molecular structures in an intuitive and interactive environment.",
-      "links": {
-        "demo": "https://rf3-molecules.onrender.com/"
-      },
-      "block": [2, 2, 1],
+      "block": [
+        2,
+        2,
+        1
+      ],
       "face": "right",
-      "preview": { "color": "#D42828" },
+      "preview": {
+        "color": "#D42828"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/glucose.glb",
-            "scale": 0.1,
-            "rotation": [0.15, 0.9, 0],
-            "position": [0, -0.02, 0]
+            "scale": 0.15,
+            "rotation": [
+              0.15,
+              0.9,
+              0
+            ],
+            "position": [
+              0,
+              -0.02,
+              0
+            ]
           }
         },
         "animation": {
           "type": "spin",
           "params": {
             "speed": 0.7,
-            "axis": [0.15, 1, 0.1]
+            "axis": [
+              0.15,
+              1,
+              0.1
+            ]
           }
         },
         "lights": {
           "preset": "studioKey",
           "ambient": 0.25
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "prototype",
-      "title": "3D Prototype Cube",
       "priority": 2,
-      "tech": ["React Three Fiber"],
-      "description": "A proof-of-concept demonstrating interactive cube behavior, param-driven meshes, lighting systems, and real-time rendering.",
-      "links": {
-        "demo": "https://r3f-prototype.onrender.com/"
-      },
-      "block": [1, 2, 0],
+      "block": [
+        1,
+        2,
+        0
+      ],
       "face": "top",
-      "preview": { "color": "#ffffff" },
+      "preview": {
+        "color": "#ffffff"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
@@ -105,52 +148,80 @@
           "type": "spin",
           "params": {
             "speed": 0.45,
-            "axis": [0, 1, 0.3]
+            "axis": [
+              0,
+              1,
+              0.3
+            ]
           }
         },
         "lights": {
           "ambient": 1.5,
           "dirs": [
             {
-              "position": [2, 2.5, 1],
+              "position": [
+                2,
+                2.5,
+                1
+              ],
               "intensity": 1.2
             },
             {
-              "position": [-1.5, 1.2, -2],
+              "position": [
+                -1.5,
+                1.2,
+                -2
+              ],
               "intensity": 0.7
             }
           ]
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "circles-mask-revealer",
-      "title": "Spinning Circle Image Revealer",
       "priority": 2,
-      "tech": ["HTML", "CSS", "JavaScript", "SVG"],
-      "description": "An image reveal experiment using SVG masking and JavaScript animation to create a circular transition effect. Animated circles orbit around a center point, gradually revealing the underlying image.",
-      "links": {
-        "demo": "https://r3f-image-revealer.onrender.com"
-      },
-      "block": [2, 2, 0],
+      "block": [
+        2,
+        2,
+        0
+      ],
       "face": "right",
-      "preview": { "color": "#D42828" },
+      "preview": {
+        "color": "#D42828"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/image-revealer.glb",
-            "scale": 0.275,
-            "rotation": [0.1, 0.8, 0],
-            "position": [0, -0.02, 0]
+            "scale": 0.4,
+            "rotation": [
+              0.1,
+              0.8,
+              0
+            ],
+            "position": [
+              0,
+              -0.02,
+              0
+            ]
           }
         },
         "animation": {
           "type": "spin",
           "params": {
             "speed": 0.45,
-            "axis": [0, 1, 0]
+            "axis": [
+              0,
+              1,
+              0
+            ]
           }
         },
         "lights": {
@@ -158,45 +229,69 @@
           "directional": 1.15,
           "dirs": [
             {
-              "position": [2, 2.5, 1],
+              "position": [
+                2,
+                2.5,
+                1
+              ],
               "intensity": 1.2
             },
             {
-              "position": [-1.5, 1.2, -2],
+              "position": [
+                -1.5,
+                1.2,
+                -2
+              ],
               "intensity": 0.7
             }
           ]
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "r3f-wing-configurator",
-      "title": "USU Aerospace Wingcraft Web Application",
       "priority": 1,
-      "tech": ["React Three Fiber", "Three.js", "Blender", "Node.js"],
-      "description": "An aerospace-focused 3D wing modeling system created for USU Aerospace. Users can adjust airplane wing parameters in real time and preview animated flight paths.",
-      "links": {
-        "demo": "https://r3f-wing-configurator-demo.onrender.com"
-      },
-      "block": [1, 2, 1],
+      "block": [
+        1,
+        2,
+        1
+      ],
       "face": "top",
-      "preview": { "color": "#FFFFFF" },
+      "preview": {
+        "color": "#FFFFFF"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/diamond-da42-twin-star3.glb",
-            "scale": 0.02,
-            "rotation": [1.5, 0.75, 0],
-            "position": [-0.1, 0.1, 0]
+            "scale": 0.05,
+            "rotation": [
+              0.5,
+              0.75,
+              0
+            ],
+            "position": [
+              -0.0,
+              -0.1,
+              0
+            ]
           }
         },
         "animation": {
           "type": "spin",
           "params": {
             "speed": 0.35,
-            "axis": [1, 1, 0]
+            "axis": [
+              1,
+              1,
+              0
+            ]
           }
         },
         "lights": {
@@ -205,38 +300,58 @@
           "Enviorment": 0.1,
           "dirs": [
             {
-              "position": [2, 2.2, 1],
+              "position": [
+                2,
+                2.2,
+                1
+              ],
               "intensity": 1.1
             },
             {
-              "position": [-1.2, 1, -1.5],
+              "position": [
+                -1.2,
+                1,
+                -1.5
+              ],
               "intensity": 0.6
             }
           ]
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "aquarium",
-      "title": "3D Aquarium",
       "priority": 1,
-      "tech": ["React", "React Three Fiber", "Three.js", "Blender"],
-      "description": "An interactive 3D aquarium experience showcasing modeled aquatic life and underwater environments. The project explores real-time 3D rendering, animated models, and interactive exploration.",
-      "links": {
-        "demo": "https://aquarium-ten-omega.vercel.app/"
-      },
-      "block": [0, 2, 0],
+      "block": [
+        0,
+        2,
+        0
+      ],
       "face": "top",
-      "preview": { "color": "#ffffff" },
+      "preview": {
+        "color": "#ffffff"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/Moore_Idol.glb",
-            "scale": 0.1,
-            "rotation": [0, 0, 0],
-            "position": [0, 0, -0.1]
+            "scale": 0.14,
+            "rotation": [
+              0,
+              -1.25,
+              0
+            ],
+            "position": [
+              0.1,
+              0,
+              -0.1
+            ]
           }
         },
         "animation": {
@@ -249,66 +364,94 @@
         "lights": {
           "preset": "studioKey",
           "ambient": 0.45
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "feedback-library",
-      "title": "Feedback Library",
       "priority": 1,
-      "tech": ["JavaScript", "HTML", "CSS"],
-      "description": "A web-based feedback library showcasing reusable interface and design resources, frontend development, and interactive user experiences.",
-      "links": {
-        "demo": "https://feedback-library.vercel.app/"
-      },
-      "block": [2, 1, 0],
+      "block": [
+        2,
+        1,
+        0
+      ],
       "face": "right",
-      "preview": { "color": "#D42828" },
+      "preview": {
+        "color": "#D42828"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/scroll%20and%20pen.glb",
-            "scale": 0.3,
-            "rotation": [0, 0, 0],
-            "position": [0, -0.25, 0]
+            "scale": 0.4,
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "position": [
+              0,
+              -0.6,
+              0
+            ]
           }
         },
         "animation": {
           "type": "spin",
           "params": {
             "speed": 0.15,
-            "axis": [0, 1, 0]
+            "axis": [
+              0,
+              1,
+              0
+            ]
           }
         },
         "lights": {
           "preset": "studioKey",
           "ambient": 0.45
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "world-forge",
-      "title": "World Forge",
-      "priority": 2, 
-      "tech": ["Web Development", "3D Modeling"],
-      "description": "A world-building project focused on creating and exploring fictional worlds through a web-based creative environment and custom 3D assets.",
-      "links": {
-        "demo": "https://world-forge-eznd.vercel.app/"
-      },
-      "block": [0, 1, 2],
+      "priority": 2,
+      "block": [
+        0,
+        1,
+        2
+      ],
       "face": "front",
-      "preview": { "color": "#0FA74A" },
+      "preview": {
+        "color": "#0FA74A"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/crab%20castle-reduced.glb",
-            "scale": 0.01,
-            "rotation": [0, 3.5, 0],
-            "position": [0, -0.2, 0]
+            "scale": 0.0175,
+            "rotation": [
+              0,
+              3.75,
+              0
+            ],
+            "position": [
+              0,
+              -0.4,
+              0
+            ]
           }
         },
         "animation": {
@@ -321,66 +464,94 @@
         "lights": {
           "preset": "studioKey",
           "ambient": 0.45
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.80
         }
       }
     },
     {
       "id": "3d-animal-icon-lab",
-      "title": "3D Animal Icon Lab",
       "priority": 2,
-      "tech": ["React", "React Three Fiber", "Three.js", "Blender"],
-      "description": "A 3D modeling and visualization project focused on animal icons and low-poly representations. It explores the conversion and presentation of graphical assets as interactive 3D models.",
-      "links": {
-        "demo": "https://3danimaliconlab.vercel.app/"
-      },
-      "block": [1, 1, 2],
+      "block": [
+        1,
+        1,
+        2
+      ],
       "face": "front",
-      "preview": { "color": "#0FA74A" },
+      "preview": {
+        "color": "#0FA74A"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/fossil.glb",
-            "scale": 3,
-            "rotation": [0, 0, 0],
-            "position": [0, 0, 0.05]
+            "scale": 6,
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "position": [
+              0,
+              0,
+              0.05
+            ]
           }
         },
         "animation": {
           "type": "spin",
           "params": {
             "speed": 0.12,
-            "axis": [0, 1, 0]
+            "axis": [
+              0,
+              1,
+              0
+            ]
           }
         },
         "lights": {
           "preset": "studioKey",
           "ambient": 0.45
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.80
         }
       }
     },
     {
       "id": "space-ship-explorer",
-      "title": "Space Ship Explorer",
-      "priority": 1, 
-      "tech": ["React", "Three.js", "3D Modeling"],
-      "description": "An interactive space ship exploration experience showcasing 3D spacecraft and immersive browser-based 3D interaction.",
-      "links": {
-        "demo": "https://space-ship-explorer.vercel.app/"
-      },
-      "block": [2, 0, 1],
+      "priority": 1,
+      "block": [
+        2,
+        0,
+        1
+      ],
       "face": "right",
-      "preview": { "color": "#D42828" },
+      "preview": {
+        "color": "#D42828"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/spiderhawk-splash.glb",
-            "scale": 0.025,
-            "rotation": [0, 0.0, 0],
-            "position": [0, 0.0, 0]
+            "scale": 0.03,
+            "rotation": [
+              1,
+              -0.7,
+              6
+            ],
+            "position": [
+              -0.15,
+              -0.15,
+              0
+            ]
           }
         },
         "animation": {
@@ -393,37 +564,53 @@
         "lights": {
           "preset": "studioKey",
           "ambient": 0.45
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "maze-ball-2",
-      "title": "3D Maze Ball Configurator",
-      "priority": 2, 
-      "tech": ["React Three Fiber", "GLTF"],
-      "description": "A web-based 3D maze ball configurator where users can explore and customize ball-maze layouts.",
-      "links": {
-        "demo": "https://janson2025.github.io/mazeball2/"
-      },
-      "block": [2, 1, 1],
+      "priority": 2,
+      "block": [
+        2,
+        1,
+        1
+      ],
       "face": "right",
-      "preview": { "color": "#D42828" },
+      "preview": {
+        "color": "#D42828"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/maze.glb",
-            "scale": 0.05,
-            "rotation": [0.05, 0.7, 0],
-            "position": [0, -0.03, 0]
+            "scale": 0.0666,
+            "rotation": [
+              0.05,
+              0.7,
+              0
+            ],
+            "position": [
+              0,
+              -0.03,
+              0
+            ]
           }
         },
         "animation": {
           "type": "spin",
           "params": {
             "speed": 0.4,
-            "axis": [0, 1, 0]
+            "axis": [
+              0,
+              1,
+              0
+            ]
           }
         },
         "lights": {
@@ -431,86 +618,127 @@
           "directional": 1.15,
           "dirs": [
             {
-              "position": [2, 2.5, 1],
+              "position": [
+                2,
+                2.5,
+                1
+              ],
               "intensity": 1.2
             },
             {
-              "position": [-1.5, 1.2, -2],
+              "position": [
+                -1.5,
+                1.2,
+                -2
+              ],
               "intensity": 0.7
             }
           ]
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "multiplex-hts",
-      "title": "Drug Screening Analysis Program",
       "priority": 1,
-      "tech": ["Python", "Flow Cytometry", "Vercel"],
-      "description": "A drug screening analysis platform that automates multiplex high-throughput screening data using flow cytometry results. Co-authored as part of a peer-reviewed study on Trypanosoma brucei.",
-      "links": {
-        "demo": "https://multiplexhighthroughputscreening.vercel.app/",
-        "repo": "https://github.com/jacall2016/drugscreen-ph-flip700-yemk-live",
-        "pubmed": "https://pubmed.ncbi.nlm.nih.gov/39163740/"
-      },
-      "block": [2, 1, 2],
+      "block": [
+        2,
+        1,
+        2
+      ],
       "face": "front",
-      "preview": { "color": "#0FA74A" },
+      "preview": {
+        "color": "#0FA74A"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/trapanazome.glb",
-            "scale": 0.065,
-            "rotation": [0.05, 0.7, 0],
-            "position": [0, 0, 0]
+            "scale": 0.095,
+            "rotation": [
+              -0.2,
+              0.7,
+              0
+            ],
+            "position": [
+              0,
+              0,
+              0
+            ]
           }
         },
         "animation": {
           "type": "spin",
           "params": {
             "speed": 0.5,
-            "axis": [0.1, 1, 0.2]
+            "axis": [
+              0.1,
+              1,
+              0.2
+            ]
           }
         },
         "lights": {
           "ambient": 0.45,
           "dirs": [
             {
-              "position": [2, 2.5, 1],
+              "position": [
+                2,
+                2.5,
+                1
+              ],
               "intensity": 1.1
             },
             {
-              "position": [-1.5, 1.2, -2],
+              "position": [
+                -1.5,
+                1.2,
+                -2
+              ],
               "intensity": 0.7
             }
           ]
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.1
         }
       }
     },
     {
       "id": "paleo-gis",
-      "title": "Paleobiological GIS Program",
       "priority": 2,
-      "tech": ["JavaScript", "CSS", "GitHub Pages"],
-      "description": "An educational GIS platform visualizing fossil site data across geologic time using the Paleobiology Database API.",
-      "links": {
-        "demo": "https://jacall2016.github.io/paleoGISfinnal/",
-        "repo": "https://github.com/jacall2016/paleoGISfinnal"
-      },
-      "block": [1, 2, 2],
+      "block": [
+        1,
+        2,
+        2
+      ],
       "face": "front",
-      "preview": { "color": "#0FA74A" },
+      "preview": {
+        "color": "#0FA74A"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/paltologicalMap.glb",
-            "scale": 0.008,
-            "rotation": [0.05, 0.7, 0],
-            "position": [0, 0, 0]
+            "scale": 0.014,
+            "rotation": [
+              0.05,
+              0.7,
+              0
+            ],
+            "position": [
+              0,
+              0,
+              0
+            ]
           }
         },
         "animation": {
@@ -524,148 +752,349 @@
           "directional": 0.15,
           "dirs": [
             {
-              "position": [2, 2.5, 1],
+              "position": [
+                2,
+                2.5,
+                1
+              ],
               "intensity": 1.1
             },
             {
-              "position": [-1.5, 1.2, -2],
+              "position": [
+                -1.5,
+                1.2,
+                -2
+              ],
               "intensity": 0.7
             }
           ]
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.95
         }
       }
     },
     {
       "id": "plums",
-      "title": "Personal Learning System",
-      "tech": ["Next.js", "Vercel"],
-      "description": "A productivity-focused tool designed to help learners organize objectives, tasks, and files in multiple formats.",
-      "links": {
-        "demo": "https://plums-eosin.vercel.app/"
-      },
-      "block": [0, 2, 2],
+      "priority": 2,
+      "block": [
+        0,
+        2,
+        2
+      ],
       "face": "front",
-      "preview": { "color": "#0FA74A" },
+      "preview": {
+        "color": "#0FA74A"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/plumTree.glb",
-            "scale": 0.05,
-            "rotation": [0.00, 0.0, 0],
-            "position": [0, -0.4, 0]
+            "scale": 0.07,
+            "rotation": [
+              0.0,
+              0.0,
+              0
+            ],
+            "position": [
+              0,
+              -0.6,
+              0
+            ]
           }
         },
         "animation": {
           "type": "spin",
           "params": {
             "speed": 0.2,
-            "axis": [0, 1, 0]
+            "axis": [
+              0,
+              1,
+              0
+            ]
           }
         },
         "lights": {
           "ambient": 0.45,
           "dirs": [
             {
-              "position": [2, 2.5, 1],
+              "position": [
+                2,
+                2.5,
+                1
+              ],
               "intensity": 1.1
             },
             {
-              "position": [-1.5, 1.2, -2],
+              "position": [
+                -1.5,
+                1.2,
+                -2
+              ],
               "intensity": 0.7
             }
           ]
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "raindrop-image-revealer",
-      "title": "Raindrop Image Revealer",
       "priority": 2,
-      "tech": ["JavaScript"],
-      "description": "An image revealing system that uses raindrop-like splattering effects to reveal and blend image layers.",
-      "links": {
-        "demo": "https://vanilla-pencil-image-revealer-prototype.onrender.com/"
-      },
-      "block": [2, 2, 2],
+      "block": [
+        2,
+        2,
+        2
+      ],
       "face": "front",
-      "preview": { "color": "#0FA74A" },
+      "preview": {
+        "color": "#0FA74A"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/raindropSplatterPlane.glb",
-            "scale": 0.35,
-            "rotation": [-1.75, -0.1, 0],
-            "position": [0, -0.02, 0]
+            "scale": 0.55,
+            "rotation": [
+              -1.75,
+              -0.1,
+              0
+            ],
+            "position": [
+              0,
+              -0.02,
+              0
+            ]
           }
         },
         "animation": {
           "type": "spin",
           "params": {
             "speed": 0.2,
-            "axis": [0, 1, 0]
+            "axis": [
+              0,
+              1,
+              0
+            ]
           }
         },
         "lights": {
           "ambient": 0.45,
           "dirs": [
             {
-              "position": [2, 2.5, 1],
+              "position": [
+                2,
+                2.5,
+                1
+              ],
               "intensity": 1.1
             },
             {
-              "position": [-1.5, 1.2, -2],
+              "position": [
+                -1.5,
+                1.2,
+                -2
+              ],
               "intensity": 0.7
             }
           ]
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
+        }
+      }
+    },
+    {
+      "id": "castle-chess",
+      "priority": 2,
+      "block": [
+        2,
+        1,
+        2
+      ],
+      "face": "front",
+      "preview": {
+        "color": "#0FA74A"
+      },
+      "portal": {
+        "distance": -0.3,
+        "mesh": {
+          "type": "glb",
+          "props": {
+            "url": "/models/castle-chess.glb",
+            "scale": 4.75,
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "position": [
+              0,
+              -0.33,
+              0
+            ]
+          }
+        },
+        "animation": {
+          "type": "idle",
+          "params": {
+            "speed": 0.2,
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        },
+        "lights": {
+          "ambient": 0.45,
+          "dirs": [
+            {
+              "position": [
+                2,
+                2.5,
+                1
+              ],
+              "intensity": 1.1
+            },
+            {
+              "position": [
+                -1.5,
+                1.2,
+                -2
+              ],
+              "intensity": 0.7
+            }
+          ]
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
         }
       }
     },
     {
       "id": "emily-sweet-apparel",
-      "title": "Elegant Sewing Services",
       "priority": 1,
-      "tech": ["JavaScript"],
-      "description": "A sewing business website showcasing products, services, pricing, and contact information.",
-      "links": {
-        "demo": "https://emily-sweet-apparel.vercel.app/"
-      },
-      "block": [2, 2, 2],
+      "block": [
+        2,
+        2,
+        2
+      ],
       "face": "right",
-      "preview": { "color": "#D42828" },
+      "preview": {
+        "color": "#D42828"
+      },
       "portal": {
         "distance": -0.3,
         "mesh": {
           "type": "glb",
           "props": {
             "url": "/models/threadSpool2.glb",
-            "scale": 0.5,
-            "rotation": [0, 0, 0],
-            "position": [0, -0.35, 0]
+            "scale": 0.8,
+            "rotation": [
+              0,
+              0,
+              0
+            ],
+            "position": [
+              0,
+              -0.55,
+              0
+            ]
           }
         },
         "animation": {
           "type": "spin",
           "params": {
             "speed": 0.2,
-            "axis": [0, 1, 0]
+            "axis": [
+              0,
+              1,
+              0
+            ]
           }
         },
         "lights": {
           "ambient": 0.45,
           "dirs": [
             {
-              "position": [2, 2.5, 1],
+              "position": [
+                2,
+                2.5,
+                1
+              ],
               "intensity": 1.1
             },
             {
-              "position": [-1.5, 1.2, -2],
+              "position": [
+                -1.5,
+                1.2,
+                -2
+              ],
               "intensity": 0.7
             }
           ]
+        },
+        "background": {
+          "image": null,
+          "opacity": 0.5
+        }
+      }
+    },
+    {
+      "id": "simple-rubix-cube",
+      "priority": 1,
+      "block": [
+        1,
+        0,
+        0
+      ],
+      "face": "back",
+      "preview": {
+        "color": "#4383bd"
+      },
+      "portal": {
+        "mesh": {
+          "type": "glb",
+          "props": {
+            "url": "/models/rubix_cube.glb",
+            "scale": 0.14,
+            "rotation": [
+              0.3,
+              0.5,
+              0.1
+            ],
+            "position": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "distance": 0,
+        "animation": {
+          "type": "spin",
+          "params": {
+            "speed": 0.25,
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        },
+        "background": {
+          "opacity": 0.5
         }
       }
     }

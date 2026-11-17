@@ -1,0 +1,1 @@
+export default function NotFoundPage() { return <div className="portfolio-container portfolio-page"><p className="overline">PAGE NOT FOUND</p><h1>A path less traveled.</h1><p className="page-intro">This page or project could not be found.</p><a className="portfolio-button" href="#/projects">Browse projects ↗</a></div>; }

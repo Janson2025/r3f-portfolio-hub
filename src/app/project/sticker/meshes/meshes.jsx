@@ -1,6 +1,6 @@
 
-import { useMemo } from "react";
-import { useGLTF } from "@react-three/drei";
+import { useEffect, useMemo } from "react";
+import { useAnimations, useGLTF } from "@react-three/drei";
 import { Box3, Vector3 } from "three";
 import { clone } from "three/addons/utils/SkeletonUtils.js";
 
@@ -102,17 +102,26 @@ export function plane({ size = 1 }) {
  */
 export function GLB({
   url,
+  playing = false,
   scale = 1,
   rotation = [0, 0, 0],
   position = [0, 0, 0],
   center = true,
   ...rest
 }) {
-  const { scene } = useGLTF(url);
+  const { scene, animations } = useGLTF(url);
 
   // Clone the cached scene.
   // SkeletonUtils.clone also handles skinned meshes and skeletons.
   const model = useMemo(() => clone(scene), [scene]);
+  const { actions } = useAnimations(animations, model);
+  useEffect(() => {
+    for (const action of Object.values(actions)) {
+      if (!action) continue;
+      if (playing) action.play();
+      action.paused = !playing;
+    }
+  }, [actions, playing]);
 
   // Calculate centering from the original, unscaled model.
   // Only X and Z are centered to preserve the existing disableY behavior.
@@ -165,7 +174,7 @@ export const MESH_REGISTRY = {
   glb: GLB,
 };
 
-export function ResolveMesh({ type = "icosa", props = {} }) {
+export function ResolveMesh({ type = "icosa", props = {}, playing = false }) {
   const Comp = MESH_REGISTRY[type] ?? Icosa;
-  return <Comp {...props} />;
+  return type === 'glb' ? <Comp {...props} playing={playing} /> : <Comp {...props} />;
 }

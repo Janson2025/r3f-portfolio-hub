@@ -105,6 +105,7 @@ export default function useCubeKeyboardControls({
 
     function onKeyDown(event) {
       const target = event.target;
+      if (!target?.closest?.(".project-cube-panel")) return;
 
       if (
         target instanceof HTMLInputElement ||
@@ -235,5 +236,5 @@ export default function useCubeKeyboardControls({
       window.removeEventListener("keyup", onKeyUp);
       window.removeEventListener("blur", onBlur);
     };
-  }, [size, performMove, rotationBusy]);
+  }, [size, performMove, rotationBusy, enabled]);
 }

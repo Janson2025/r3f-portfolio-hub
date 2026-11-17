@@ -1,3 +1,4 @@
+import { useMotion } from "../../../../lib/motion.jsx";
 
 import * as THREE from "three";
 import { useCallback, useRef } from "react";
@@ -68,6 +69,7 @@ export default function useCubeRotation({
   onMoveComplete,
   durationMs = 250,
 }) {
+  const { reducedMotion } = useMotion();
   const animation = useRef(
     createAnimationState(durationMs)
   );
@@ -488,7 +490,7 @@ export default function useCubeRotation({
     state.elapsed += delta;
 
     const progress = Math.min(
-      state.elapsed / (state.duration / 1000),
+      reducedMotion ? 1 : state.elapsed / (state.duration / 1000),
       1
     );
 

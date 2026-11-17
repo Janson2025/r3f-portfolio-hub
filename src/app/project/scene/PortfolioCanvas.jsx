@@ -1,52 +1,48 @@
+import { useEffect, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { MotionContext, useMotion } from '../../../lib/motion.jsx';
+import { useTheme } from "../../../lib/themes/useTheme.js";
 
 import { Canvas } from "@react-three/fiber";
-import {
-  Environment,
-  ContactShadows,
-} from "@react-three/drei";
 
-import { Avatar } from "./Avatar";
-import { FadingDiskPlane } from "./FadingDiskPlane";
-import CubeRig from "./cube/CubeRig";
+
+import ProjectCubeRig from "./cube/ProjectCubeRig.jsx";
+
+function ContextLossGuard({ onUnavailable, onReadyChange }) {
+  const { gl } = useThree();
+  const frames=useRef(0),timer=useRef(null);
+  useFrame(()=>{if(!gl.getContext().isContextLost()&&frames.current<3){frames.current++;if(frames.current===3)onReadyChange?.(true);}});
+  useEffect(() => {
+    const canvas = gl.domElement;
+    const lost = event => {event.preventDefault();frames.current=0;onReadyChange?.(false);clearTimeout(timer.current);timer.current=setTimeout(()=>onUnavailable?.(),4000);};
+    const restored=()=>{clearTimeout(timer.current);frames.current=0;};
+    canvas.addEventListener("webglcontextlost", lost);
+    canvas.addEventListener('webglcontextrestored',restored);
+    return () => {clearTimeout(timer.current);canvas.removeEventListener("webglcontextlost", lost);canvas.removeEventListener('webglcontextrestored',restored);};
+  }, [gl, onUnavailable,onReadyChange]);
+  return null;
+}
 
 export default function PortfolioCanvas({
-  gridRef,
-  onProjectNavigationChange,
-  cameraControlRef,
-
-  onSelectProject,
-  onActivateSticker,
-  onTransitionComplete,
-  onReturnToCube,
-
-  selectedProject,
-  isProjectView,
-  isTransitioning = false,
-
-  frameReady,
-  controlsEnabled,
-
-  activationEnabled,
-  activationProjectId,
+  mode, idle, onReadyChange, onUnavailable, gridRef, cameraControlRef, selection, eligibleIds, onSelect, onActivate, disabled, onNavigationChange, onFrameChange, onTransitionChange,
 }) {
-  const handlePointerMissed = () => {
-    if (!isProjectView || isTransitioning) return;
-
-    onReturnToCube?.();
-  };
-
+  const theme = useTheme();
+  const motion=useMotion();
   return (
     <Canvas
+      dpr={[1, 1.25]}
+      fallback={<p>WebGL is unavailable. Use the project list below.</p>}
+      tabIndex={0}
+      aria-label={mode === 'cube' ? 'Cube view. Drag a face to turn a slice; drag empty space to rotate the cube.' : 'Project view. Scroll to browse or use the directional arrows. Select the focused portal to open its project.'}
       camera={{
         position: [0, 1.5, 6],
-        fov: 47.5,
+        fov: 18,
       }}
       shadows
-      onPointerMissed={handlePointerMissed}
     >
       <color
         attach="background"
-        args={["#22222f"]}
+        args={[theme.colors["scene-background"]]}
       />
 
       <ambientLight intensity={0.3} />
@@ -65,9 +61,11 @@ export default function PortfolioCanvas({
         shadow-camera-far={40}
       />
 
-      <Environment preset="sunset" />
+      <hemisphereLight intensity={0.6} color="#ffffff" groundColor="#53617a" />
+      <ContextLossGuard onUnavailable={onUnavailable} onReadyChange={onReadyChange}/>
 
-      {/* Portfolio avatar */}
+
+      {/* Portfolio avatar
       <group
         position={[-1.25, -0.25, 3.0]}
         rotation={[0, 0.75, 0]}
@@ -80,30 +78,13 @@ export default function PortfolioCanvas({
         >
           <FadingDiskPlane />
         </group>
-      </group>
+      </group> */}
 
-      <ContactShadows
-        position={[0, 0.001, 0]}
-        opacity={0.6}
-        scale={24}
-        blur={2.8}
-        far={8}
-      />
 
-      <CubeRig
-        gridRef={gridRef}
-        cameraControlRef={cameraControlRef}
-        onSelectProject={onSelectProject}
-        onActivateSticker={onActivateSticker}
-        onTransitionComplete={onTransitionComplete}
-        onProjectNavigationChange={onProjectNavigationChange}
-        selectedProject={selectedProject}
-        isProjectView={isProjectView}
-        frameReady={frameReady}
-        controlsEnabled={controlsEnabled}
-        activationEnabled={activationEnabled}
-        activationProjectId={activationProjectId}
-      />
+
+      <MotionContext.Provider value={{...motion,cubeMode:mode,previewsEnabled:!disabled}}><ProjectCubeRig mode={mode} idle={idle} gridRef={gridRef} cameraControlRef={cameraControlRef} selection={selection}
+        onNavigationChange={onNavigationChange} onFrameChange={onFrameChange} onTransitionChange={onTransitionChange}
+        eligibleIds={eligibleIds} onSelect={onSelect} onActivate={onActivate} disabled={disabled} /></MotionContext.Provider>
     </Canvas>
   );
 }

@@ -1,73 +1,20 @@
-
-const ARROWS = [
-  { direction: "up", label: "Previous project above" },
-  { direction: "down", label: "Next project below" },
-  { direction: "left", label: "Previous project to the left" },
-  { direction: "right", label: "Next project to the right" },
+const directions = [
+  { id: 'up', label: 'Project above', symbol: '↑' },
+  { id: 'down', label: 'Project below', symbol: '↓' },
+  { id: 'left', label: 'Project to the left', symbol: '←' },
+  { id: 'right', label: 'Project to the right', symbol: '→' },
 ];
 
-function ArrowIcon({ direction }) {
-  const paths = {
-    up: "M12 19V5 M5 12l7-7 7 7",
-    down: "M12 5v14 M19 12l-7 7-7-7",
-    left: "M19 12H5 M12 5l-7 7 7 7",
-    right: "M5 12h14 M12 5l7 7-7 7",
-  };
-
-  return (
-    <svg
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d={paths[direction]} />
-    </svg>
-  );
-}
-
-export default function ProjectNavigationArrows({
-  navigation,
-  onNavigate,
-  disabled = false,
-}) {
-  if (!navigation) return null;
-
-  return (
-    <div
-      className="project-navigation-arrows"
-      aria-label="Project navigation"
-    >
-      {ARROWS.map(({ direction, label }) => {
-        const project = navigation[direction];
-        const isDisabled = disabled || !project?.id;
-
-        return (
-          <button
-            key={direction}
-            type="button"
-            className={`project-navigation-arrow project-navigation-arrow--${direction}`}
-            aria-label={
-              project?.title
-                ? `${label}: ${project.title}`
-                : label
-            }
-            title={project?.title ?? label}
-            disabled={isDisabled}
-            onClick={() => {
-              if (isDisabled) return;
-              onNavigate?.(project);
-            }}
-          >
-            <ArrowIcon direction={direction} />
-          </button>
-        );
-      })}
-    </div>
-  );
+export default function ProjectNavigationArrows({ navigation, frame, onNavigate, disabled }) {
+  if (!frame || !navigation) return null;
+  const centerX = (frame.left + frame.right) / 2, centerY = (frame.top + frame.bottom) / 2;
+  const positions = { up: [centerX, frame.top - 28], down: [centerX, frame.bottom + 28], left: [frame.left - 28, centerY], right: [frame.right + 28, centerY] };
+  return <div className="focused-project-arrows" aria-label="Spatial project navigation">
+    {directions.map(({ id, label, symbol }) => {
+      const project = navigation[id];
+      const [x, y] = positions[id];
+      return <button key={id} className={`focused-project-arrow arrow-${id}`} style={{ left: Math.max(24, Math.min(frame.width - 24, x)), top: Math.max(24, Math.min(frame.height - 24, y)) }}
+        disabled={disabled || !project} aria-label={project ? `${label}: ${project.title}` : `${label}: no project`} title={project?.title ?? 'No project in this lane'} onClick={() => { if (project) onNavigate(project.id, 'cube-arrow'); }}>{symbol}</button>;
+    })}
+  </div>;
 }

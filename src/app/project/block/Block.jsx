@@ -1,3 +1,4 @@
+import { useMotion } from "../../../lib/motion.jsx";
 import { useEffect, useRef, useMemo } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -20,6 +21,7 @@ function seededRandom(seed) {
 
 function AnimatedVisuals({ children, cubieId, position }) {
   const visualRef = useRef();
+  const { reducedMotion, ambientMotion } = useMotion();
 
   const animation = useMemo(() => {
     const seed = Number(cubieId) || 0;
@@ -66,6 +68,7 @@ function AnimatedVisuals({ children, cubieId, position }) {
 
     if (!visual) return;
 
+    if (reducedMotion || !ambientMotion) { visual.position.set(0, 0, 0); return; }
     const time = clock.elapsedTime;
 
     const primaryWave = Math.sin(

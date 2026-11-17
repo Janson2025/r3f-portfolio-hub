@@ -1,12 +1,14 @@
 {
-  "name": "r3f-ultimate-character-configurator",
+  "name": "james-r3f-portfolio-hub",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "node --test tests/*.test.js",
+    "verify:build": "node scripts/verify-build.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.5",

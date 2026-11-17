@@ -37,8 +37,7 @@ export default function ZoomSlider({
       </div>
 
       <p className="cube-controls__note">
-        20% is the default Project View zoom.
-        50% is the default Cube View zoom.
+        0% is the default focused-project zoom.
         Changes apply immediately while dragging.
       </p>
     </div>

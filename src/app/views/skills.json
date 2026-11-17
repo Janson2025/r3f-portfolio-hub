@@ -5,8 +5,7 @@
     "Three.js",
     "Tailwind",
     "Vite",
-    "TypeScript",
-    "Astro"
+    "TypeScript"
   ],
   "3D / Graphics": [
     "Blender",

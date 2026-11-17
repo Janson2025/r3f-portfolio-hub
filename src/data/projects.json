@@ -1,0 +1,512 @@
+[
+  {
+    "id": "character-config",
+    "slug": "character-config",
+    "title": "3D Character Configurator",
+    "summary": "A fully interactive 3D character configurator built with React Three Fiber. Users can customize character attributes, swap components, and preview the results instantly in a responsive 3D environment.",
+    "description": "A fully interactive 3D character configurator built with React Three Fiber. Users can customize character attributes, swap components, and preview the results instantly in a responsive 3D environment.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "React Three Fiber",
+      "Three.js",
+      "VRM"
+    ],
+    "featured": true,
+    "sortOrder": 10,
+    "image": "/images/backgrounds/Character-config background.png",
+    "imageAlt": "3D Character Configurator project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://r3f-ultimate-character-configurator-ten.vercel.app/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "r3f-molecules",
+    "slug": "r3f-molecules",
+    "title": "3D Molecule Maker",
+    "summary": "An experimental browser-based 3D molecule maker and viewer. Users can visualize molecular structures in an intuitive and interactive environment.",
+    "description": "An experimental browser-based 3D molecule maker and viewer. Users can visualize molecular structures in an intuitive and interactive environment.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "React Three Fiber",
+      "GLTF"
+    ],
+    "featured": false,
+    "sortOrder": 20,
+    "image": "/images/backgrounds/r3f-molecules..png",
+    "imageAlt": "3D Molecule Maker project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://rf3-molecules.onrender.com/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "prototype",
+    "slug": "prototype",
+    "title": "3D Prototype Cube",
+    "summary": "A proof-of-concept demonstrating interactive cube behavior, param-driven meshes, lighting systems, and real-time rendering.",
+    "description": "A proof-of-concept demonstrating interactive cube behavior, param-driven meshes, lighting systems, and real-time rendering.",
+    "role": null,
+    "status": "prototype",
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "React Three Fiber"
+    ],
+    "featured": false,
+    "sortOrder": 30,
+    "image": "/images/backgrounds/r3f-prototype.png",
+    "imageAlt": "3D Prototype Cube project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://r3f-prototype.onrender.com/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "circles-mask-revealer",
+    "slug": "circles-mask-revealer",
+    "title": "Spinning Circle Image Revealer",
+    "summary": "An image reveal experiment using SVG masking and JavaScript animation to create a circular transition effect. Animated circles orbit around a center point, gradually revealing the underlying image.",
+    "description": "An image reveal experiment using SVG masking and JavaScript animation to create a circular transition effect. Animated circles orbit around a center point, gradually revealing the underlying image.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "Web apps",
+    "tags": [
+      "HTML",
+      "CSS",
+      "JavaScript",
+      "SVG"
+    ],
+    "featured": false,
+    "sortOrder": 40,
+    "image": "/images/backgrounds/r3f-image-revealer.png",
+    "imageAlt": "Spinning Circle Image Revealer project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://r3f-image-revealer.onrender.com"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "r3f-wing-configurator",
+    "slug": "r3f-wing-configurator",
+    "title": "USU Aerospace Wingcraft Web Application",
+    "summary": "An aerospace-focused 3D wing modeling system created for USU Aerospace. Users can adjust airplane wing parameters in real time and preview animated flight paths.",
+    "description": "An aerospace-focused 3D wing modeling system created for USU Aerospace. Users can adjust airplane wing parameters in real time and preview animated flight paths.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "React Three Fiber",
+      "Three.js",
+      "Blender",
+      "Node.js"
+    ],
+    "featured": false,
+    "sortOrder": 50,
+    "image": "/images/backgrounds/r3f-wing-configurator-demo.png",
+    "imageAlt": "USU Aerospace Wingcraft Web Application project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://r3f-wing-configurator-demo.onrender.com"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "aquarium",
+    "slug": "aquarium",
+    "title": "3D Aquarium",
+    "summary": "An interactive 3D aquarium experience showcasing modeled aquatic life and underwater environments. The project explores real-time 3D rendering, animated models, and interactive exploration.",
+    "description": "An interactive 3D aquarium experience showcasing modeled aquatic life and underwater environments. The project explores real-time 3D rendering, animated models, and interactive exploration.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "React",
+      "React Three Fiber",
+      "Three.js",
+      "Blender"
+    ],
+    "featured": false,
+    "sortOrder": 60,
+    "image": "/images/backgrounds/Aquarium background.png",
+    "imageAlt": "3D Aquarium project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://aquarium-ten-omega.vercel.app/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "feedback-library",
+    "slug": "feedback-library",
+    "title": "Feedback Library",
+    "summary": "A web-based feedback library showcasing reusable interface and design resources, frontend development, and interactive user experiences.",
+    "description": "A web-based feedback library showcasing reusable interface and design resources, frontend development, and interactive user experiences.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "Web apps",
+    "tags": [
+      "JavaScript",
+      "HTML",
+      "CSS"
+    ],
+    "featured": false,
+    "sortOrder": 70,
+    "image": "/images/backgrounds/feedback-library.png",
+    "imageAlt": "Feedback Library project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://feedback-library.vercel.app/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "world-forge",
+    "slug": "world-forge",
+    "title": "World Forge",
+    "summary": "A world-building project focused on creating and exploring fictional worlds through a web-based creative environment and custom 3D assets.",
+    "description": "A world-building project focused on creating and exploring fictional worlds through a web-based creative environment and custom 3D assets.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "Web Development",
+      "3D Modeling"
+    ],
+    "featured": false,
+    "sortOrder": 80,
+    "image": "/images/backgrounds/world-forge.png",
+    "imageAlt": "World Forge project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://world-forge-eznd.vercel.app/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "3d-animal-icon-lab",
+    "slug": "3d-animal-icon-lab",
+    "title": "3D Animal Icon Lab",
+    "summary": "A 3D modeling and visualization project focused on animal icons and low-poly representations. It explores the conversion and presentation of graphical assets as interactive 3D models.",
+    "description": "A 3D modeling and visualization project focused on animal icons and low-poly representations. It explores the conversion and presentation of graphical assets as interactive 3D models.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "React",
+      "React Three Fiber",
+      "Three.js",
+      "Blender"
+    ],
+    "featured": false,
+    "sortOrder": 90,
+    "image": "/images/backgrounds/3d-animal-icon-lab-background.png",
+    "imageAlt": "3D Animal Icon Lab project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://3danimaliconlab.vercel.app/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "space-ship-explorer",
+    "slug": "space-ship-explorer",
+    "title": "Space Ship Explorer",
+    "summary": "An interactive space ship exploration experience showcasing 3D spacecraft and immersive browser-based 3D interaction.",
+    "description": "An interactive space ship exploration experience showcasing 3D spacecraft and immersive browser-based 3D interaction.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "React",
+      "Three.js",
+      "3D Modeling"
+    ],
+    "featured": false,
+    "sortOrder": 100,
+    "image": "/images/backgrounds/space-ship-explorer.png",
+    "imageAlt": "Space Ship Explorer project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://space-ship-explorer.vercel.app/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "maze-ball-2",
+    "slug": "maze-ball-2",
+    "title": "3D Maze Ball Configurator",
+    "summary": "A web-based 3D maze ball configurator where users can explore and customize ball-maze layouts.",
+    "description": "A web-based 3D maze ball configurator where users can explore and customize ball-maze layouts.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "React Three Fiber",
+      "GLTF"
+    ],
+    "featured": false,
+    "sortOrder": 110,
+    "image": "/images/backgrounds/maze ball background.png",
+    "imageAlt": "3D Maze Ball Configurator project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://janson2025.github.io/mazeball2/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "multiplex-hts",
+    "slug": "multiplex-hts",
+    "title": "Drug Screening Analysis Program",
+    "summary": "A drug screening analysis platform that automates multiplex high-throughput screening data using flow cytometry results. Co-authored as part of a peer-reviewed study on Trypanosoma brucei.",
+    "description": "A drug screening analysis platform that automates multiplex high-throughput screening data using flow cytometry results. Co-authored as part of a peer-reviewed study on Trypanosoma brucei.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "Software",
+    "tags": [
+      "Python",
+      "Flow Cytometry",
+      "Vercel"
+    ],
+    "featured": true,
+    "sortOrder": 120,
+    "image": "/images/backgrounds/multiplex-hts.png",
+    "imageAlt": "Drug Screening Analysis Program project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://multiplexhighthroughputscreening.vercel.app/"
+      },
+      {
+        "kind": "repo",
+        "label": "Source code",
+        "url": "https://github.com/jacall2016/drugscreen-ph-flip700-yemk-live"
+      },
+      {
+        "kind": "pubmed",
+        "label": "Research publication",
+        "url": "https://pubmed.ncbi.nlm.nih.gov/39163740/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "paleo-gis",
+    "slug": "paleo-gis",
+    "title": "Paleobiological GIS Program",
+    "summary": "An educational GIS platform visualizing fossil site data across geologic time using the Paleobiology Database API.",
+    "description": "An educational GIS platform visualizing fossil site data across geologic time using the Paleobiology Database API.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "Web apps",
+    "tags": [
+      "JavaScript",
+      "CSS",
+      "GitHub Pages"
+    ],
+    "featured": true,
+    "sortOrder": 130,
+    "image": "/images/backgrounds/paleo-gis.png",
+    "imageAlt": "Paleobiological GIS Program project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://jacall2016.github.io/paleoGISfinnal/"
+      },
+      {
+        "kind": "repo",
+        "label": "Source code",
+        "url": "https://github.com/jacall2016/paleoGISfinnal"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "plums",
+    "slug": "plums",
+    "title": "Personal Learning System",
+    "summary": "A productivity-focused tool designed to help learners organize objectives, tasks, and files in multiple formats.",
+    "description": "A productivity-focused tool designed to help learners organize objectives, tasks, and files in multiple formats.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "Web apps",
+    "tags": [
+      "Next.js",
+      "Vercel"
+    ],
+    "featured": false,
+    "sortOrder": 140,
+    "image": "/images/backgrounds/PLUMS background.png",
+    "imageAlt": "Personal Learning System project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://plums-eosin.vercel.app/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "raindrop-image-revealer",
+    "slug": "raindrop-image-revealer",
+    "title": "Raindrop Image Revealer",
+    "summary": "An image revealing system that uses raindrop-like splattering effects to reveal and blend image layers.",
+    "description": "An image revealing system that uses raindrop-like splattering effects to reveal and blend image layers.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "Web apps",
+    "tags": [
+      "JavaScript"
+    ],
+    "featured": false,
+    "sortOrder": 150,
+    "image": "/images/backgrounds/raindrop splatter background.png",
+    "imageAlt": "Raindrop Image Revealer project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://vanilla-pencil-image-revealer-prototype.onrender.com/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "emily-sweet-apparel",
+    "slug": "emily-sweet-apparel",
+    "title": "Elegant Sewing Services",
+    "summary": "A sewing business website showcasing products, services, pricing, and contact information.",
+    "description": "A sewing business website showcasing products, services, pricing, and contact information.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "Web apps",
+    "tags": [
+      "JavaScript"
+    ],
+    "featured": false,
+    "sortOrder": 160,
+    "image": "/images/backgrounds/emily-sweet-apparel.png",
+    "imageAlt": "Elegant Sewing Services project preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://emily-sweet-apparel.vercel.app/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "castle-chess",
+    "slug": "castle-chess",
+    "title": "Castle Chess",
+    "summary": "A castle-themed 3D chess project.",
+    "description": "A castle-themed 3D chess project with a custom model preview. Detailed project information and links have not yet been added.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "3D"
+    ],
+    "featured": false,
+    "sortOrder": 175,
+    "image": "/images/backgrounds/castle-chess background.png",
+    "imageAlt": "castle chess web preview",
+    "links": [
+      {
+        "kind": "repo",
+        "label": "Castle Chess",
+        "url": "https://castle-chess-seven.vercel.app/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "simple-rubix-cube",
+    "slug": "simple-rubix-cube",
+    "title": "Simple Rubix Cube",
+    "summary": "An interactive Rubix cube project in the browser.",
+    "description": "Explore an interactive Rubix cube in this browser-based project.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "3D & interactive",
+    "tags": [
+      "3D",
+      "Web Development"
+    ],
+    "featured": false,
+    "sortOrder": 180,
+    "image": "/images/backgrounds/simple-rubix-cube.svg",
+    "imageAlt": "Illustrated cube project placeholder",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://janson2025.github.io/simpleRubixCube/"
+      }
+    ],
+    "caseStudy": []
+  }
+]

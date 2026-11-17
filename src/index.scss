@@ -26,3 +26,13 @@
 
 /* 5. Feature-specific styles */
 @use "./styles/features/cube-controls";
+
+@use "./styles/layout/portfolio";
+
+@use "./styles/layout/project-workspace";
+
+@use "./styles/layout/refinements";
+
+@use './styles/layout/interactions';
+
+@use './styles/layout/inspector';

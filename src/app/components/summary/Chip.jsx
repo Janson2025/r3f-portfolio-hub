@@ -11,7 +11,7 @@ export default function Chip({
     <button
       ref={refCallback}
       type="button"
-      aria-selected={active}
+      aria-pressed={active}
       className={[
         "project-chip",
         active ? "is-active" : "",

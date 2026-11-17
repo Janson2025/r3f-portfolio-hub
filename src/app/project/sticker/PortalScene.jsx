@@ -1,5 +1,8 @@
+import PortalBackground from "./PortalBackground.jsx";
+import { useMotion } from "../../../lib/motion.jsx";
 // src/sticker/PortalScene.jsx
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, Suspense } from "react";
+import SceneErrorBoundary from '../../components/SceneErrorBoundary.jsx';
 import { useFrame } from "@react-three/fiber";
 import { ResolveMesh, ResolveLights } from "./meshes/index.jsx";
 import { makeAnimator } from "./meshPortalObjectAnimation.js";
@@ -21,10 +24,12 @@ export default function PortalScene({
   lights,
   distance = 0,
   animation,
+  background,
   // Deprecated (kept for older sticker entries)
   spin,
   playing = false,
 }) {
+  const { reducedMotion, ambientMotion } = useMotion();
   const g = useRef();
 
   const resolvedAnimation = useMemo(() => {
@@ -43,16 +48,17 @@ export default function PortalScene({
 
   useFrame((_, dt) => {
     // Cheap: animator early-returns when not playing
-    animator(g.current, dt, playing);
+    animator(g.current, dt, playing && !reducedMotion);
   });
 
   return (
     <>
       <color attach="background" args={[bgColor]} />
       <ResolveLights lights={lights} />
+      <PortalBackground config={background} />
 
       <group ref={g} position={[0, 0, -distance]}>
-        <ResolveMesh type={mesh?.type} props={mesh?.props} />
+        <SceneErrorBoundary fallback={<mesh><icosahedronGeometry args={[.3,0]}/><meshStandardMaterial color="#8dabff"/></mesh>}><Suspense fallback={<mesh><boxGeometry args={[.25,.25,.25]}/><meshStandardMaterial wireframe color="#8dabff"/></mesh>}><ResolveMesh type={mesh?.type} props={mesh?.props} playing={playing && !reducedMotion} /></Suspense></SceneErrorBoundary>
       </group>
     </>
   );

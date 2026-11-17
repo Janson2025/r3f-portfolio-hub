@@ -1,3 +1,6 @@
+import { useTheme } from "../../../lib/themes/useTheme.js";
+import { useMotion } from '../../../lib/motion.jsx';
+import { portalShouldPlay } from '../../../features/projects/interactionPolicy.js';
 
 import * as THREE from "three";
 import {
@@ -21,6 +24,7 @@ import pubsub from "../../project/shared/pubsub.js";
 
 export default function Sticker({
   config,
+  selected = false,
   dims = [0.94, 0.94, 0.09],
   onActivate,
   frameReady,
@@ -30,6 +34,8 @@ export default function Sticker({
   activationEnabled = false,
 }) {
   const mat = useRef();
+  const theme = useTheme();
+  const { cubeMode, previewsEnabled = true } = useMotion();
   const isPortal = config?.type === "portal";
 
   const { width, height, baseDepth, zScale, bevelRadius, smoothness, faceColor } =
@@ -74,7 +80,7 @@ export default function Sticker({
   const handoffRef = useRef(null);
 
   const blendMs = useMemo(() => {
-    const value = stickerDefaults?.blendMs;
+    const value = stickerDefaults?.defaults?.blendMs;
 
     return Number.isFinite(value) && value > 0
       ? value
@@ -82,7 +88,7 @@ export default function Sticker({
   }, []);
 
   const handoffFallbackMs = useMemo(() => {
-    const value = stickerDefaults?.handoffFallbackMs;
+    const value = stickerDefaults?.defaults?.handoffFallbackMs;
 
     return Number.isFinite(value) && value >= 0
       ? value
@@ -202,7 +208,7 @@ export default function Sticker({
 
   const start = useCallback(
     (event) => {
-      if (!isPortal || !activationEnabled) return;
+      if (!isPortal || !activationEnabled || event?.delta > 6) return;
 
       event?.stopPropagation();
 
@@ -247,15 +253,20 @@ export default function Sticker({
         props: {},
       },
       lights: portal.lights,
+      background: portal.background,
       distance: portal.distance ?? 0,
       animation,
-      playing: isPortal && hovered,
+      playing: isPortal && portalShouldPlay({mode:cubeMode,selected,hovered,activationEnabled,previewsEnabled}),
     };
   }, [
     config.portal,
     faceColor,
     hovered,
     isPortal,
+    selected,
+    activationEnabled,
+    cubeMode,
+    previewsEnabled,
   ]);
 
   // --------------------------------------------------
@@ -346,6 +357,12 @@ export default function Sticker({
         </RoundedBox>
       </group>
 
+      {isPortal && selected && <lineLoop position={[0, 0, dims[2] / 2 + 0.008]} raycast={() => null}>
+        <bufferGeometry><bufferAttribute attach="attributes-position" args={[new Float32Array([
+          -width/2, -height/2, 0, width/2, -height/2, 0, width/2, height/2, 0, -width/2, height/2, 0,
+        ]), 3]} /></bufferGeometry>
+        <lineBasicMaterial color={theme.colors.accent} toneMapped={false} />
+      </lineLoop>}
       {isPortal && hovered && (
         <Html
           position={[0, height / 2 + 0.05, 0]}

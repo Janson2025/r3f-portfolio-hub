@@ -1,89 +1,17 @@
-import skills from "./skills.json";
+import { skillExamples, resolveSkillExample } from '../../features/about/skillExamples.js';
+import { getProjects } from '../../features/projects/queries.js';
+import SkillLink from '../components/about/SkillLink.jsx';
+import { profile } from '../../data/profile.js';
+import AvatarIntroduction from '../components/about/AvatarIntroduction.jsx';
 
 export default function AboutView() {
-  return (
-    <div className="h-full overflow-auto p-4">
-      <div
-        className="
-          mx-auto grid h-full min-h-0 max-w-6xl
-          gap-4 lg:grid-cols-2 lg:items-stretch lg:gap-6
-        "
-      >
-        {/* Profile image */}
-        <section className="overflow-hidden rounded-xl bg-[--color-bg-elev] p-0 shadow-sm lg:h-full">
-          <img
-            src="/images/profile.jpg"
-            alt="James Call"
-            className="block h-[360px] w-full object-cover lg:h-full"
-            loading="lazy"
-            onError={(event) => {
-              // Hide the image if the optional profile asset is unavailable.
-              event.currentTarget.style.display = "none";
-            }}
-          />
-        </section>
-
-        {/* About information */}
-        <section className="flex flex-col rounded-xl bg-[--color-bg-elev] p-4 shadow-sm sm:p-6">
-          <header className="mb-4">
-            <h1 className="h-title">James Call</h1>
-
-            <p className="text-[--color-muted]">
-              Web Software Engineer & Designer
-            </p>
-          </header>
-
-          <div className="prose max-w-none text-[--color-fg] prose-p:my-0">
-            <h2 className="h-lead mb-2">About Me</h2>
-
-            <p className="leading-relaxed text-[--color-muted]">
-              I’m a web software engineer/designer focused on interactive 3D
-              experiences with React Three Fiber and Three.js. I enjoy building
-              clean, modular frontends and tying them to data-driven visuals—
-              whether that’s character configurators, molecule viewers, or
-              educational simulations. Beyond code, I’m into 3D modeling,
-              creative writing and reading history and science.
-            </p>
-          </div>
-
-          {/* Skills */}
-          <div className="mt-6">
-            <h3 className="h-subtitle mb-2">Skills</h3>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              {Object.entries(skills).map(([group, list]) => (
-                <div
-                  key={group}
-                  className="
-                    rounded-lg border
-                    border-[color-mix(in_srgb,currentColor,transparent_80%)]/40
-                    p-3
-                  "
-                >
-                  <div className="mb-2 font-medium text-[--color-fg]">
-                    {group}
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {list.map((skill) => (
-                      <span
-                        key={skill}
-                        className="chip text-sm"
-                        aria-label={skill}
-                        title={skill}
-                      >
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mt-4" />
-        </section>
-      </div>
+  return <div className="portfolio-container portfolio-page about-page">
+    <header className="about-profile-header"><div><p className="overline">HELLO, I’M JAMES CALL</p><h1>A builder with<br/>a designer’s curiosity<span className="accent-dot">.</span></h1><p className="page-intro">{profile.role}</p></div><img className="about-profile-image" src={profile.image} alt="James Call" /></header>
+    <div className="about-flow">
+      <aside className="about-avatar-float" aria-label="Animated introduction"><AvatarIntroduction floating text={profile.bio} /></aside>
+      <section className="portfolio-prose"><h2>About me</h2><p>{profile.bio}</p></section>
+      <section className="portfolio-prose"><h2>How I approach the work</h2><p>Clear interfaces, modular code, and a solid foundation for creative exploration. The useful parts of an experience should always be easy to reach.</p><div className="page-actions"><a className="portfolio-button" href="#/contact">Get in touch ↗</a>{profile.resume && <a className="portfolio-link" href={profile.resume}>View resume ↗</a>}</div><p><a className="portfolio-link" href={profile.previousPortfolio} target="_blank" rel="noopener noreferrer">Visit the previous portfolio ↗</a></p></section>
+      <section className="about-flow-skills"><h2>Tools & skills</h2>{Object.entries(skillExamples).map(([group, list]) => <section className="skill-type-row" key={group}><h3>{group}</h3><div>{list.map(skill => {const example=resolveSkillExample(skill,getProjects(),profile.image);return example?<SkillLink key={skill.label} label={skill.label} example={example}/>:null;})}</div></section>)}</section>
     </div>
-  );
+  </div>;
 }

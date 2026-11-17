@@ -1,3 +1,4 @@
+import { useMotion } from "../../../../lib/motion.jsx";
 import { useEffect, useRef, useState } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
@@ -264,6 +265,7 @@ export default function CubeRig({
   activationEnabled = false,
   activationProjectId = null,
 }) {
+  const { reducedMotion, ambientMotion } = useMotion();
   const group = useRef();
   const idleGroup = useRef();
 
@@ -708,7 +710,7 @@ export default function CubeRig({
     transition.elapsed += delta;
 
     const rawProgress = THREE.MathUtils.clamp(
-      transition.elapsed / TRANSITION_DURATION,
+      transition.elapsed / (reducedMotion ? 0.001 : TRANSITION_DURATION),
       0,
       1
     );
@@ -885,14 +887,14 @@ export default function CubeRig({
 
       <CubeIdleAnimation
         targetRef={idleGroup}
-        enabled={controlsEnabled && !idleSliceActive}
-        freeze={!controlsEnabled || transitionActive}
+        enabled={ambientMotion && controlsEnabled && !idleSliceActive}
+        freeze={!ambientMotion || !controlsEnabled || transitionActive}
         idleDelay={8}
       />
 
       <CubeIdleSliceAnimation
         gridRef={gridRef}
-        enabled={controlsEnabled && !transitionActive}
+        enabled={ambientMotion && controlsEnabled && !transitionActive}
         minInterval={3}
         maxInterval={7}
         turnDuration={0.8}

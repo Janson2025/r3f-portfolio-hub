@@ -3,7 +3,7 @@ import Chip from "./Chip.jsx";
 import Paragraph from "./SummaryParagraph.jsx";
 import pubsub from "../../project/shared/pubsub.js";
 
-import stickerData from "../../project/sticker/params/stickers.json";
+import stickerData from "../../project/projectCatalog.js";
 import gridParams from "../../project/grid/params/grid.json";
 import { createProjectStickerOverrides } from "../../project/grid/engine/projectAssignment.js";
 
@@ -121,7 +121,7 @@ export default function SummaryContainer() {
   };
 
   return (
-    <section className="summary flex flex-col pointer-events-auto text-[--color-fg]">
+    <section className="summary flex flex-col pointer-events-auto text-[var(--color-fg)]">
       <div className="project-selector" aria-label="Project selector">
         {sortedProjects.map((project) => {
           const color = projectColors[project.id] ?? "#3285e8";

@@ -1,0 +1,4 @@
+import { profile } from '../../data/profile.js';
+export default function ContactPage() {
+  return <div className="portfolio-container portfolio-page"><p className="overline">START A CONVERSATION</p><h1>Let’s connect<span className="accent-dot">.</span></h1><p className="page-intro">Have an interesting idea, a project, or an opportunity? Here’s where to find me.</p><section className="empty-panel contact-details"><h2>Find me online</h2><div className="page-actions"><a className="portfolio-button" href={profile.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>{profile.email && <a className="portfolio-link" href={`mailto:${profile.email}`}>{profile.email} ↗</a>}{profile.linkedin && <a className="portfolio-link" href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>}</div>{!profile.email && <p>A public email address has not been added yet.</p>}</section></div>;
+}

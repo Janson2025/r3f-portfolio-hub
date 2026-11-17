@@ -1,3 +1,5 @@
+import { workspacePlace,restoreCubeMoves } from '../../../lib/placeMemory.js';
+import { playSound } from '../../../lib/audio.js';
 
 import React, {
   useMemo,
@@ -16,7 +18,7 @@ import {
 } from "./projectStickerLookup.js";
 import Block from "../block/Block";
 import gridParams from "./params/grid.json";
-import stickerData from "../sticker/params/stickers.json";
+import stickerData from "../projectCatalog.js";
 
 const customStickers = stickerData.projects;
 
@@ -49,6 +51,7 @@ const GridCube = forwardRef(function GridCube(
     projectSelectionEnabled = false,
     isProjectView = false,
     showProjectPortals = true,
+    eligibleProjectIds,
 
     activationEnabled = false,
     activationProjectId = null,
@@ -102,13 +105,14 @@ const GridCube = forwardRef(function GridCube(
   // Cube engine
   // --------------------------------------------------
 
-  const [engine] = useState(() => createCubeEngine(dx));
+  const [engine] = useState(() => restoreCubeMoves(createCubeEngine(dx),workspacePlace().cubeMoves));
 
   const [revision, setRevision] = useState(0);
 
   const sequenceRef = useRef(null);
 
   const handleMoveComplete = useCallback(() => {
+    playSound('slide');
     setRevision((current) => current + 1);
   }, []);
 
@@ -464,19 +468,27 @@ const GridCube = forwardRef(function GridCube(
   // Sticker overrides
   // --------------------------------------------------
 
+  const eligibleKey = eligibleProjectIds?.join("|");
   const overrides = useMemo(() => {
       if (!showProjectPortals) {
           return new Map();
       }
 
-      return createProjectStickerOverrides({
+      const assignments = createProjectStickerOverrides({
           projects: customStickers,
           dimensions: dims,
           seed:
               stickerData.defaults?.assignmentSeed ??
               "rubix-portfolio-v1",
       });
-  }, [showProjectPortals, dims]);
+      if (eligibleProjectIds) {
+        const eligible = new Set(eligibleProjectIds);
+        for (const [key, value] of assignments) {
+          if (!eligible.has(value.id)) assignments.set(key, { ...value, type: "plain" });
+        }
+      }
+      return assignments;
+  }, [showProjectPortals, dims, eligibleKey]);
 
   // --------------------------------------------------
   // Developer / HUD API
@@ -641,6 +653,7 @@ const GridCube = forwardRef(function GridCube(
         frameReady,
         activationEnabled,
         activationProjectId,
+        isProjectView,
         handleStickerPointerDown,
       ]
   );

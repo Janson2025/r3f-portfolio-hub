@@ -1,1 +1,15 @@
 @import "tailwindcss";
+@theme inline {
+  --color-bg: var(--color-canvas);
+  --color-panel: var(--color-surface);
+  --color-panel-raised: var(--color-surface-raised);
+  --color-fg: var(--color-text);
+  --color-muted: var(--color-text-muted);
+  --color-line: var(--color-border);
+  --color-brand: var(--color-accent);
+  --color-brand-hover: var(--color-accent-hover);
+  --color-brand-weak: var(--color-accent-weak);
+  --color-ok: var(--color-success);
+  --color-caution: var(--color-warning);
+  --color-error: var(--color-danger);
+}

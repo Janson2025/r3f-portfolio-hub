@@ -6,7 +6,7 @@ import ZoomSlider from "./ZoomSlider";
 const DEFAULT_CAMERA = {
   position: [0, 1.5, 6],
   target: [0, 0, 0],
-  zoomPercent: 50,
+  zoomPercent: 0,
 };
 
 function readVector(value, fallback) {

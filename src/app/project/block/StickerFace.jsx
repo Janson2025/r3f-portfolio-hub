@@ -58,6 +58,7 @@ export default function StickerFace({
         id: faceConfig.id,
         title: faceConfig.title ?? faceConfig.id,
         href: faceConfig.links?.demo ?? null,
+        width: w, height: h,
 
         originalBlock: faceConfig.block
           ? [...faceConfig.block]
@@ -109,12 +110,13 @@ export default function StickerFace({
     >
       <Sticker
         config={faceConfig}
+        selected={isCurrentlyFocused}
         dims={[w, h, d]}
         activationEnabled={activationEnabled}
         onActivate={() => {
           const projectUrl = faceConfig.links?.demo;
 
-          if (!activationEnabled || !projectUrl) return;
+          if (!activationEnabled) return;
 
           onActivateSticker?.(projectUrl, faceConfig);
         }}

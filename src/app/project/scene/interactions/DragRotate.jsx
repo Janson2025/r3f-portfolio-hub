@@ -1,3 +1,4 @@
+import { useMotion } from "../../../../lib/motion.jsx";
 import { useEffect, useRef, useMemo, useCallback } from "react";
 import { useThree, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -11,6 +12,7 @@ function DragRotate({
   maxVelocity = 6,
 }) {
   const { gl, camera } = useThree();
+  const { reducedMotion } = useMotion();
 
   const raycaster = useMemo(() => new THREE.Raycaster(), []);
 
@@ -278,6 +280,7 @@ function DragRotate({
 
     if (!enabled || !group || state.dragging) return;
 
+    if (reducedMotion) {state.velocityYaw = 0; state.velocityPitch = 0; return;}
     const minimumVelocity = 0.0001;
 
     if (
