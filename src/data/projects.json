@@ -310,7 +310,7 @@
       {
         "kind": "demo",
         "label": "Open live demo",
-        "url": "https://janson2025.github.io/mazeball2/"
+        "url": "https://maze-ball-configurator.vercel.app/"
       }
     ],
     "caseStudy": []
