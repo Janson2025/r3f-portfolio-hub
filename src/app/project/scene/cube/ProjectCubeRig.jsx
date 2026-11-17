@@ -1,4 +1,4 @@
-import { workspacePlace,patchWorkspace } from '../../../../lib/placeMemory.js';
+import { workspacePlace,patchWorkspace,safeQuaternion } from '../../../../lib/placeMemory.js';
 import { useEffect, useRef, useState } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
@@ -13,7 +13,7 @@ import { cubePermissions, easeTransition, transitionDuration } from './viewModes
 const initialRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 5.5, -Math.PI / 2.75, 0.25));
 export default function ProjectCubeRig({ gridRef, selection, eligibleIds, onSelect, onActivate, disabled, idle = false, mode = 'project', onNavigationChange, onFrameChange, onTransitionChange }) {
   const group = useRef(null), move = useRef(null), request = useRef(true);
-  const overview = useRef(new THREE.Quaternion().fromArray(workspacePlace().cubeQuaternion??initialRotation.toArray())), previousMode = useRef(mode);
+  const overview = useRef(new THREE.Quaternion().fromArray(safeQuaternion(workspacePlace().cubeQuaternion,initialRotation.toArray()))), previousMode = useRef(mode);
   const target = useRef(new THREE.Vector3());
   const [transitioning, setTransitioning] = useState(true);
   const { camera, size } = useThree();

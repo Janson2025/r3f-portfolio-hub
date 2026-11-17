@@ -114,8 +114,8 @@
     "slug": "r3f-wing-configurator",
     "title": "USU Aerospace Wingcraft Web Application",
     "summary": "An aerospace-focused 3D wing modeling system created for USU Aerospace. Users can adjust airplane wing parameters in real time and preview animated flight paths.",
-    "description": "An aerospace-focused 3D wing modeling system created for USU Aerospace. Users can adjust airplane wing parameters in real time and preview animated flight paths.",
-    "role": null,
+    "description": "Designed and implemented an interactive 3D airplane wing modeling system with real-time adjustments and animated flight paths. Built backend infrastructure for storing and sharing group data across local and global contexts, and created textured airplane models in Blender.",
+    "role": "Software Engineering Intern · USU Aerospace Engineering",
     "status": null,
     "visibility": "published",
     "discipline": "3D & interactive",
@@ -136,7 +136,16 @@
         "url": "https://r3f-wing-configurator-demo.onrender.com"
       }
     ],
-    "caseStudy": []
+    "caseStudy": [
+      {
+        "heading": "Interactive wing design",
+        "body": "Built real-time wing controls and animated flight paths using React Three Fiber and Three.js."
+      },
+      {
+        "heading": "Shared data and 3D assets",
+        "body": "Implemented backend infrastructure for storing and sharing group data, and created and textured airplane models in Blender."
+      }
+    ]
   },
   {
     "id": "aquarium",
@@ -310,9 +319,9 @@
     "id": "multiplex-hts",
     "slug": "multiplex-hts",
     "title": "Drug Screening Analysis Program",
-    "summary": "A drug screening analysis platform that automates multiplex high-throughput screening data using flow cytometry results. Co-authored as part of a peer-reviewed study on Trypanosoma brucei.",
-    "description": "A drug screening analysis platform that automates multiplex high-throughput screening data using flow cytometry results. Co-authored as part of a peer-reviewed study on Trypanosoma brucei.",
-    "role": null,
+    "summary": "Python and flow-cytometry analysis automation that saved 200+ hours of manual work and supported a peer-reviewed Trypanosoma brucei study.",
+    "description": "Automated drug-screening data analysis using Python and flow-cytometry results, improving consistency and reducing manual work. Co-authored the associated peer-reviewed study.",
+    "role": "Software Engineering Intern · BYU Chemistry & Biochemistry; research co-author",
     "status": null,
     "visibility": "published",
     "discipline": "Software",
@@ -342,15 +351,24 @@
         "url": "https://pubmed.ncbi.nlm.nih.gov/39163740/"
       }
     ],
-    "caseStudy": []
+    "caseStudy": [
+      {
+        "heading": "Estimated impact",
+        "body": "Saved 200+ hours of manual analysis and approximately $1,500 in labor costs while improving consistency."
+      },
+      {
+        "heading": "Published research",
+        "body": "Co-authored “A multiplexed high throughput screening assay using flow cytometry identifies glycolytic molecular probes in bloodstream form Trypanosoma brucei.” The publication is linked above."
+      }
+    ]
   },
   {
     "id": "paleo-gis",
     "slug": "paleo-gis",
     "title": "Paleobiological GIS Program",
     "summary": "An educational GIS platform visualizing fossil site data across geologic time using the Paleobiology Database API.",
-    "description": "An educational GIS platform visualizing fossil site data across geologic time using the Paleobiology Database API.",
-    "role": null,
+    "description": "Designed an educational GIS tool that visualizes fossil sites across geologic time on a global map using the Paleobiology Database. Built with JavaScript and CSS and hosted on GitHub Pages.",
+    "role": "Developer",
     "status": null,
     "visibility": "published",
     "discipline": "Web apps",
@@ -375,7 +393,12 @@
         "url": "https://github.com/jacall2016/paleoGISfinnal"
       }
     ],
-    "caseStudy": []
+    "caseStudy": [
+      {
+        "heading": "Exploring fossils through time",
+        "body": "Combined Paleobiology Database data with a global map so learners can explore fossil sites across geologic time."
+      }
+    ]
   },
   {
     "id": "plums",
@@ -505,6 +528,33 @@
         "kind": "demo",
         "label": "Open live demo",
         "url": "https://janson2025.github.io/simpleRubixCube/"
+      }
+    ],
+    "caseStudy": []
+  },
+  {
+    "id": "cultural-api",
+    "slug": "cultural-api",
+    "title": "Cultural API",
+    "summary": "An API project with interactive documentation for exploring its endpoints.",
+    "description": "Explore Cultural API through its interactive API documentation.",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "Software",
+    "tags": [
+      "API",
+      "Swagger"
+    ],
+    "featured": false,
+    "sortOrder": 190,
+    "image": "/images/backgrounds/Cultural-api background.png",
+    "imageAlt": "Cultural API documentation preview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "View API documentation",
+        "url": "https://cse341-team-final-project.onrender.com/api-docs/"
       }
     ],
     "caseStudy": []

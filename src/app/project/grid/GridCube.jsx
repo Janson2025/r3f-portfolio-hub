@@ -111,8 +111,9 @@ const GridCube = forwardRef(function GridCube(
 
   const sequenceRef = useRef(null);
 
+  const handleMoveStart = useCallback(() => { playSound('slide'); }, []);
+
   const handleMoveComplete = useCallback(() => {
-    playSound('slide');
     setRevision((current) => current + 1);
   }, []);
 
@@ -151,6 +152,7 @@ const GridCube = forwardRef(function GridCube(
     pivotRef,
     getBlocks,
     engine,
+    onMoveStart: handleMoveStart,
     onMoveComplete: handleMoveComplete,
     durationMs: ANIMATION_DURATION,
   });

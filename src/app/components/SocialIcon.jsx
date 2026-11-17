@@ -1,0 +1,4 @@
+export default function SocialIcon({name}){
+ const paths={youtube:'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zm6 4 6 4-6 4z',facebook:'M14 21v-8h3l.5-4H14V7c0-1 .4-2 2-2h2V1.5L15 1c-3 0-5 2-5 5v3H7v4h3v8z',X:'M3 3h4.5L21 21h-4.5zM21 3 3 21',linkedin:'M4 9v12M4 4v.1M10 21V9m0 5c0-6 10-6 10 0v7',tiktok:'M14 3v12.5a4.5 4.5 0 1 1-4-4.5M14 3c1 4 3 5 7 5',github:'M9 21v-4c-4 1-5-2-6-2m12 6v-4c0-1-.3-2-1-2.5 4-.5 7-2 7-6 0-2-.5-3-2-4 0-1 0-2-.5-3-2 0-3 .5-4 1a14 14 0 0 0-7 0c-1-.5-2-1-4-1-.5 1-.5 2-.5 3C2 5.5 2 7 2 8.5c0 4 3 5.5 7 6-.7.5-1 1.5-1 2.5'};
+ return <svg width="22" height="22" viewBox="0 0 24 24" fill={name==='facebook'?'currentColor':'none'} stroke={name==='facebook'?'none':'currentColor'} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name]}/></svg>;
+}

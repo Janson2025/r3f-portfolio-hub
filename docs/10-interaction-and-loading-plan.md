@@ -1,3 +1,5 @@
+> Current changes are tracked in [11: inspector and navigation](11-inspector-navigation-and-audio-plan.md) and [13: double helix](13-double-helix-ribbon-plan.md). Conflicting older interaction descriptions below are historical.
+
 # Interaction, loading and responsive presentation stages
 
 Status: stages 1–7 implemented and validated. This supersedes conflicting requirements in 09; preserve completed product/catalog content and owner-authored scene parameters. Local work only.

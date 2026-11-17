@@ -1,0 +1,15 @@
+.about-professional-background { clear:both; display:grid; grid-template-columns:minmax(0,.95fr) minmax(0,1.45fr); gap:48px; margin-top:44px; padding-top:34px; border-top:1px solid var(--color-border); }
+.about-professional-background h2 { font-size:1.5rem; margin:0 0 22px; }
+.about-professional-background h3 { font-size:.95rem; line-height:1.5; margin:0 0 7px; }
+.about-professional-background p { margin:0 0 9px; font-size:.85rem; line-height:1.7; }
+.about-professional-background .background-meta { color:var(--color-text-muted); font-size:.72rem; }
+.about-professional-background .credentials-heading { margin-top:25px; }
+.credential-list { padding-left:18px; font-size:.8rem; line-height:1.8; color:var(--color-text-muted); }
+.experience-list { margin:0; padding:0; list-style:none; }
+.experience-list li { padding:0 0 22px 18px; border-left:1px solid var(--color-border); }
+.experience-list li:last-child { padding-bottom:0; }
+.experience-links { display:flex; flex-wrap:wrap; gap:8px 16px; margin-top:8px; }
+.experience-links .portfolio-link,.additional-work .portfolio-link { font-size:.7rem; }
+.additional-work { margin-top:30px; }
+.additional-work .portfolio-link { display:inline-block; margin:6px 16px 0 0; }
+@media(max-width:760px) { .about-professional-background { grid-template-columns:1fr; gap:32px; margin-top:30px; padding-top:28px; } }

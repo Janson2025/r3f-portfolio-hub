@@ -1,3 +1,4 @@
+import { shouldPlayDragSlide } from '../../../../features/audio/slideMotion.js';
 import { useMotion } from "../../../../lib/motion.jsx";
 
 import * as THREE from "three";
@@ -67,6 +68,7 @@ export default function useCubeRotation({
   getBlocks,
   engine,
   onMoveComplete,
+  onMoveStart,
   durationMs = 250,
 }) {
   const { reducedMotion } = useMotion();
@@ -379,10 +381,11 @@ export default function useCubeRotation({
 
       state.commitMove = options.commitMove ?? null;
       state.onComplete = options.onComplete ?? null;
+      state.soundStarted = true; onMoveStart?.();
 
       return true;
     },
-    [beginRotation, durationMs]
+    [beginRotation, durationMs, onMoveStart]
   );
 
   // --------------------------------------------------
@@ -425,6 +428,7 @@ export default function useCubeRotation({
         return false;
       }
 
+      if (shouldPlayDragSlide(angle, state.soundAngle ?? 0)) { state.soundAngle = angle; onMoveStart?.(); }
       state.angle = angle;
 
       pivot.quaternion.setFromAxisAngle(
@@ -436,7 +440,7 @@ export default function useCubeRotation({
 
       return true;
     },
-    [pivotRef]
+    [pivotRef, onMoveStart]
   );
 
   /**

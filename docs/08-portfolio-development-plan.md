@@ -20,7 +20,7 @@ One menu: Projects, About, Products & services, Contact. One combined Project pa
 ## Implementation boundaries
 
 - Content/profile fields remain in data modules; scene configuration stays in the portal JSON and dedicated avatar settings.
-- Use the existing profile-closeup.jpg. Do not fabricate new project screenshots. Entries without an image keep an explicit visual placeholder.
+- Use the existing closeup-profile.png. Do not fabricate new project screenshots. Entries without an image keep an explicit visual placeholder.
 - Keep current model positions/rotations, project links and user-authored data intact except for requested background settings.
 - Speech timing is an approximate text-to-viseme animation, not phonetic alignment to an audio recording. The visible text and mouth movements share the same timeline and stop at the same time.
 - Reduced motion and failed asset loading must never prevent reading the About text or accessing projects.

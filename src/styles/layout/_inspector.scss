@@ -40,3 +40,23 @@
  .project-list-entry.is-expanded .project-entry-copy > p { display:block; font-size:.7rem; line-height:1.7; margin-top:10px; }
  .project-entry-overview { gap:10px; }
 }
+
+/* Both helix bands share one canvas and a real depth buffer. */
+.model-ribbon-viewport { height:350px; }
+.ribbon-edge { position:absolute; top:0; bottom:0; width:min(10vw,120px); pointer-events:none; }
+.ribbon-edge--left { left:0; background:linear-gradient(90deg,var(--color-canvas),transparent); }
+.ribbon-edge--right { right:0; background:linear-gradient(270deg,var(--color-canvas),transparent); }
+.ribbon-links--accessible { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); padding:0; }
+.ribbon-links--accessible:focus-within { position:relative; width:auto; height:auto; clip-path:none; padding:14px 24px; flex-wrap:wrap; }
+.ribbon-links a:focus-visible { outline:2px solid var(--color-focus); outline-offset:5px; }
+@media(max-width:760px) { .model-ribbon-viewport { height:280px; } }
+
+.model-ribbon-viewport[data-item-hovered=true] canvas { cursor:pointer; }
+.ribbon-project-tooltip { position:fixed; width:290px; max-width:calc(100vw - 24px); max-height:calc(100dvh - 24px); overflow:hidden; pointer-events:none; z-index:300; padding:12px; border:1px solid var(--color-border-strong); border-radius:12px; background:var(--color-surface); color:var(--color-text); box-shadow:var(--shadow-sm); animation:ribbon-tooltip-in .12s ease-out both; }
+.ribbon-project-tooltip img,.ribbon-tooltip-monogram { width:100%; height:120px; object-fit:cover; border-radius:6px; margin-bottom:10px; }
+.ribbon-tooltip-monogram { display:grid; place-items:center; background:var(--color-surface-raised); font-size:2rem; }
+.ribbon-tooltip-kind { display:block; color:var(--color-text-muted); text-transform:uppercase; letter-spacing:.13em; font-size:.55rem; margin-bottom:5px; }
+.ribbon-project-tooltip strong { display:block; font-size:.85rem; line-height:1.4; }
+.ribbon-project-tooltip p { margin:6px 0 0; color:var(--color-text-muted); font-size:.7rem; line-height:1.6; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+@keyframes ribbon-tooltip-in { from { opacity:0; } to { opacity:1; } }
+@media(prefers-reduced-motion:reduce) { .ribbon-project-tooltip { animation:none; } }

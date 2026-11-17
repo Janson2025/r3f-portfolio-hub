@@ -60,6 +60,11 @@ export function Cube({ size = 0.6 }) {
   );
 }
 
+/** Lightweight placeholder for projects without an authored model. */
+export function Cone({radius=.32,height=.8,radialSegments=32,color='#e7ad61',position=[0,0,0],rotation=[0,0,0],scale=1}) {
+  return <mesh position={position} rotation={rotation} scale={scale}><coneGeometry args={[radius,height,radialSegments]}/><meshStandardMaterial color={color} roughness={.45} metalness={.12}/></mesh>;
+}
+
 export function Cylinder({
   radiusTop = 0.4,
   radiusBottom = 0.4,
@@ -170,6 +175,7 @@ export const MESH_REGISTRY = {
   wbox: WBox,
   cube: Cube,
   cylinder: Cylinder,
+  cone: Cone,
   plane: plane,
   glb: GLB,
 };

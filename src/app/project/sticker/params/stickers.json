@@ -1097,6 +1097,48 @@
           "opacity": 0.5
         }
       }
+    },
+    {
+      "id": "cultural-api",
+      "priority": 1,
+      "preview": {
+        "color": "#e7ad61"
+      },
+      "portal": {
+        "distance": 0,
+        "mesh": {
+          "type": "cone",
+          "props": {
+            "radius": 0.32,
+            "height": 0.8,
+            "radialSegments": 32,
+            "color": "#e7ad61",
+            "rotation": [
+              0.12,
+              0,
+              0.1
+            ]
+          }
+        },
+        "animation": {
+          "type": "spin",
+          "params": {
+            "speed": 0.3,
+            "axis": [
+              0,
+              1,
+              0
+            ]
+          }
+        },
+        "lights": {
+          "preset": "studioKey",
+          "ambient": 0.45
+        },
+        "background": {
+          "image": null
+        }
+      }
     }
   ]
 }
