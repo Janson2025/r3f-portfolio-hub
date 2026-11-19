@@ -612,5 +612,32 @@
       }
     ],
     "caseStudy": []
+  },
+  {
+    "id": "paint-by-number-generator",
+    "slug": "paint-by-number-generator",
+    "title": "Paint by Number Generator",
+    "summary": "A website that generates paint by numbers from inputted images",
+    "description": "A website that generates paint by numbers from inputted images",
+    "role": null,
+    "status": null,
+    "visibility": "published",
+    "discipline": "Web apps",
+    "tags": [
+      "Game",
+      "Web Development"
+    ],
+    "featured": false,
+    "sortOrder": 210,
+    "image": "/images/backgrounds/paint-by-number background.png",
+    "imageAlt": "paint by number prieview",
+    "links": [
+      {
+        "kind": "demo",
+        "label": "Open live demo",
+        "url": "https://3dfruitmerge.vercel.app/"
+      }
+    ],
+    "caseStudy": []
   }
 ]
